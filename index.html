@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciamento Segurança</title>
+
+    <script src="./shared/scripts/getSession.js" defer></script>
+    <script src="./shared/scripts/loginUser.js" defer></script>
+
+    <link rel="stylesheet" href="./shared/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="auth-card">
+        <div class="auth-logo">Segurança da Pesada</div>
+        <div class="auth-title">Autenticação</div>
+
+        <div id="msgBox" class="alert"></div>
+
+        <div class="form-group">
+          <label>Número de Segurança</label>
+          <input type="number" id="usuarioNum" placeholder="Ex: 1042" />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="••••••" />
+        </div>
+
+        <button class="btn btn-auth btn-primary" onclick="loginUser()">
+          Entrar
+        </button>
+
+        <div class="auth-switch">
+          Não tem conta? <a href="register.html">Registar</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

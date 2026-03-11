@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seguranças — Ocorrências</title>
+    <link rel="stylesheet" href="../../shared/css/style.css" />
+  </head>
+  <body>
+    <div class="container-dashboard">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="dot"></div>
+          Seguranças da pesada
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="doLogout()">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <nav class="navbar">
+        <a class="nav-item" href="../dashboard.html">Dashboard</a>
+        <a class="nav-item" href="../movimentacoes/movimentacoes.html"
+          >Movimentações</a
+        >
+        <a class="nav-item" href="../visitas/visitas.html">Visitantes</a>
+        <a class="nav-item" href="../chaves/chaves.html">Chaves</a>
+        <a class="nav-item active" href="../ocorrencias/ocorrencias.html"
+          >Ocorrências</a
+        >
+        <a class="nav-item" href="../consumos/consumos.html">Consumos</a>
+      </nav>
+
+      <main class="main">
+        <div class="form-inline">
+          <div class="card-title">Registar nova ocorrência</div>
+          <!-- ADICIONAR FUNCAO NO FORM PARA ENVIAR OS DADOS PARA BACKEND -->
+          <form>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ocorrências</label>
+                <textarea
+                  name="ocorrencias"
+                  placeholder="Descreva ocorrências encontradas (deixe vazio se sem incidentes)"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                  Confirmar ocorrencia
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- HISTÓRICO DE OCORRÊNCIAS -->
+        <div class="card">
+          <div class="card-title">Histórico de Ocorrências</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data / Hora</th>
+                  <th>Segurança</th>
+                  <th>Ocorrências</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyRondas">
+                <!-- LINHAS DE EXEMPLO -->
+                <tr>
+                  <td>11/03/2026 22:30</td>
+                  <td>João Silva</td>
+                  <td>Sem ocorrências</td>
+                </tr>
+                <tr>
+                  <td>11/03/2026 19:00</td>
+                  <td>Maria Santos</td>
+                  <td>
+                    Porta do piso 2 entreaberta — encerrada e reportada à chefia
+                  </td>
+                </tr>
+
+                <!-- VAZIO EXEMPLO 
+                <tr>
+                  <td colspan="3">
+                    <div class="empty-state">
+                      <div class="icon">🛡️</div>
+                      Nenhuma ocorrência registada hoje
+                    </div>
+                  </td>
+                </tr>
+                -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

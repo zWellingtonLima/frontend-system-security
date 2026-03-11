@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seguranças — Movimentações</title>
+    <link rel="stylesheet" href="../../shared/css/style.css" />
+    <script src="../shared/scripts/modals.js" defer></script>
+  </head>
+  <body>
+    <div class="container-dashboard">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="dot"></div>
+          Seguranças da pesada
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="doLogout()">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <nav class="navbar">
+        <a class="nav-item" href="../dashboard.html">Dashboard</a>
+        <a class="nav-item active" href="../movimentacoes/movimentacoes.html"
+          >Movimentações</a
+        >
+        <a class="nav-item" href="../visitas/visitas.html">Visitantes</a>
+        <a class="nav-item" href="../chaves/chaves.html">Chaves</a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html"
+          >Ocorrências</a
+        >
+        <a class="nav-item" href="../consumos/consumos.html">Consumos</a>
+      </nav>
+
+      <main class="main">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Movimentações</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modalEntrada')">
+            + Nova Entrada
+          </button>
+        </div>
+
+        <div class="card mb">
+          <div class="card-title">Atualmente no Edifício</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Tipo</th>
+                  <th>Entrada</th>
+                  <th>Destino / Setor</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyAtivos"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Histórico do Dia</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Tipo</th>
+                  <th>Entrada</th>
+                  <th>Saída</th>
+                  <th>Duração</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyHistorico"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- MODAL ENTRADA -->
+    <div class="overlay" id="modalEntrada">
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal('modalEntrada')">
+          ✕
+        </button>
+        <div class="modal-title">Registar Entrada</div>
+
+        <div class="form-group">
+          <label>Tipo de Entrada</label>
+          <select id="eTipo" onchange="toggleEntradaTipo()">
+            <option value="funcionario">Funcionário</option>
+            <option value="visita">Visita</option>
+            <option value="servico">Prestação de Serviço</option>
+            <option value="entrega">Entrega</option>
+            <option value="manutencao">Manutenção</option>
+          </select>
+        </div>
+
+        <div id="secFuncionario">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do Funcionário</label>
+              <input
+                type="text"
+                id="eNomeFuncionario"
+                placeholder="Nome completo"
+              />
+            </div>
+            <div class="form-group">
+              <label>Setor</label>
+              <input
+                type="text"
+                id="eSetorFuncionario"
+                placeholder="Ex: TI, RH, Contab."
+              />
+            </div>
+          </div>
+        </div>
+
+        <div id="secVisita" class="hidden">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do Visitante</label>
+              <input type="text" id="eNomeVisita" placeholder="Nome completo" />
+            </div>
+            <div class="form-group">
+              <label>Empresa</label>
+              <input
+                type="text"
+                id="eEmpresa"
+                placeholder="Empresa / Organização"
+              />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Documento de Identificação</label>
+              <input
+                type="text"
+                id="eDocumento"
+                placeholder="BI / Passaporte"
+              />
+            </div>
+            <div class="form-group">
+              <label>Setor Destino</label>
+              <input
+                type="text"
+                id="eSetorDestino"
+                placeholder="Departamento / Sala"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Funcionário Responsável (Opcional)</label>
+            <input
+              type="text"
+              id="eFuncResponsavel"
+              placeholder="Quem recebe"
+            />
+          </div>
+        </div>
+
+        <!-- CHAVE OPCIONAL -->
+        <div class="section-toggle" id="keyToggle" onclick="toggleKeySection()">
+          <div class="section-toggle-icon" id="keyToggleIcon"></div>
+          <span class="section-toggle-label"
+            >🔑 Incluir entrega de chave (opcional)</span
+          >
+        </div>
+        <div class="section-body hidden" id="keySection">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Código da Chave</label>
+              <input type="text" id="eCodChave" placeholder="Ex: CH-001" />
+            </div>
+            <div class="form-group">
+              <label>Sala / Número</label>
+              <input type="text" id="eSalaChave" placeholder="Ex: 204" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tipo de Chave</label>
+            <select id="eTipoChave">
+              <option value="Principal">Principal</option>
+              <option value="Reserva">Reserva</option>
+              <option value="Mestra">Mestra</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Observações</label>
+          <textarea
+            id="eObs"
+            placeholder="Notas adicionais (opcional)"
+          ></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal('modalEntrada')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="registarEntrada()">
+            Confirmar Entrada
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seguranças — Visitas</title>
+    <link rel="stylesheet" href="../../shared/css/style.css" />
+    <script src="../shared/scripts/modals.js" defer></script>
+  </head>
+  <body>
+    <div class="container-dashboard">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="dot"></div>
+          Seguranças da pesada
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="doLogout()">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <nav class="navbar">
+        <a class="nav-item" href="../dashboard.html"> Dashboard </a>
+        <a class="nav-item" href="../movimentacoes/movimentacoes.html">
+          Movimentações
+        </a>
+        <a class="nav-item active" href="../visitas/visitas.html">
+          Visitantes
+        </a>
+        <a class="nav-item" href="../chaves/chaves.html"> Chaves </a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html">
+          Ocorrências
+        </a>
+        <a class="nav-item" href="../consumos/consumos.html"> Consumos </a>
+      </nav>
+
+      <main class="main">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Visitantes</div>
+            <div class="page-sub">
+              Base de dados de visitantes e prestadores
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modalVisitante')">
+            + Novo Visitante
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Empresa</th>
+                <th>Documento</th>
+                <th>Setor Destino</th>
+                <th>Registado em</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyVisitantes"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <!-- MODAL VISITANTE -->
+    <div class="overlay" id="modalVisitante">
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal('modalVisitante')">
+          ✕
+        </button>
+        <div class="modal-title">Registar Visitante</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo</label>
+            <input type="text" id="vNome" placeholder="Nome do visitante" />
+          </div>
+          <div class="form-group">
+            <label>Empresa</label>
+            <input type="text" id="vEmpresa" placeholder="Empresa (opcional)" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Documento</label>
+            <input type="text" id="vDoc" placeholder="BI / Passaporte / NIF" />
+          </div>
+          <div class="form-group">
+            <label>Setor Destino</label>
+            <input type="text" id="vSetor" placeholder="Departamento" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal('modalVisitante')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="registarVisitante()">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

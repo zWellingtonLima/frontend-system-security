@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seguranças — Consumos</title>
+    <link rel="stylesheet" href="../../shared/css/style.css" />
+  </head>
+  <body>
+    <div class="container-dashboard">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="dot"></div>
+          Seguranças da Pesada
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="doLogout()">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <nav class="navbar">
+        <a class="nav-item" href="../dashboard.html">Dashboard</a>
+        <a class="nav-item" href="../movimentacoes/movimentacoes.html"
+          >Movimentações</a
+        >
+        <a class="nav-item" href="../visitas/visitas.html">Visitantes</a>
+        <a class="nav-item" href="../chaves/chaves.html">Chaves</a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html"
+          >Ocorrências</a
+        >
+        <a class="nav-item active" href="consumos.html">Consumos</a>
+      </nav>
+
+      <main class="main">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Registo de Consumos</div>
+          </div>
+        </div>
+
+        <div class="summary-strip">
+          <div class="summary-item agua">
+            <div class="summary-icon">💧</div>
+            <div>
+              <div class="summary-label">Última Leitura — Água</div>
+              <div class="summary-val">—<span class="unit">m³</span></div>
+            </div>
+          </div>
+
+          <div class="summary-item luz">
+            <div class="summary-icon">⚡</div>
+            <div>
+              <div class="summary-label">Última Leitura — Luz</div>
+              <div class="summary-val">—<span class="unit">kWh</span></div>
+            </div>
+          </div>
+          <div class="summary-item gas">
+            <div class="summary-icon">🔥</div>
+            <div>
+              <div class="summary-label">Última Leitura — Gás</div>
+              <div class="summary-val">—<span class="unit">m³</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULÁRIO DE NOVA LEITURA -->
+        <div class="form-inline">
+          <div class="card-title" style="margin-bottom: 1.25rem">
+            Nova Leitura
+          </div>
+          <form>
+            <div
+              class="form-row"
+              style="
+                grid-template-columns: 1fr 1fr 1fr 1fr auto;
+                gap: 1rem;
+                align-items: flex-end;
+              "
+            >
+              <div class="form-group">
+                <label>Tipo de Consumo</label>
+                <select name="id_tipo_consumo" required>
+                  <option value="" disabled selected>Selecionar...</option>
+                  <option value="1">Água</option>
+                  <option value="2">Luz</option>
+                  <option value="3">Gás</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Valor da Leitura</label>
+                <input
+                  type="number"
+                  name="valor_leitura"
+                  placeholder="Ex: 1245"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Data / Hora do Registo</label>
+                <input type="datetime-local" name="data_registo" required />
+              </div>
+
+              <div class="form-group">
+                <label>Observação</label>
+                <input
+                  type="text"
+                  name="observacao"
+                  placeholder="Opcional"
+                  maxlength="200"
+                />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0">
+                <button type="submit" class="btn btn-primary">Registar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- HISTORICO DE LEITURAS -->
+        <div class="card">
+          <div class="card-title">Histórico de Leituras</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data / Hora</th>
+                  <th>Tipo</th>
+                  <th>Leitura</th>
+                  <th>Diferença</th>
+                  <th>Observação</th>
+                  <th>Registado por</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- LINHA DE EXEMPLO -->
+                <tr>
+                  <td>11/03/2026 08:14</td>
+                  <td>
+                    <span class="tipo-icon tipo-agua">
+                      <span class="dot-tipo"></span>Água
+                    </span>
+                  </td>
+                  <td>1 248 <span class="diff">m³</span></td>
+                  <td><span class="diff-val">+ 12</span></td>
+                  <td>Leitura mensal</td>
+                  <td>João Silva</td>
+                </tr>
+                <tr>
+                  <td>11/03/2026 08:10</td>
+                  <td>
+                    <span class="tipo-icon tipo-luz">
+                      <span class="dot-tipo"></span>Luz
+                    </span>
+                  </td>
+                  <td>43 820 <span class="diff">kWh</span></td>
+                  <td><span class="diff-val">+ 340</span></td>
+                  <td>—</td>
+                  <td>João Silva</td>
+                </tr>
+                <tr>
+                  <td>10/03/2026 17:45</td>
+                  <td>
+                    <span class="tipo-icon tipo-gas">
+                      <span class="dot-tipo"></span>Gás
+                    </span>
+                  </td>
+                  <td>892 <span class="diff">m³</span></td>
+                  <td><span class="diff-val">+ 5</span></td>
+                  <td>Verificado com técnico</td>
+                  <td>Maria Santos</td>
+                </tr>
+
+                <!-- ESTADO VAZIO — descomentar quando não tiver dados
+            <tr>
+              <td colspan="6">
+                <div class="empty-state">
+                  <div class="icon">📊</div>
+                  Nenhuma leitura registada
+                </div>
+              </td>
+            </tr>
+            -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
