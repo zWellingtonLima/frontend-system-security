@@ -6,7 +6,10 @@ function auth() {
   return true;
 }
 
-function logoutUser() {
-  localStorage.removeItem("sp_session");
-  window.location.href = "../index.html";
+async function logoutUser() {
+  const idSessao = sessionStorage.getItem("idSessao");
+  await fetch(`/auth/logout/${idSessao}`, { method: "POST" });
+  sessionStorage.clear();
+
+  window.location.href = "../../index.html";
 }

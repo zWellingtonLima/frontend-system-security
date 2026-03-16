@@ -10,18 +10,23 @@ function loginUser() {
     body: { numSeguranca: userNum, password },
   })
     .then((res) => res.json())
-    .then((data) => console.log(data))
-    // DEVE EXIBIR PARA O USUARIO MENSAGEM DE ERRO CASO O USUARIO NAO EXISTA
-    .catch((err) => console.log(err));
+    .then((data) => {
+      console.log(data);
 
-  // MENSAGEM DE ERRO JA PRONTA
-  if (!user) {
-    errorMessage.className = "alert alert-error";
-    errorMessage.textContent = "Número ou password incorretos.";
-    errorMessage.style.display = "block";
-    return;
-  }
+      // guardar no sessionStorage
+      sessionStorage.setItem("idSessao", data.idSessao);
+      sessionStorage.setItem("idUser", data.idUser);
+      sessionStorage.setItem("nome", data.nome);
 
-  // REDIRECIONAMENTO PARA O DASHBOARD
-  window.location.href = "../app/dashboard.html";
+      window.location.href = "./app/dashboard.html";
+    })
+    .catch((err) => {
+      console.log(err);
+
+      errorMessage.className = "alert alert-error";
+      errorMessage.textContent = "Número ou password incorretos.";
+      errorMessage.style.display = "block";
+
+      return;
+    });
 }
