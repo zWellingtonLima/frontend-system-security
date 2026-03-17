@@ -90,3 +90,23 @@ function clearForm() {
     document.getElementById(id).value = "";
   });
 }
+
+// REGISTRAR FUNCIONARIO
+function registarFuncionario() {
+  const nome = document.getElementById("fNome").value.trim();
+  const numero = document.getElementById("fNumero").value.trim();
+  const setor = document.getElementById("fSetor").value.trim();
+
+  if (!nome || !numero || !setor)
+    return alert("Todos os campos são obrigatórios.");
+
+  closeModal("modalFuncionario");
+  clearForm();
+}
+
+// LIMPAR FORM
+function clearForm() {
+  ["fNome", "fNumero", "fSetor"].forEach((id) => {
+    document.getElementById(id).value = "";
+  });
+}

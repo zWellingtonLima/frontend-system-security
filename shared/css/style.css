@@ -313,7 +313,7 @@ th {
   letter-spacing: 0.15em;
   color: var(--text-muted);
   text-transform: uppercase;
-  text-align: left;
+  text-align: center;
   padding: 0.6rem 1rem;
   background: var(--surface2);
   border-bottom: 1px solid var(--border);
@@ -610,6 +610,11 @@ tr:hover td {
 }
 
 /* AUXILARES */
+.divider {
+  color: var(--accent-glow);
+  margin: 3rem 0;
+}
+
 .hidden {
   display: none;
 }
