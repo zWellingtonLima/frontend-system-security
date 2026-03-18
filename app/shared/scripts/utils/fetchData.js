@@ -1,4 +1,4 @@
-export const API_BASE_URL = "http://localhost:8080/api";
+import { API_BASE_URL } from "../api/api_url.js";
 
 export async function fetchData(endpoint) {
   try {
