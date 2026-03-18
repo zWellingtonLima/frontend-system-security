@@ -6,7 +6,9 @@ const renderTable = async (endpoint, campos, tbodySelector) => {
 
   data.forEach((item) => {
     const tr = document.createElement("tr");
-    tr.innerHTML = campos.map((campo) => `<td>${item[campo]}</td>`).join("");
+    tr.innerHTML = campos
+      .map((campo) => `<td>${item[campo] ?? "-"}</td>`)
+      .join("");
     tbody.appendChild(tr);
   });
 };
