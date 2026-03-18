@@ -181,9 +181,13 @@ textarea {
   cursor: pointer;
   padding: 0.65rem 1.4rem;
   transition: all 0.15s;
-  display: inline-flex;
+  display: block;
   align-items: center;
   gap: 0.45rem;
+}
+
+.btn-full {
+  width: 100%;
 }
 
 .btn-primary {
@@ -510,14 +514,14 @@ tr:hover td {
 }
 .form-inline .form-row {
   align-items: flex-end;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
 }
 .form-inline .form-row .form-group {
   margin-bottom: 0;
 }
 .form-inline-actions {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   padding-bottom: 0;
 }
 
