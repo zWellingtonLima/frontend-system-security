@@ -12,8 +12,7 @@
       type="module"
       defer
     ></script>
-
-    <script src="./scripts/registarPessoa.js" type="module" defer></script>
+    <script src="./scripts/registar.js" type="module" defer></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -104,6 +103,7 @@
         </div>
       </main>
     </div>
+
     <!-- MODAL DE VISITANTE -->
     <div class="overlay" id="modalVisitante">
       <div class="modal">
@@ -111,30 +111,39 @@
           ✕
         </button>
         <div class="modal-title">Registar Visitante</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome Completo</label>
-            <input type="text" id="vNome" placeholder="Nome do visitante" />
+        <form id="registerVisitante">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome Completo</label>
+              <input type="text" id="vNome" placeholder="Nome do visitante" />
+            </div>
+            <div class="form-group">
+              <label>Empresa</label>
+              <input
+                type="text"
+                id="vEmpresa"
+                placeholder="Empresa (opcional)"
+              />
+            </div>
+            <div class="form-group">
+              <label>Documento</label>
+              <input
+                type="text"
+                id="vDoc"
+                placeholder="BI / Passaporte / NIF"
+              />
+            </div>
           </div>
-          <div class="form-group">
-            <label>Empresa</label>
-            <input type="text" id="vEmpresa" placeholder="Empresa (opcional)" />
+          <div class="modal-footer">
+            <button
+              class="btn btn-ghost"
+              onclick="closeModal('modalVisitante')"
+            >
+              Cancelar
+            </button>
+            <button class="btn btn-primary">Guardar</button>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Documento</label>
-            <input type="text" id="vDoc" placeholder="BI / Passaporte / NIF" />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modalVisitante')">
-            Cancelar
-          </button>
-          <button class="btn btn-primary" onclick="registarVisitante()">
-            Guardar
-          </button>
-        </div>
+        </form>
       </div>
     </div>
 
@@ -145,37 +154,36 @@
           ✕
         </button>
         <div class="modal-title">Registar Funcionário</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome Completo</label>
-            <input type="text" id="fNome" placeholder="Nome do funcionário" />
+        <form id="registerFuncionario">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome Completo</label>
+              <input required type="text" id="fNome" placeholder="Nome do funcionário" />
+            </div>
+            <div class="form-group">
+              <label>Número Funcionário</label>
+              <input
+                type="text"
+                id="fNumero"
+                placeholder="Número do funcionário"
+              />
+            </div>
+            <div class="form-group">
+              <label>Setor</label>
+              <input type="text" id="fSetor" placeholder="Setor" />
+            </div>
           </div>
-          <div class="form-group">
-            <label>Número Funcionário</label>
-            <input
-              type="text"
-              id="fNumero"
-              placeholder="Número do funcionário"
-            />
+
+          <div class="modal-footer">
+            <button
+              class="btn btn-ghost"
+              onclick="closeModal('modalFuncionario')"
+            >
+              Cancelar
+            </button>
+            <button class="btn btn-primary">Guardar</button>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Setor</label>
-            <input type="text" id="fSetor" placeholder="Setor" />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button
-            class="btn btn-ghost"
-            onclick="closeModal('modalFuncionario')"
-          >
-            Cancelar
-          </button>
-          <button class="btn btn-primary" onclick="registarFuncionario()">
-            Guardar
-          </button>
-        </div>
+        </form>
       </div>
     </div>
   </body>
