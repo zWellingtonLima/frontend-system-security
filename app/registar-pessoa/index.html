@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Seguranças — Visitas</title>
     <link rel="stylesheet" href="../../shared/css/style.css" />
+
     <script src="../shared/scripts/UI/modals.js" defer></script>
+    <script src="../shared/scripts/UI/fillPessoasFields.js" defer></script>
+
+    <script src="./scripts/registarPessoa.js" defer></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -56,7 +60,6 @@
                 <th>Nome</th>
                 <th>Empresa</th>
                 <th>Documento</th>
-                <th>Setor Destino</th>
                 <th>Registado em</th>
               </tr>
             </thead>
@@ -118,10 +121,6 @@
           <div class="form-group">
             <label>Documento</label>
             <input type="text" id="vDoc" placeholder="BI / Passaporte / NIF" />
-          </div>
-          <div class="form-group">
-            <label>Setor Destino</label>
-            <input type="text" id="vSetor" placeholder="Departamento" />
           </div>
         </div>
         <div class="modal-footer">
