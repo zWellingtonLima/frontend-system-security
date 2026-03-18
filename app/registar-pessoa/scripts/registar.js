@@ -37,6 +37,7 @@ funciForm.addEventListener("submit", async (e) => {
     registarPessoa(funcionarioData, "funcionarios");
 
     funciForm.reset();
+    // Poderiamos chamar novamente o renderTable passando todos os dados
     setTimeout(() => location.reload(), 1000);
   } catch (err) {
     alert("Ocorreu um erro ao tentar registar o Visitante.");
