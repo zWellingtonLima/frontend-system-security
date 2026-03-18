@@ -17,13 +17,13 @@ const renderTable = async (endpoint, campos, tbodySelector) => {
 // Para para Funcionarios
 renderTable(
   "funcionarios",
-  ["nomeFuncionario", "numeroFuncionario", "setor"],
+  ["nomeFuncionario", "numeroFuncionario", "setor", "registadoEm"],
   "#tbodyFuncionarios",
 );
 
 // Render para Visitantes
 renderTable(
   "visitantes",
-  ["nomeVisitante", "empresa", "documentoIdentificacao"],
+  ["nomeVisitante", "empresa", "documentoIdentificacao", "registadoEm"],
   "#tbodyVisitantes",
 );
