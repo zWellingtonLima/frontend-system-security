@@ -125,8 +125,8 @@
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
 }
 
 label {
@@ -593,9 +593,6 @@ tr:hover td {
     grid-template-columns: 1fr 1fr;
   }
   .grid-2 {
-    grid-template-columns: 1fr;
-  }
-  .form-row {
     grid-template-columns: 1fr;
   }
   .main {
