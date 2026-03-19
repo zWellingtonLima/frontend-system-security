@@ -1,17 +1,28 @@
-async function sessionIsValid() {
-  const idSessao = sessionStorage.getItem("idSessao");
+import { API_BASE_URL } from "./api/api_url.js";
 
-  if (!idSessao) {
-    window.location.href = "../../index.html";
-    return;
+export async function sessionIsValid() {
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/index.html";
+    return false;
   }
 
-  const res = await fetch(`/auth/sessao/${idSessao}`);
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/sessao`, {
+      headers: { "X-Sessao-Id": token },
+    });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+      return false;
+    }
+
+    return true;
+  } catch {
     sessionStorage.clear();
-    window.location.href = "../../index.html";
+    window.location.href = "/index.html";
+    return false;
   }
 }
-
-sessionIsValid();
