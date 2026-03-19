@@ -19,21 +19,42 @@ function registerUser() {
   if (pwd !== pwd2) return err("As passwords não são iguais.");
 
   // CHAMADA AO BACKEND
-  fetch("http://localhost:8080/api/users", {
+  fetch("http://localhost:8080/api/auth/register", {
     method: "POST",
-    body: { numSeguranca: userNum, password },
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      nomeSeguranca: nome,
+      numeroSeguranca: userNum,
+      password: pwd,
+    }),
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) {
+        msg.className = "alert alert-error";
+        msg.textContent = "Verifique os dados";
+        msg.style.display = "block";
+
+        throw new Error("Erro ao fazer registo.");
+      }
+
+      return res.json();
+    })
     // EXIBIR MENSAGEM DE SUCESSO E REDIRECIONAR PARA LOGIN
-    .then((data) => console.log(data))
+    .then((data) => {
+      console.log(data);
+
+
+
+      msg.className = "alert alert-success";
+      msg.textContent = "Conta criada com sucesso! Redirecionando...";
+      msg.style.display = "block";
+
+      //setTimeout(() => (window.location.href = "index.html"), 1200);
+    })
     // EXIBIR MENSAGEM PARA USUARIO CASO USUARIO JA EXISTA
     .catch((err) => console.log(err));
 
   //return err("Número já registado.");
-
-  // MENSAGEM DE SUCESSO E REDIRECIONAMENTO JA PRONTO
-  msg.className = "alert alert-success";
-  msg.textContent = "Conta criada com sucesso! Redirecionando...";
-  msg.style.display = "block";
-  setTimeout(() => (window.location.href = "login.html"), 1200);
 }

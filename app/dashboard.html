@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg" href="../shared/public/favicon.svg" />
+
     <title>Seguranças - Dashboard</title>
     <link rel="stylesheet" href="../shared/css/style.css" />
 
-    <script type="module" src="./shared/scripts/api/lists.js" ></script>
+    <script src="./shared/scripts/api/logout.js" defer></script>
+
+    <script type="module" src="./shared/scripts/api/lists.js"></script>
     <script type="module" src="./shared/scripts/sessionIsValid.js"></script>
   </head>
   <body>
@@ -15,6 +19,7 @@
         <div class="topbar-brand">
           <div class="dot"></div>
           Seguranças da pesada
+          <img src="../shared/public/favicon.svg" height="28" alt="" />
         </div>
         <div class="topbar-right">
           <button class="btn btn-ghost btn-sm" onclick="doLogout()">
