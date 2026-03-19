@@ -22,7 +22,7 @@
           <img src="../../shared/public/favicon.svg" height="28" alt="" />
         </div>
         <div class="topbar-right">
-          <button class="btn btn-ghost btn-sm" onclick="doLogout()">
+          <button class="btn btn-danger btn-sm" onclick="doLogout()">
             Sair
           </button>
         </div>
@@ -53,7 +53,9 @@
             <div class="summary-icon">💧</div>
             <div>
               <div class="summary-label">Última Leitura — Água</div>
-              <div class="summary-val">—<span class="unit">m³</span></div>
+              <div id="aguaUltimaLeitura" class="summary-val">
+                —<span class="unit">m³</span>
+              </div>
             </div>
           </div>
 
@@ -61,23 +63,25 @@
             <div class="summary-icon">⚡</div>
             <div>
               <div class="summary-label">Última Leitura — Luz</div>
-              <div class="summary-val">—<span class="unit">kWh</span></div>
+              <div id="energiaUltimaLeitura" class="summary-val">
+                —<span class="unit">kWh</span>
+              </div>
             </div>
           </div>
           <div class="summary-item gas">
             <div class="summary-icon">🔥</div>
             <div>
               <div class="summary-label">Última Leitura — Gás</div>
-              <div class="summary-val">—<span class="unit">m³</span></div>
+              <div id="gasUltimaLeitura" class="summary-val">
+                —<span class="unit">m³</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- FORMULÁRIO DE NOVA LEITURA -->
         <div class="form-inline">
-          <div class="card-title" style="margin-bottom: 1.25rem">
-            Nova Leitura
-          </div>
+          <div class="card-title">Nova Leitura</div>
           <form id="formConsumos">
             <div class="form-row">
               <div class="form-group">
@@ -168,17 +172,6 @@
                   <td>Verificado com técnico</td>
                   <td>Maria Santos</td>
                 </tr>
-
-                <!-- ESTADO VAZIO — descomentar quando não tiver dados
-            <tr>
-              <td colspan="6">
-                <div class="empty-state">
-                  <div class="icon">📊</div>
-                  Nenhuma leitura registada
-                </div>
-              </td>
-            </tr>
-            -->
               </tbody>
             </table>
           </div>
