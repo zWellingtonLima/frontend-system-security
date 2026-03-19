@@ -1,21 +1,13 @@
-import { API_BASE_URL } from "../../shared/scripts/api/api_url.js";
+import { fetchData } from "../../shared/scripts/utils/fetchData.js";
 
 const visiForm = document.querySelector("#registerVisitante");
 const funciForm = document.querySelector("#registerFuncionario");
 
 async function registarPessoa(dados, endpoint) {
-  const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+  const response = await fetchData(`${endpoint}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // X-Sessao-Id:
-    },
     body: JSON.stringify(dados),
   });
-
-  if (!response.ok) {
-    throw new Error(`Erro: ${response.status}`);
-  }
 
   return response.json();
 }
