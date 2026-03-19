@@ -8,7 +8,7 @@ fillSelect("#tipoOcorrencia", tipos, "valor", "label");
 // Pra renderizar o historico
 renderTable({
   endpoint: "ocorrencias",
-  campos: ["registadoEm", "seguranca", "tipoLabel", "descricao"],
+  campos: ["createDate", "createUser", "tipoOcorrencia", "ocorrencia"],
   tbodySelector: "#tbodyOcorrencias",
 });
 
@@ -26,13 +26,14 @@ function showAlert(mensagem, tipo = "success") {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  console.log("Valor enviado ao backend: ", form.tipoOcorrencia.value);
+
   try {
     await fetchData("ocorrencias", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        tipo: form.tipoOcorrencia.value,
-        descricao: form.descricao.value,
+        tipoOcorrencia: form.tipoOcorrencia.value,
+        ocorrencia: form.descricao.value,
       }),
     });
 
@@ -42,7 +43,7 @@ form.addEventListener("submit", async (e) => {
     // Atualiza a tabela após registrar
     renderTable({
       endpoint: "ocorrencias",
-      campos: ["registadoEm", "seguranca", "tipoLabel", "descricao"],
+      campos: ["createDate", "createUser", "tipoOcorrencia", "ocorrencia"],
       tbodySelector: "#tbodyOcorrencias",
     });
   } catch {

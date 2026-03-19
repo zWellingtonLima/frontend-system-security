@@ -22,7 +22,7 @@ fetchData("lists/movimentacoes/ativas");
 fetchData("lists/movimentacoes");
 
 // Listagens todas as MOVIMENTACOES VISITANTES ID
-fetchData("lists/movimentacoes/visistante/1");
+fetchData("lists/movimentacoes/visitante/1");
 
 // Listagens todas as MOVIMENTACOES FUNCIONARIOS ID
 fetchData("lists/movimentacoes/funcionario/1");
