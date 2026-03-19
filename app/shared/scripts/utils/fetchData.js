@@ -1,8 +1,27 @@
 import { API_BASE_URL } from "../api/api_url.js";
 
 export async function fetchData(endpoint, opcoes = {}) {
+  const token = sessionStorage.getItem("token");
+
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    ...(token && { "X-Sessao-Id": token }),
+  };
+
   try {
-    const response = await fetch(`${API_BASE_URL}/${endpoint}`, opcoes);
+    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      ...opcoes,
+      headers: {
+        ...defaultHeaders,
+        ...opcoes.headers,
+      },
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      sessionStorage.clear();
+      window.location.href = "/index.html";
+      return;
+    }
 
     if (!response.ok) {
       throw new Error(`Erro ${response.status}: ${response.statusText}`);
