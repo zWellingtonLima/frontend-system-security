@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
     <title>Seguranças — Consumos</title>
-    
+
     <script src="../shared/scripts/api/logout.js" defer></script>
+
+    <script type="module" src="./scripts/registarConsumos.js"></script>
+    <script type="module" src="./scripts/carregarConsumos.js"></script>
 
     <link rel="stylesheet" href="../../shared/css/style.css" />
   </head>
@@ -75,22 +78,12 @@
           <div class="card-title" style="margin-bottom: 1.25rem">
             Nova Leitura
           </div>
-          <form>
-            <div
-              class="form-row"
-              style="
-                grid-template-columns: 1fr 1fr 1fr 1fr auto;
-                gap: 1rem;
-                align-items: flex-end;
-              "
-            >
+          <form id="formConsumos">
+            <div class="form-row">
               <div class="form-group">
-                <label>Tipo de Consumo</label>
-                <select name="id_tipo_consumo" required>
-                  <option value="" disabled selected>Selecionar...</option>
-                  <option value="1">Água</option>
-                  <option value="2">Luz</option>
-                  <option value="3">Gás</option>
+                <label for="tipoConsumos">Tipo de Consumo</label>
+                <select id="tipoConsumos" name="id_tipo_consumo" required>
+                  <option value="" disabled selected>A carregar...</option>
                 </select>
               </div>
 
@@ -98,16 +91,11 @@
                 <label>Valor da Leitura</label>
                 <input
                   type="number"
-                  name="valor_leitura"
+                  name="valorLeitura"
                   placeholder="Ex: 1245"
                   min="0"
                   required
                 />
-              </div>
-
-              <div class="form-group">
-                <label>Data / Hora do Registo</label>
-                <input type="datetime-local" name="data_registo" required />
               </div>
 
               <div class="form-group">
@@ -120,7 +108,7 @@
                 />
               </div>
 
-              <div class="form-group" style="margin-bottom: 0">
+              <div class="form-group">
                 <button type="submit" class="btn btn-primary">Registar</button>
               </div>
             </div>
@@ -142,7 +130,7 @@
                   <th>Registado por</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="tbodyConsumos">
                 <!-- LINHA DE EXEMPLO -->
                 <tr>
                   <td>11/03/2026 08:14</td>

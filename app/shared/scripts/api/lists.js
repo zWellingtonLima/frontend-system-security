@@ -6,6 +6,9 @@ fetchData("funcionarios");
 // Listagem de VISITANTES
 fetchData("visitantes");
 
+// Listagem de VISITANTES
+fetchData("consumos");
+
 // Listagem de TIPOS DE CONSUMO;
 fetchData("lists/tipos-consumo");
 
