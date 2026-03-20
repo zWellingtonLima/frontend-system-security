@@ -1,5 +1,8 @@
 import { fetchData } from "../../shared/scripts/utils/fetchData.js";
-import { carregarHistorico } from "./carregarConsumos.js";
+import {
+  carregarHistorico,
+  carregarUltimasLeituras,
+} from "./carregarConsumos.js";
 
 const formConsumos = document.querySelector("#formConsumos");
 
@@ -21,7 +24,8 @@ formConsumos.addEventListener("submit", async (e) => {
     });
 
     formConsumos.reset();
-    carregarHistorico(); // ← atualiza a tabela sem reload
+    carregarHistorico();
+    carregarUltimasLeituras();
   } catch (err) {
     console.error("Erro ao registar consumo:", err);
   }
