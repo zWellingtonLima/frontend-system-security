@@ -1,6 +1,7 @@
 import { fetchData } from "../../shared/scripts/utils/fetchData.js";
 import { fillSelect } from "../../shared/scripts/UI/fillSelects.js";
 import { renderTable } from "../../shared/scripts/UI/renderTable.js";
+import { formatDate } from "../../shared/scripts/utils/formatDate.js";
 
 const tipos = await fetchData("lists/tipos-ocorrencia");
 fillSelect("#tipoOcorrencia", tipos, "valor", "label");
@@ -10,6 +11,9 @@ renderTable({
   endpoint: "ocorrencias",
   campos: ["createDate", "createUser", "tipoOcorrencia", "ocorrencia"],
   tbodySelector: "#tbodyOcorrencias",
+  renderCampo: {
+    createDate: (item) => formatDate(item.createDate),
+  },
 });
 
 // Cria uma nova ocorrencia
@@ -45,6 +49,9 @@ form.addEventListener("submit", async (e) => {
       endpoint: "ocorrencias",
       campos: ["createDate", "createUser", "tipoOcorrencia", "ocorrencia"],
       tbodySelector: "#tbodyOcorrencias",
+      renderCampo: {
+        createDate: (item) => formatDate(item.createDate),
+      },
     });
   } catch {
     showAlert("Erro ao registar ocorrência.", "error");
