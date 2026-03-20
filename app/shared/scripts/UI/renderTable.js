@@ -27,17 +27,18 @@ export async function renderTable({
     tbody.innerHTML = "";
 
     data.forEach((item) => {
+      console.log(item);
+
       const tr = document.createElement("tr");
       tr.innerHTML = campos
         .map((campo) => {
           const custom = renderCampo?.[campo];
-
           // Ou seja, se existir um campo customizado (como o de consumos), rnderiza-o
           return `<td>${custom ? custom(item) : (item[campo] ?? "—")}</td>`;
         })
         .join("");
 
-      tbody.appendChild(tr);
+      tbody.prepend(tr);
     });
   } catch (err) {
     console.error(`[renderTable] Erro ao carregar "${endpoint}":`, err);
