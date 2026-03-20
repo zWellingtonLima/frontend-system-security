@@ -312,7 +312,7 @@ table {
 }
 th {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   text-align: center;
@@ -327,7 +327,7 @@ td {
   color: var(--text);
   vertical-align: middle;
   font-family: var(--mono);
-  font-size: 0.9rem;
+  font-size: 1.2rem;
 }
 tr:last-child td {
   border-bottom: none;
@@ -472,7 +472,7 @@ tr:hover td {
   align-items: center;
   gap: 0.4rem;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 500;
 }
 .tipo-icon .dot-tipo {
@@ -580,8 +580,14 @@ tr:hover td {
 }
 .diff-val {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: var(--accent);
+}
+
+.diff-val-minus {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--danger);
 }
 
 @media (max-width: 700px) {
