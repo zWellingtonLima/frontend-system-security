@@ -1,6 +1,82 @@
 @import url("reset.css");
 @import url("auth.css");
 
+/* AUTOCOMPLETE */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.autocomplete-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.autocomplete-item:hover {
+  background: var(--hover);
+}
+
+.autocomplete-nome {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.autocomplete-detalhe {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.autocomplete-empty {
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* CHIP DA CHAVE SELECIONADA */
+.selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--primary-muted, #e8f0fe);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  width: fit-content;
+}
+
+.selected-chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.selected-chip button:hover {
+  color: var(--danger);
+}
+
 /* CONTAINER DASHBOARD */
 .container-dashboard {
   display: flex;
@@ -624,6 +700,10 @@ tr:hover td {
   display: none;
 }
 
+.mt {
+  margin-top: 1.25rem;
+}
+
 .mb {
   margin-bottom: 1.25rem;
 }
@@ -634,6 +714,11 @@ tr:hover td {
   border-left: 3px solid;
   margin-bottom: 1rem;
   font-family: var(--mono);
+}
+.alert-warning {
+  background: var(--warning-dim);
+  border-color: var(--warning);
+  color: var(--warning);
 }
 .alert-error {
   background: var(--danger-dim);
