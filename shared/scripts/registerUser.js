@@ -51,7 +51,7 @@ function registerUser() {
       msg.textContent = "Conta criada com sucesso! Redirecionando...";
       msg.style.display = "block";
 
-      //setTimeout(() => (window.location.href = "index.html"), 1200);
+      setTimeout(() => (window.location.href = "index.html"), 1200);
     })
     // EXIBIR MENSAGEM PARA USUARIO CASO USUARIO JA EXISTA
     .catch((err) => console.log(err));
