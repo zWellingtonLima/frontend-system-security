@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
+    <title>Seguranças — Histórico Chaves</title>
+    <link rel="stylesheet" href="../../shared/css/style.css" />
+
+    <script src="../shared/scripts/api/logout.js" defer></script>
+
+    <script src="../shared/scripts/UI/modals.js" defer></script>
+  </head>
+  <body>
+    <div class="container-dashboard">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="dot"></div>
+          Seguranças da pesada
+          <img src="../../shared/public/favicon.svg" height="28" alt="" />
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-danger btn-sm" onclick="doLogout()">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <nav class="navbar">
+        <a class="nav-item" href="../dashboard.html"> Dashboard </a>
+        <a class="nav-item" href="../movimentacoes/movimentacoes.html">
+          Movimentações
+        </a>
+        <a class="nav-item" href="../registar-pessoa/index.html"> Pessoas </a>
+        <a class="nav-item active" href="../chaves/chaves.html"> Chaves </a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html">
+          Ocorrências
+        </a>
+        <a class="nav-item" href="../consumos/consumos.html"> Consumos </a>
+      </nav>
+
+      <main class="main">
+        <div class="page-header">
+          <div class="page-title">Histórico de Chaves</div>
+          <a href="./chaves.html">Gestão de Chaves</a>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Histórico de Devoluções</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Sala</th>
+                  <th>Tipo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyDevolvidas"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
