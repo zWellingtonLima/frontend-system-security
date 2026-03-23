@@ -1,5 +1,16 @@
 import { API_BASE_URL } from "../api/api_url.js";
 
+// Erro customizado que carrega o body da resposta
+export class ApiError extends Error {
+  constructor(status, body) {
+    // Extrai a primeira mensagem útil para o .message padrão
+    const mensagem = body?.mensagens?.[0] ?? body?.erro ?? `Erro ${status}`;
+    super(mensagem);
+    this.status = status;
+    this.body = body; // body completo disponível para quem precisar
+  }
+}
+
 export async function fetchData(endpoint, opcoes = {}) {
   const token = sessionStorage.getItem("token");
 
@@ -23,14 +34,19 @@ export async function fetchData(endpoint, opcoes = {}) {
       return;
     }
 
+    // Tenta sempre extrair o body, mesmo em erro, para enriquecer a exceção
+    const contentType = response.headers.get("content-type");
+    const data = contentType?.includes("application/json")
+      ? await response.json()
+      : null;
+
     if (!response.ok) {
-      throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      throw new ApiError(response.status, data);
     }
 
-    // No caso de DELETE ou outros casos que a gente nao retorna body
-    const contentType = response.headers.get("content-type");
-    return contentType?.includes("application/json") ? response.json() : null;
+    return data;
   } catch (err) {
-    console.log(`Falha ao tentar carregar dados de ${endpoint}: ${err}`);
+    if (err instanceof ApiError) throw err;
+    console.error(`Falha ao tentar carregar dados de ${endpoint}: ${err}`);
   }
 }
