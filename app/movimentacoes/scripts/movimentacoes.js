@@ -16,7 +16,6 @@ const _timers = {};
 document.addEventListener("DOMContentLoaded", () => {
   carregarMovimentacoes();
 
-  // Fechar dropdowns ao clicar fora de qualquer wrapper
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".autocomplete-wrapper")) {
       [
@@ -30,61 +29,59 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ─────────────────────────────────────────────
-// TABELAS
+// TABELA DE ATIVOS
 // ─────────────────────────────────────────────
 async function carregarMovimentacoes() {
   await renderTable({
     endpoint: "lists/movimentacoes/ativas",
-    campos: ["nomePessoa", "tipoPessoa", "horaEntrada", "setorDestino", "acao"],
+    campos: [
+      "nomePessoa",
+      "tipoPessoa",
+      "horaEntrada",
+      "setorDestino",
+      "acoes",
+    ],
     tbodySelector: "#tbodyAtivos",
     renderCampo: {
-      nome: (item) => item.nomeFuncionario ?? item.nomeVisitante ?? "—",
-      tipoPessoa: (item) => formatTipo(item.tipoVisita),
+      nomePessoa: (item) => item.nomePessoa ?? "—",
+      tipoPessoa: (item) => formatTipo(item.tipoPessoa, item.tipoVisita),
       horaEntrada: (item) => formatDate(item.horaEntrada),
-      setorDestino: (item) => item.setor ?? item.setorDestino ?? "—",
-      acao: (item) => `
-        <button class="btn btn-sm btn-danger" onclick="confirmarSaida(${item.id_movimentacao})">
-          Registar Saída
-        </button>`,
-    },
-  });
-
-  await renderTable({
-    endpoint: "lists/movimentacoes",
-    campos: ["nomePessoa", "tipoPessoa", "horaEntrada", "horaSaida", "duracao"],
-    tbodySelector: "#tbodyHistorico",
-    renderCampo: {
-      nome: (item) => item.nomeFuncionario ?? item.nomeVisitante ?? "—",
-      tipoPessoa: (item) => formatTipo(item.tipoVisita),
-      horaEntrada: (item) => formatDate(item.horaEntrada),
-      horaSaida: (item) => formatDate(item.horaSaida),
-      duracao: (item) => calcularDuracao(item.horaEntrada, item.horaSaida),
+      setorDestino: (item) => item.setorDestino ?? "—",
+      acoes: (item) => renderAcoes(item),
     },
   });
 }
 
-function formatTipo(tipo) {
-  if (tipo === null) return "Funcionário";
+function renderAcoes(item) {
+  const temChavePendente = item.entregasPendentes?.length > 0;
+  const dataAttr = encodeURIComponent(JSON.stringify(item));
 
+  const btnSaida = `
+    <button class="btn btn-sm btn-danger"
+      onclick="confirmarSaida(${item.id_movimentacao})">
+      Registar Saída
+    </button>`;
+
+  // Só aparece se houver exatamente uma chave pendente
+  const btnChave = temChavePendente
+    ? `<button class="btn btn-sm btn-ghost mt-1"
+        onclick="abrirModalDevolucao(decodeAndParse('${dataAttr}'))">
+        🔑 Devolver Chave
+      </button>`
+    : "";
+
+  return `<div>${btnSaida}${btnChave}</div>`;
+}
+
+function formatTipo(tipoPessoa, tipoVisita) {
+  if (tipoPessoa === "FUNCIONARIO") return "Funcionário";
   const labels = {
-    funcionario: "Funcionário",
-    visita: "Visita",
+    visitante: "Visitante",
     servico: "Serviço",
     entrega: "Entrega",
     manutencao: "Manutenção",
   };
-
-  if (tipo) return labels[tipo.toLowerCase()];
-
-  return labels[tipo] ?? tipo ?? "—";
-}
-
-function calcularDuracao(entrada, saida) {
-  if (!entrada || !saida) return "Em curso";
-  const diff = new Date(saida) - new Date(entrada);
-  const h = Math.floor(diff / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  return labels[tipoVisita?.toLowerCase()] ?? tipoVisita ?? "—";
 }
 
 // ─────────────────────────────────────────────
@@ -93,18 +90,61 @@ function calcularDuracao(entrada, saida) {
 window.confirmarSaida = async function (idMovimentacao) {
   if (!confirm("Confirmar saída desta pessoa?")) return;
 
-  const res = await fetchData(`movimentacoes/saida/${idMovimentacao}`, {
-    method: "PATCH",
-  });
+  try {
+    const res = await fetchData(`movimentacoes/saida/${idMovimentacao}`, {
+      method: "PATCH",
+    });
 
-  if (!res) return;
+    if (res?.aviso) {
+      alert(`⚠️ ${res.aviso}`);
+    }
 
-  // Aviso de chaves pendentes retornado pelo backend
-  if (res.aviso) {
-    alert(`⚠️ ${res.aviso}`);
+    carregarMovimentacoes();
+  } catch (err) {
+    alert(err.message ?? "Erro ao registar saída.");
   }
+};
 
-  carregarMovimentacoes();
+// ─────────────────────────────────────────────
+// MODAL DEVOLUÇÃO — sempre uma única chave
+// ─────────────────────────────────────────────
+window.abrirModalDevolucao = function (movimentacao) {
+  // Garantidamente apenas uma entrada no array
+  const pendente = movimentacao.entregasPendentes[0];
+
+  document.getElementById("dIdEntrega").value = pendente.idEntrega;
+  document.getElementById("devolucaoNomePessoa").textContent =
+    `Chave pendente de: ${movimentacao.nomePessoa}`;
+  document.getElementById("chavePendenteInfo").innerHTML = `
+    <span class="autocomplete-nome">${pendente.descricao}</span>
+    <span class="autocomplete-detalhe">${pendente.tipo}</span>`;
+
+  document.getElementById("dDevolvidaPor").value = "";
+  clearMsg("msgBoxDevolucao");
+
+  openModal("modalDevolucao");
+};
+
+window.confirmarDevolucao = async function () {
+  clearMsg("msgBoxDevolucao");
+
+  const idEntrega = document.getElementById("dIdEntrega").value;
+  const devolvidaPor = document.getElementById("dDevolvidaPor").value.trim();
+
+  if (!devolvidaPor)
+    return showMsg("msgBoxDevolucao", "Indique quem está a devolver a chave.");
+
+  try {
+    await fetchData(
+      `movimentacoes/devolucao/${idEntrega}?devolvidaPor=${encodeURIComponent(devolvidaPor)}`,
+      { method: "PATCH" },
+    );
+
+    closeModal("modalDevolucao");
+    carregarMovimentacoes();
+  } catch (err) {
+    showMsg("msgBoxDevolucao", err.message ?? "Erro ao registar devolução.");
+  }
 };
 
 // ─────────────────────────────────────────────
@@ -142,7 +182,6 @@ window.onPessoaInput = function (tipo) {
   const cfg = pessoaConfig(tipo);
   const query = document.getElementById(cfg.inputId).value.trim();
 
-  // Limpar o ID hidden quando o utilizador volta a editar manualmente
   document.getElementById(cfg.hiddenId).value = "";
 
   if (query.length < MIN_CHARS) {
@@ -150,10 +189,10 @@ window.onPessoaInput = function (tipo) {
     return;
   }
 
-  const isVisitante = tipo === "visitante";
-  const endpoint = isVisitante
-    ? `busca/visitantes?nome=${encodeURIComponent(query)}`
-    : `busca/funcionarios?nome=${encodeURIComponent(query)}`;
+  const endpoint =
+    tipo === "visitante"
+      ? `busca/visitantes?nome=${encodeURIComponent(query)}`
+      : `busca/funcionarios?nome=${encodeURIComponent(query)}`;
 
   debounce(`busca_${tipo}`, async () => {
     const lista = await fetchData(endpoint);
@@ -174,10 +213,10 @@ function renderDropdownPessoa(lista, tipo, cfg) {
     .map((p) => {
       const nome = p.nomeFuncionario ?? p.nomeVisitante;
       const detalhe = p.setor ?? p.empresa ?? "";
-      // JSON.stringify inline para passar o objeto no onclick sem perder caracteres especiais
       const dataAttr = encodeURIComponent(JSON.stringify(p));
       return `
-        <div class="autocomplete-item" onclick="selecionarPessoa(decodeAndParse('${dataAttr}'), '${tipo}')">
+        <div class="autocomplete-item"
+          onclick="selecionarPessoa(decodeAndParse('${dataAttr}'), '${tipo}')">
           <span class="autocomplete-nome">${nome}</span>
           ${detalhe ? `<span class="autocomplete-detalhe">${detalhe}</span>` : ""}
         </div>`;
@@ -187,7 +226,6 @@ function renderDropdownPessoa(lista, tipo, cfg) {
   dropdown.classList.remove("hidden");
 }
 
-// Helper para descodificar o objeto passado pelo onclick sem problemas de aspas
 window.decodeAndParse = (encoded) => JSON.parse(decodeURIComponent(encoded));
 
 window.selecionarPessoa = function (pessoa, tipo) {
@@ -215,7 +253,6 @@ window.selecionarPessoa = function (pessoa, tipo) {
 window.onChaveInput = function () {
   const query = document.getElementById("eChaveBusca").value.trim();
 
-  // Se limpar o campo, limpa também a chave selecionada
   if (!query.length) {
     fecharDropdown("dropdownChave");
     return;
@@ -241,7 +278,8 @@ function renderDropdownChave(lista) {
   dropdown.innerHTML = lista
     .map(
       (c) => `
-      <div class="autocomplete-item" onclick="selecionarChave(${c.idChave}, '${c.descricao}', '${c.tipo}')">
+      <div class="autocomplete-item"
+        onclick="selecionarChave(${c.idChave}, '${c.descricao}', '${c.tipo}')">
         <span class="autocomplete-nome">${c.descricao}</span>
         <span class="autocomplete-detalhe">${c.tipo}</span>
       </div>`,
@@ -313,20 +351,23 @@ window.registarEntrada = async function () {
 
   const tipo = document.getElementById("eTipo").value;
   const isFuncionario = tipo === "funcionario";
-
   const idFuncionario = document.getElementById("eIdFuncionario").value;
   const idVisitante = document.getElementById("eIdVisitante").value;
 
   if (isFuncionario && !idFuncionario)
-    return showMsg("Selecione um funcionário na lista de sugestões.");
+    return showMsg(
+      "msgBoxEntrada",
+      "Selecione um funcionário na lista de sugestões.",
+    );
 
   if (!isFuncionario && !idVisitante)
-    return showMsg("Selecione um visitante na lista de sugestões.");
+    return showMsg(
+      "msgBoxEntrada",
+      "Selecione um visitante na lista de sugestões.",
+    );
 
   const body = {
     observacoes: document.getElementById("eObs").value.trim() || null,
-    tipoEntrada: "",
-    setorDestino: "",
   };
 
   if (isFuncionario) {
@@ -336,7 +377,8 @@ window.registarEntrada = async function () {
     body.idVisitante = parseInt(idVisitante);
     body.tipoVisita = tipo.toUpperCase();
     body.tipoEntrada = "VISITANTE";
-    body.setorDestino = document.querySelector("#eSetorDestino").value;
+    body.setorDestino =
+      document.getElementById("eSetorDestino").value.trim() || null;
     const idResp = document.getElementById("eIdFuncResponsavel").value;
     if (idResp) body.idFuncionarioResponsavel = parseInt(idResp);
   }
@@ -352,20 +394,16 @@ window.registarEntrada = async function () {
       body: JSON.stringify(body),
     });
 
-    showMsg("msgBoxEntrada", "Entrada registada com sucesso!", "success");
     closeModal("modalEntrada");
     clearEntradaForm();
     carregarMovimentacoes();
   } catch (err) {
-    console.log(err);
-
+    // Mantém o form preenchido para o segurança corrigir sem perder os dados
     showMsg(
       "msgBoxEntrada",
-      err.message ?? "Erro ao registar entrada",
+      err.message ?? "Erro ao registar entrada.",
       "error",
     );
-
-    clearEntradaForm();
   }
 };
 
@@ -390,6 +428,7 @@ function limparPessoa() {
 function clearEntradaForm() {
   limparPessoa();
   window.limparChave();
+  clearMsg("msgBoxEntrada");
   document.getElementById("eObs").value = "";
   document.getElementById("eTipo").value = "funcionario";
   document.getElementById("keyToggle").classList.remove("on");

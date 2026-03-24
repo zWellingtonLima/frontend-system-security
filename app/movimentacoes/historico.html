@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
+    <title>Seguranças — Histórico de Movimentações</title>
+    <link rel="stylesheet" href="../../shared/css/style.css" />
+    <script src="../shared/scripts/api/logout.js" defer></script>
+    <script type="module" src="./scripts/historico.js"></script>
+
+    <script type="module" src="../shared/scripts/sessionIsValid.js"></script>
+  </head>
+  <body>
+    <div class="container-dashboard">
+      <header class="topbar">
+        <div class="topbar-brand">
+          <div class="dot"></div>
+          Seguranças da pesada
+          <img src="../../shared/public/favicon.svg" height="28" alt="" />
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-danger btn-sm" onclick="doLogout()">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <nav class="navbar">
+        <a class="nav-item" href="../dashboard.html">Dashboard</a>
+        <a class="nav-item active" href="../movimentacoes/movimentacoes.html"
+          >Movimentações</a
+        >
+        <a class="nav-item" href="../registar-pessoa/index.html">Pessoas</a>
+        <a class="nav-item" href="../chaves/chaves.html">Chaves</a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html"
+          >Ocorrências</a
+        >
+        <a class="nav-item" href="../consumos/consumos.html">Consumos</a>
+      </nav>
+
+      <main class="main">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Histórico de Movimentações</div>
+            <a href="./movimentacoes.html">← Voltar às entradas ativas</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Histórico do Dia</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Tipo</th>
+                  <th>Entrada</th>
+                  <th>Saída</th>
+                  <th>Duração</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyHistorico"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -4,10 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
-
     <title>Seguranças — Movimentações</title>
     <link rel="stylesheet" href="../../shared/css/style.css" />
-
     <script src="../shared/scripts/api/logout.js" defer></script>
     <script src="../shared/scripts/UI/modals.js" defer></script>
     <script type="module" src="./scripts/movimentacoes.js"></script>
@@ -46,13 +44,14 @@
         <div class="page-header">
           <div>
             <div class="page-title">Movimentações</div>
+            <a href="./historico.html">Ver histórico do dia</a>
           </div>
           <button class="btn btn-primary" onclick="openModal('modalEntrada')">
             + Nova Entrada
           </button>
         </div>
 
-        <div class="card mb">
+        <div class="card">
           <div class="card-title">Atualmente no Edifício</div>
           <div class="table-wrap">
             <table>
@@ -62,37 +61,17 @@
                   <th>Tipo</th>
                   <th>Entrada</th>
                   <th>Destino / Setor</th>
-                  <th>Ação</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody id="tbodyAtivos"></tbody>
             </table>
           </div>
         </div>
-
-        <hr class="divider"></hr>
-
-        <div class="card">
-          <div class="card-title">Histórico do Dia</div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Tipo</th>
-                  <th>Entrada</th>
-                  <th>Saída</th>
-                  <th>Duração</th>
-                </tr>
-              </thead>
-              <tbody id="tbodyHistorico"></tbody>
-            </table>
-          </div>
-        </div>
       </main>
     </div>
 
-    <!-- MODAL ENTRADA -->
+    <!-- MODAL ENTRADA                               -->
     <div class="overlay" id="modalEntrada">
       <div class="modal">
         <button class="close-btn" onclick="closeModal('modalEntrada')">
@@ -104,7 +83,7 @@
           <label>Tipo de Entrada</label>
           <select id="eTipo" onchange="toggleEntradaTipo()">
             <option value="funcionario">Funcionário</option>
-            <option value="visitante">Visita</option>
+            <option value="visitante">Visitante</option>
             <option value="servico">Prestação de Serviço</option>
             <option value="entrega">Entrega</option>
             <option value="manutencao">Manutenção</option>
@@ -212,11 +191,7 @@
         </div>
 
         <!-- CHAVE OPCIONAL -->
-        <div
-          class="section-toggle mb"
-          id="keyToggle"
-          onclick="toggleKeySection()"
-        >
+        <div class="section-toggle" id="keyToggle" onclick="toggleKeySection()">
           <div class="section-toggle-icon" id="keyToggleIcon"></div>
           <span class="section-toggle-label"
             >🔑 Incluir entrega de chave (opcional)</span
@@ -254,14 +229,51 @@
           ></textarea>
         </div>
 
-        <!-- MENSAGENS -->
-        <div id="msgBoxEntrada" class="alert mt mb"></div>
+        <div id="msgBoxEntrada" class="alert" style="display: none"></div>
+
         <div class="modal-footer">
           <button class="btn btn-ghost" onclick="closeModal('modalEntrada')">
             Cancelar
           </button>
           <button class="btn btn-primary" onclick="registarEntrada()">
             Confirmar Entrada
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DEVOLUÇÃO DE CHAVE -->
+    <div class="overlay" id="modalDevolucao">
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal('modalDevolucao')">
+          ✕
+        </button>
+        <div class="modal-title">Devolução de Chave</div>
+
+        <p class="modal-subtitle" id="devolucaoNomePessoa"></p>
+
+        <!-- Informação da chave pendente — sempre apenas uma -->
+        <div class="chave-info-card" id="chavePendenteInfo"></div>
+
+        <input type="hidden" id="dIdEntrega" />
+
+        <div class="form-group mt">
+          <label>Devolvida por</label>
+          <input
+            type="text"
+            id="dDevolvidaPor"
+            placeholder="Nome de quem entrega a chave"
+          />
+        </div>
+
+        <div id="msgBoxDevolucao" class="alert" style="display: none"></div>
+
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeModal('modalDevolucao')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="confirmarDevolucao()">
+            Confirmar Devolução
           </button>
         </div>
       </div>
