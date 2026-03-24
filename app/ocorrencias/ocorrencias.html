@@ -6,9 +6,8 @@
     <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
     <title>Seguranças — Ocorrências</title>
     <link rel="stylesheet" href="../../shared/css/style.css" />
-
     <script src="../shared/scripts/api/logout.js" defer></script>
-
+    <script type="module" src="../shared/scripts/utils/getSegurancaNome.js"></script>
     <script type="module" src="./scripts/registarOcorrencia.js"></script>
   </head>
   <body>
@@ -19,7 +18,8 @@
           Seguranças da pesada
           <img src="../../shared/public/favicon.svg" height="28" alt="" />
         </div>
-        <div class="topbar-right">
+        <div class="topbar-right">          
+          <span id="segurancaNome" class="segurancaNome"></span>
           <button class="btn btn-danger btn-sm" onclick="doLogout()">
             Sair
           </button>

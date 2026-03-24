@@ -294,6 +294,13 @@ textarea {
   min-height: 75px;
 }
 
+.segurancaNome {
+  text-transform: uppercase;
+  font-family: var(--mono);
+  font-weight: bold;
+  color: var(--accent-dim);
+}
+
 /* BUTTONS */
 .btn {
   font-family: var(--mono);

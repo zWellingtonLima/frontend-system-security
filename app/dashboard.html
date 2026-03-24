@@ -13,6 +13,7 @@
     <script type="module" src="./shared/scripts/api/lists.js"></script>
     <script type="module" src="./shared/scripts/sessionIsValid.js"></script>
     <script type="module" src="./shared/scripts/dashboard.js"></script>
+    <script type="module" src="./shared/scripts/utils/getSegurancaNome.js"></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -23,6 +24,7 @@
           <img src="../shared/public/favicon.svg" height="28" alt="" />
         </div>
         <div class="topbar-right">
+          <span id="segurancaNome" class="segurancaNome"></span>
           <button class="btn btn-danger btn-sm" onclick="doLogout()">
             Sair
           </button>
