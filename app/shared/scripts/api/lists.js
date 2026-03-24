@@ -25,7 +25,7 @@ fetchData("lists/tipos-ocorrencia");
 fetchData("lists/movimentacoes/ativas");
 
 // Listagens todas as MOVIMENTACOES
-fetchData("lists/movimentacoes");
+fetchData("lists/movimentacoes/todas");
 
 // Listagens todas as MOVIMENTACOES VISITANTES ID
 fetchData("lists/movimentacoes/visitante/1");
