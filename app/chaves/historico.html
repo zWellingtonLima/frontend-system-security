@@ -4,12 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
-    <title>Seguranças — Histórico Chaves</title>
+    <title>Seguranças — Histórico de Chaves</title>
     <link rel="stylesheet" href="../../shared/css/style.css" />
-
     <script src="../shared/scripts/api/logout.js" defer></script>
-
-    <script src="../shared/scripts/UI/modals.js" defer></script>
+    <script type="module" src="./scripts/historicoChaves.js"></script>
+    <script type="module" src="../shared/scripts/sessionIsValid.js"></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -27,37 +26,42 @@
       </header>
 
       <nav class="navbar">
-        <a class="nav-item" href="../dashboard.html"> Dashboard </a>
-        <a class="nav-item" href="../movimentacoes/movimentacoes.html">
-          Movimentações
-        </a>
-        <a class="nav-item" href="../registar-pessoa/index.html"> Pessoas </a>
-        <a class="nav-item active" href="../chaves/chaves.html"> Chaves </a>
-        <a class="nav-item" href="../ocorrencias/ocorrencias.html">
-          Ocorrências
-        </a>
-        <a class="nav-item" href="../consumos/consumos.html"> Consumos </a>
+        <a class="nav-item" href="../dashboard.html">Dashboard</a>
+        <a class="nav-item" href="../movimentacoes/movimentacoes.html"
+          >Movimentações</a
+        >
+        <a class="nav-item" href="../registar-pessoa/index.html">Pessoas</a>
+        <a class="nav-item active" href="../chaves/chaves.html">Chaves</a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html"
+          >Ocorrências</a
+        >
+        <a class="nav-item" href="../consumos/consumos.html">Consumos</a>
       </nav>
 
       <main class="main">
         <div class="page-header">
-          <div class="page-title">Histórico de Chaves</div>
-          <a href="./chaves.html">Gestão de Chaves</a>
+          <div>
+            <div class="page-title">Histórico de Chaves</div>
+            <a href="./chaves.html">← Voltar às chaves emprestadas</a>
+          </div>
         </div>
 
         <div class="card">
-          <div class="card-title">Histórico de Devoluções</div>
+          <div class="card-title">Devoluções Registadas</div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Código</th>
-                  <th>Sala</th>
+                  <th>Chave / Molho</th>
                   <th>Tipo</th>
-                  <th>Status</th>
+                  <th>Sala</th>
+                  <th>Esteve com</th>
+                  <th>Entregue</th>
+                  <th>Devolvida</th>
+                  <th>Devolvida por</th>
                 </tr>
               </thead>
-              <tbody id="tbodyDevolvidas"></tbody>
+              <tbody id="tbodyHistoricoChaves"></tbody>
             </table>
           </div>
         </div>

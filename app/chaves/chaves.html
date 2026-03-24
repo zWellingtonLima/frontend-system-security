@@ -6,10 +6,11 @@
     <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
     <title>Seguranças — Chaves</title>
     <link rel="stylesheet" href="../../shared/css/style.css" />
-
     <script src="../shared/scripts/api/logout.js" defer></script>
-
     <script src="../shared/scripts/UI/modals.js" defer></script>
+    <script type="module" src="./scripts/chaves.js"></script>
+    
+    <script type="module" src="../shared/scripts/sessionIsValid.js"></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -27,89 +28,164 @@
       </header>
 
       <nav class="navbar">
-        <a class="nav-item" href="../dashboard.html"> Dashboard </a>
-        <a class="nav-item" href="../movimentacoes/movimentacoes.html">
-          Movimentações
-        </a>
-        <a class="nav-item" href="../registar-pessoa/index.html"> Pessoas </a>
-        <a class="nav-item active" href="../chaves/chaves.html"> Chaves </a>
-        <a class="nav-item" href="../ocorrencias/ocorrencias.html">
-          Ocorrências
-        </a>
-        <a class="nav-item" href="../consumos/consumos.html"> Consumos </a>
+        <a class="nav-item" href="../dashboard.html">Dashboard</a>
+        <a class="nav-item" href="../movimentacoes/movimentacoes.html"
+          >Movimentações</a
+        >
+        <a class="nav-item" href="../registar-pessoa/index.html">Pessoas</a>
+        <a class="nav-item active" href="../chaves/chaves.html">Chaves</a>
+        <a class="nav-item" href="../ocorrencias/ocorrencias.html"
+          >Ocorrências</a
+        >
+        <a class="nav-item" href="../consumos/consumos.html">Consumos</a>
       </nav>
 
       <main class="main">
         <div class="page-header">
           <div>
             <div class="page-title">Gestão de Chaves</div>
-            <a href="./historico.html">Histórico de Devoluções</a>
+            <a href="./historico.html">Ver histórico de devoluções</a>
           </div>
-          <button class="btn btn-primary" onclick="openModal('modalChave')">
-            + Emprestar Chave
+
+          <button
+            class="btn btn-primary"
+            onclick="openModal('modalEntregarChave')"
+          >
+            🔑 Entregar Chave
           </button>
         </div>
 
-        <div>
-          <div class="card">
-            <div class="card-title">Chaves Emprestadas</div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Sala</th>
-                    <th>Tipo</th>
-                    <th>Com</th>
-                    <th>Ação</th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyEmprestadas"></tbody>
-              </table>
-            </div>
+        <div class="card">
+          <div class="card-title">Chaves Emprestadas</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Chave / Molho</th>
+                  <th>Tipo</th>
+                  <th>Sala</th>
+                  <th>Com</th>
+                  <th>Desde</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyEmprestadas"></tbody>
+            </table>
           </div>
         </div>
       </main>
     </div>
 
-    <div class="overlay" id="modalChave">
+    <!-- MODAL DEVOLUÇÃO -->
+    <div class="overlay" id="modalDevolucaoChave">
       <div class="modal">
-        <button class="close-btn" onclick="closeModal('modalChave')">✕</button>
-        <div class="modal-title">Emprestar Chave</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Código da Chave</label>
-            <input type="text" id="cCodigo" placeholder="Ex: CH-001" />
-          </div>
-          <div class="form-group">
-            <label>Sala / Número</label>
-            <input type="text" id="cSala" placeholder="Ex: 204" />
-          </div>
+        <button class="close-btn" onclick="closeModal('modalDevolucaoChave')">
+          ✕
+        </button>
+        <div class="modal-title">Registar Devolução</div>
+
+        <input type="hidden" id="cIdEntrega" />
+
+        <div class="form-group">
+          <label>Chave</label>
+          <input type="text" id="cDescricaoChave" readonly />
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Tipo de Chave</label>
-            <select id="cTipo">
-              <option value="Principal">Principal</option>
-              <option value="Reserva">Reserva</option>
-              <option value="Mestra">Mestra</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Entregue a</label>
-            <input
-              type="text"
-              id="cEntregueA"
-              placeholder="Nome do responsável"
-            />
-          </div>
+        <div class="form-group">
+          <label>Com</label>
+          <input type="text" id="cNomePessoa" readonly />
         </div>
+        <div class="form-group">
+          <label>Devolvida por</label>
+          <input
+            type="text"
+            id="cDevolvidaPor"
+            placeholder="Nome de quem entrega a chave"
+          />
+        </div>
+
+        <div id="msgBoxChave" class="alert" style="display: none"></div>
+
         <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modalChave')">
+          <button
+            class="btn btn-ghost"
+            onclick="closeModal('modalDevolucaoChave')"
+          >
             Cancelar
           </button>
-          <button class="btn btn-primary" onclick="emprestarChave()">
-            Confirmar Empréstimo
+          <button class="btn btn-primary" onclick="confirmarDevolucaoChave()">
+            Confirmar Devolução
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ENTREGA AVULSA  -->
+    <div class="overlay" id="modalEntregarChave">
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal('modalEntregarChave')">
+          ✕
+        </button>
+        <div class="modal-title">Entregar Chave</div>
+        <p class="modal-subtitle">
+          Painel para entrega de chaves para pessoas que já estão no edifício.
+        </p>
+
+        <input type="hidden" id="cIdMovimentacao" />
+        <input type="hidden" id="cIdChaveEntrega" />
+
+        <div class="form-group">
+          <label>Pessoa no Edifício</label>
+          <div class="autocomplete-wrapper">
+            <input
+              type="text"
+              id="cNomePessoaEntrega"
+              placeholder="Nome da pessoa"
+              autocomplete="off"
+              oninput="onEntradaAtivaInput()"
+            />
+            <div
+              class="autocomplete-dropdown hidden"
+              id="dropdownEntradaAtiva"
+            ></div>
+          </div>
+          <div id="pessoaSelecionadaInfo" class="selected-chip hidden">
+            <span id="pessoaEntregaLabel"></span>
+            <button type="button" onclick="limparPessoaEntrega()">✕</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Chave a Entregar</label>
+          <div class="autocomplete-wrapper">
+            <input
+              type="text"
+              id="cChaveBuscaEntrega"
+              placeholder="Ex: CHV-101 ou Molho TI"
+              autocomplete="off"
+              oninput="onChaveBuscaEntregaInput()"
+            />
+            <div
+              class="autocomplete-dropdown hidden"
+              id="dropdownChaveEntrega"
+            ></div>
+          </div>
+          <div id="chaveEntregaSelecionada" class="selected-chip hidden">
+            <span id="chaveLabelEntrega"></span>
+            <button type="button" onclick="limparChaveEntrega()">✕</button>
+          </div>
+        </div>
+
+        <div id="msgBoxEntregarChave" class="alert"></div>
+
+        <div class="modal-footer">
+          <button
+            class="btn btn-ghost"
+            onclick="closeModal('modalEntregarChave')"
+          >
+            Cancelar
+          </button>
+          <button class="btn btn-primary" onclick="confirmarEntregaAvulsa()">
+            Confirmar Entrega
           </button>
         </div>
       </div>
