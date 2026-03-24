@@ -57,10 +57,20 @@
   gap: 8px;
   margin-top: 8px;
   padding: 6px 12px;
-  background: var(--primary-muted, #e8f0fe);
+  background: var(--accent-glow);
   border-radius: 20px;
   font-size: 0.85rem;
   width: fit-content;
+}
+
+.chave-info-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
 }
 
 .selected-chip button {
@@ -85,6 +95,44 @@
   margin: 0 auto;
   justify-content: space-between;
   max-width: 1280px;
+}
+
+/* ── ITENS DAS LISTAS DO DASHBOARD ───────── */
+.dash-list-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-list-item:last-child {
+  border-bottom: none;
+}
+
+.dash-list-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.dash-list-nome {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.dash-list-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.dash-list-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-weight: 500;
 }
 
 /* LAYOUT  */
@@ -283,7 +331,7 @@ textarea {
 
 .btn-ghost:hover {
   color: var(--text);
-  background: var(--surface2);
+  background: var(--accent-glow);
 }
 
 .btn-danger {
@@ -484,6 +532,13 @@ tr:hover td {
 }
 .close-btn:hover {
   color: var(--text);
+}
+
+/* ── SUBTÍTULO DO MODAL ──────────────────── */
+.modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
 }
 
 /* ── KEY TOGGLE ───────────────────────────────── */
@@ -702,6 +757,10 @@ tr:hover td {
 
 .mt {
   margin-top: 1.25rem;
+}
+
+.mt-1 {
+  margin-top: 0.5rem;
 }
 
 .mb {
