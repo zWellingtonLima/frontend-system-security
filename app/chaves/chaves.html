@@ -95,13 +95,23 @@
           <input type="text" id="cNomePessoa" readonly />
         </div>
         <div class="form-group">
-          <label>Devolvida por</label>
-          <input
-            type="text"
-            id="cDevolvidaPor"
-            placeholder="Nome de quem entrega a chave"
-          />
-        </div>
+         <div class="form-group">
+  <label>Devolvida por</label>
+  <div class="autocomplete-wrapper">
+    <input
+      type="text"
+      id="cDevolvidaPor"
+      placeholder="Nome de quem entrega a chave"
+      autocomplete="off"
+      oninput="onDevolvidaPorInput()"
+    />
+    <div
+      class="autocomplete-dropdown hidden"
+      id="dropdownDevolvidaPor"
+    ></div>
+  </div>
+  <input type="hidden" id="cDevolvidaPorTipo" />
+</div>
 
         <div id="msgBoxChave" class="alert" style="display: none"></div>
 
