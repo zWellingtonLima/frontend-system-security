@@ -211,50 +211,48 @@ window.limparChaveEntrega = function () {
 // ─────────────────────────────────────────────
 
 window.onDevolvidaPorInput = function () {
-    const query = document.getElementById("cDevolvidaPor").value.trim();
+  const query = document.getElementById("cDevolvidaPor").value.trim();
 
-    if (query.length < 2) {
-        fecharDropdown("dropdownDevolvidaPor");
-        return;
-    }
+  if (query.length < 2) {
+    fecharDropdown("dropdownDevolvidaPor");
+    return;
+  }
 
-    debounce("busca_devolvida_por", async () => {
-        const lista = await fetchData(
-            `busca?nome=${encodeURIComponent(query)}`,
-        );
-        renderDropdownDevolvidaPor(lista ?? []);
-    });
+  debounce("busca_devolvida_por", async () => {
+    const lista = await fetchData(`busca?nome=${encodeURIComponent(query)}`);
+    renderDropdownDevolvidaPor(lista ?? []);
+  });
 };
 
 function renderDropdownDevolvidaPor(lista) {
-    const dropdown = document.getElementById("dropdownDevolvidaPor");
+  const dropdown = document.getElementById("dropdownDevolvidaPor");
 
-    if (!lista.length) {
-        dropdown.innerHTML = `<div class="autocomplete-empty">Nenhuma pessoa encontrada.</div>`;
-        dropdown.classList.remove("hidden");
-        return;
-    }
+  if (!lista.length) {
+    dropdown.innerHTML = `<div class="autocomplete-empty">Nenhuma pessoa encontrada.</div>`;
+    dropdown.classList.remove("hidden");
+    return;
+  }
 
-    dropdown.innerHTML = lista
-        .map(
-            (p) => `
+  dropdown.innerHTML = lista
+    .map(
+      (p) => `
             <div class="autocomplete-item" onclick="selecionarDevolvidaPor('${p.nome}', '${p.tipo}')">
                 <span>${p.nome}</span>
-                <span class="autocomplete-badge ${p.tipo === 'FUNCIONARIO' ? 'badge-func' : 'badge-visit'}">
-                    ${p.tipo === 'FUNCIONARIO' ? 'Funcionário' : 'Visitante'}
+                <span class="autocomplete-badge ${p.tipo === "FUNCIONARIO" ? "badge-func" : "badge-visit"}">
+                    ${p.tipo === "FUNCIONARIO" ? "Funcionário" : "Visitante"}
                 </span>
             </div>`,
-        )
-        .join("");
+    )
+    .join("");
 
-    dropdown.classList.remove("hidden");
+  dropdown.classList.remove("hidden");
 }
 
 function selecionarDevolvidaPor(nome, tipo) {
-    document.getElementById("cDevolvidaPor").value = nome;
-    // se precisar guardar o tipo junto:
-    document.getElementById("cDevolvidaPorTipo").value = tipo;
-    fecharDropdown("dropdownDevolvidaPor");
+  document.getElementById("cDevolvidaPor").value = nome;
+  // se precisar guardar o tipo junto:
+  document.getElementById("cDevolvidaPorTipo").value = tipo;
+  fecharDropdown("dropdownDevolvidaPor");
 }
 // ─────────────────────────────────────────────
 // SUBMISSÃO — ENTREGA AVULSA
