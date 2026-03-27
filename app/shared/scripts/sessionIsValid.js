@@ -15,14 +15,14 @@ export async function sessionIsValid() {
 
     if (!res.ok) {
       sessionStorage.clear();
-      window.location.href = "/index.html";
+      window.location.replace("/index.html");
       return false;
     }
 
     return true;
   } catch {
     sessionStorage.clear();
-    window.location.href = "/index.html";
+    window.location.replace("/index.html");
     return false;
   }
 }
