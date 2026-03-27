@@ -23,8 +23,7 @@
   position: relative;
 }
 
-/* Classe para adicionar um efeito bonitin */
-/* .auth-card::before {
+.auth-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -32,7 +31,7 @@
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
-} */
+}
 
 .auth-logo {
   font-family: var(--mono);
