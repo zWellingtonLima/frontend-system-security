@@ -7,13 +7,16 @@
 
     <title>Seguranças - Dashboard</title>
     <link rel="stylesheet" href="../shared/css/style.css" />
+    <script type="module" src="./shared/scripts/sessionIsValid.js"></script>
 
-    <script src="./shared/scripts/api/logout.js" defer></script>
+    <script type="module" src="./shared/scripts/api/logout.js"></script>
 
     <script type="module" src="./shared/scripts/api/lists.js"></script>
-    <script type="module" src="./shared/scripts/sessionIsValid.js"></script>
     <script type="module" src="./shared/scripts/dashboard.js"></script>
-    <script type="module" src="./shared/scripts/utils/getSegurancaNome.js"></script>
+    <script
+      type="module"
+      src="./shared/scripts/utils/getSegurancaNome.js"
+    ></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -25,9 +28,7 @@
         </div>
         <div class="topbar-right">
           <span id="segurancaNome" class="segurancaNome"></span>
-          <button class="btn btn-danger btn-sm" onclick="doLogout()">
-            Sair
-          </button>
+          <button id="logout-btn" class="btn btn-danger btn-sm">Sair</button>
         </div>
       </header>
 

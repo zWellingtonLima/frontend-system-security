@@ -1,11 +1,9 @@
-async function doLogout() {
-  const token = sessionStorage.getItem("token");
+import { fetchData } from "../utils/fetchData.js";
+import { API_BASE_URL } from "./api_url.js";
 
+async function doLogout() {
   try {
-    await fetch("http://localhost:8080/api/auth/logout", {
-      method: "POST",
-      headers: { "X-Sessao-Id": token },
-    });
+    await fetchData(`${API_BASE_URL}/auth/logout`, { method: "POST" });
   } catch (err) {
     console.log(err);
   } finally {
@@ -13,3 +11,6 @@ async function doLogout() {
     window.location.href = "/index.html";
   }
 }
+
+// Seleciona o botão do logout e adiciona listener de click
+document.querySelector("#logout-btn").addEventListener("click", doLogout);

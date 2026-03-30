@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg" href="./shared/public/favicon.svg" />
     <title>Gerenciamento Segurança</title>
 
-    <script src="./shared/scripts/loginUser.js" defer></script>
+    <script type="module" src="./shared/scripts/loginUser.js" defer></script>
 
     <link rel="stylesheet" href="./shared/css/style.css" />
   </head>
@@ -18,19 +18,19 @@
 
         <div id="msgBox" class="alert"></div>
 
-        <div class="form-group">
-          <label>Número de Segurança</label>
-          <input type="number" id="usuarioNum" placeholder="Ex: 1042" />
-        </div>
+        <form>
+          <div class="form-group">
+            <label>Número de Segurança</label>
+            <input type="number" id="usuarioNum" placeholder="Ex: 1042" />
+          </div>
 
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="••••••" />
-        </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••" />
+          </div>
 
-        <button class="btn btn-auth btn-primary" onclick="loginUser()">
-          Entrar
-        </button>
+          <button class="btn btn-auth btn-primary">Entrar</button>
+        </form>
 
         <div class="auth-switch">
           Não tem conta? <a href="register.html">Registar</a>
