@@ -14,6 +14,8 @@ export class ApiError extends Error {
 export async function fetchData(endpoint, opcoes = {}) {
   const token = sessionStorage.getItem("token");
 
+  console.log(opcoes);
+
   const defaultHeaders = {
     "Content-Type": "application/json",
     ...(token && { "X-Sessao-Id": token }),
@@ -21,11 +23,12 @@ export async function fetchData(endpoint, opcoes = {}) {
 
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-      ...opcoes,
+      method: opcoes.method || "GET",
       headers: {
         ...defaultHeaders,
         ...opcoes.headers,
       },
+      body: opcoes.method === "POST" ? JSON.stringify(opcoes.body) : undefined,
     });
 
     if (response.status === 401 || response.status === 403) {
