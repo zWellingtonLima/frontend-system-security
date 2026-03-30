@@ -14,8 +14,6 @@ export class ApiError extends Error {
 export async function fetchData(endpoint, opcoes = {}) {
   const token = sessionStorage.getItem("token");
 
-  console.log(opcoes);
-
   const defaultHeaders = {
     "Content-Type": "application/json",
     ...(token && { "X-Sessao-Id": token }),

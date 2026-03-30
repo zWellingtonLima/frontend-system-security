@@ -1,9 +1,9 @@
 import { fetchData } from "../../app/shared/scripts/utils/fetchData.js";
+const errorMessage = document.getElementById("msgBox");
 
 async function loginUser() {
   const numeroSeguranca = parseInt(document.getElementById("usuarioNum").value);
   const password = document.getElementById("password").value.trim();
-  const errorMessage = document.getElementById("msgBox");
 
   if (!numeroSeguranca || !password) {
     errorMessage.className = "alert alert-error";
@@ -17,8 +17,6 @@ async function loginUser() {
       method: "POST",
       body: { numeroSeguranca, password },
     });
-
-    console.log(response);
 
     sessionStorage.setItem("token", response.token);
     sessionStorage.setItem("idUser", response.idUser);
@@ -38,4 +36,5 @@ document.querySelector("form").addEventListener("submit", (e) => {
   e.preventDefault();
 
   loginUser();
+  errorMessage.style.display = "none";
 });

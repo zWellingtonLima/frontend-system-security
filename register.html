@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg" href="./shared/public/favicon.svg">
+    <link rel="icon" type="image/svg" href="./shared/public/favicon.svg" />
     <title>Gerenciamento Segurança</title>
     <link rel="stylesheet" href="./shared/css/style.css" />
-    <script src="./shared/scripts/registerUser.js" defer></script>
+    <script type="module" src="./shared/scripts/registerUser.js"></script>
   </head>
   <body>
     <div class="container">
@@ -16,34 +16,34 @@
 
         <div id="msgBox" class="alert hidden"></div>
 
-        <div class="form-group">
-          <label>Nome Completo</label>
-          <input type="text" id="usuarioNome" placeholder="Ex: João Silva" />
-        </div>
-        <div class="form-group">
-          <label>Número de Segurança</label>
-          <input type="number" id="usuarioNumero" placeholder="Ex: 1042" />
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            id="usuarioPassword"
-            placeholder="Mínimo 6 caracteres"
-          />
-        </div>
-        <div class="form-group">
-          <label>Confirmar Password</label>
-          <input
-            type="password"
-            id="usuarioPasswordConfirm"
-            placeholder="Repetir password"
-          />
-        </div>
+        <form>
+          <div class="form-group">
+            <label>Nome Completo</label>
+            <input type="text" id="usuarioNome" placeholder="Ex: João Silva" />
+          </div>
+          <div class="form-group">
+            <label>Número de Segurança</label>
+            <input type="number" id="usuarioNumero" placeholder="Ex: 1042" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              id="usuarioPassword"
+              placeholder="Mínimo 6 caracteres"
+            />
+          </div>
+          <div class="form-group">
+            <label>Confirmar Password</label>
+            <input
+              type="password"
+              id="usuarioPasswordConfirm"
+              placeholder="Repetir password"
+            />
+          </div>
 
-        <button class="btn btn-auth btn-primary" onclick="registerUser()">
-          Registar
-        </button>
+          <button class="btn btn-auth btn-primary">Registar</button>
+        </form>
 
         <div class="auth-switch">
           Já tem conta? <a href="index.html">Entrar</a>
