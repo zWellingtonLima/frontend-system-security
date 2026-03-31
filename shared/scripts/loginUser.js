@@ -13,18 +13,18 @@ async function loginUser() {
   }
 
   try {
-    const response = await fetchData(`/auth/login`, {
+    const response = await fetchData(`auth/login`, {
       method: "POST",
       body: { numeroSeguranca, password },
     });
 
     console.log(response);
 
-    // sessionStorage.setItem("token", data.token);
-    // sessionStorage.setItem("idUser", data.idUser);
-    // sessionStorage.setItem("nome", data.nomeUsuario);
+    sessionStorage.setItem("token", response.token);
+    sessionStorage.setItem("idUser", response.idUser);
+    sessionStorage.setItem("nome", response.nomeUsuario);
 
-    // window.location.href = "./app/dashboard.html";
+    window.location.href = "./app/dashboard.html";
   } catch (err) {
     console.error(err);
 

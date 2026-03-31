@@ -45,8 +45,6 @@ function registerUser() {
     .then((data) => {
       console.log(data);
 
-
-
       msg.className = "alert alert-success";
       msg.textContent = "Conta criada com sucesso! Redirecionando...";
       msg.style.display = "block";

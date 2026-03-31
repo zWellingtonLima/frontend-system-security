@@ -11,7 +11,10 @@
 
     <script type="module" src="./scripts/registarConsumos.js"></script>
     <script type="module" src="./scripts/carregarConsumos.js"></script>
-    <script type="module" src="../shared/scripts/utils/getSegurancaNome.js"></script>
+    <script
+      type="module"
+      src="../shared/scripts/utils/getSegurancaNome.js"
+    ></script>
 
     <link rel="stylesheet" href="../../shared/css/style.css" />
   </head>
@@ -25,9 +28,7 @@
         </div>
         <div class="topbar-right">
           <span id="segurancaNome" class="segurancaNome"></span>
-          <button class="btn btn-danger btn-sm" onclick="doLogout()">
-            Sair
-          </button>
+          <button id="logout-btn" class="btn btn-danger btn-sm">Sair</button>
         </div>
       </header>
 
