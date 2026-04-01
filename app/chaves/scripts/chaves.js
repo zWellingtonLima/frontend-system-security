@@ -275,10 +275,10 @@ window.confirmarEntregaAvulsa = async function () {
   try {
     await fetchData("chaves/entregar", {
       method: "POST",
-      body: JSON.stringify({
+      body: {
         idMovimentacao: parseInt(idMovimentacao),
         idChave: parseInt(idChave),
-      }),
+      },
     });
 
     closeModal("modalEntregarChave");

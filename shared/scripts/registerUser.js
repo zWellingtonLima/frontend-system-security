@@ -41,18 +41,6 @@ async function registerUser() {
       return;
     }
 
-<<<<<<< HEAD
-      msg.className = "alert alert-success";
-      msg.textContent = "Conta criada com sucesso! Redirecionando...";
-      msg.style.display = "block";
-
-      setTimeout(() => (window.location.href = "index.html"), 1200);
-    })
-    // EXIBIR MENSAGEM PARA USUARIO CASO USUARIO JA EXISTA
-    .catch((err) => console.log(err));
-
-  //return err("Número já registado.");
-=======
     msg.className = "alert alert-success";
     msg.textContent = "Conta criada com sucesso! Redirecionando...";
     msg.style.display = "block";
@@ -61,7 +49,6 @@ async function registerUser() {
   } catch (error) {
     if (error instanceof ApiError) console.log(error);
   }
->>>>>>> 37abf1d (refatora registo e login melhorando logica e reutilizando funcao fetchData)
 }
 
 document.querySelector("form").addEventListener("submit", (e) => {

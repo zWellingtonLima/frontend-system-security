@@ -35,10 +35,10 @@ form.addEventListener("submit", async (e) => {
   try {
     await fetchData("ocorrencias", {
       method: "POST",
-      body: JSON.stringify({
+      body: {
         tipoOcorrencia: form.tipoOcorrencia.value,
         ocorrencia: form.descricao.value,
-      }),
+      },
     });
 
     showAlert("Ocorrência registada com sucesso!");

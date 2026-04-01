@@ -20,7 +20,7 @@ formConsumos.addEventListener("submit", async (e) => {
   try {
     await fetchData("consumos", {
       method: "POST",
-      body: JSON.stringify(dados),
+      body: dados,
     });
 
     formConsumos.reset();

@@ -6,7 +6,7 @@ const funciForm = document.querySelector("#registerFuncionario");
 async function registarPessoa(dados, endpoint) {
   const response = await fetchData(`${endpoint}`, {
     method: "POST",
-    body: JSON.stringify(dados),
+    body: dados,
   });
 
   return response.json();
