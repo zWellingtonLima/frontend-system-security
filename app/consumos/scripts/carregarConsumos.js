@@ -2,10 +2,16 @@ import { fetchData } from "../../shared/scripts/utils/fetchData.js";
 import { fillSelect } from "../../shared/scripts/UI/fillSelects.js";
 import { renderTable } from "../../shared/scripts/UI/renderTable.js";
 import { formatDate } from "../../shared/scripts/utils/formatDate.js";
+import { abrirModalEdicao } from "./editarConsumos.js";
 
 // PREENCHER COMBOBOX
 const tiposConsumo = await fetchData("lists/tipos-consumo");
 fillSelect("#tipoConsumos", tiposConsumo, "valor", "label");
+
+// UTILIZADOR ATUAL DA SESSÃO
+function getUtilizadorAtual() {
+  return sessionStorage.getItem("nome") ?? null;
+}
 
 // ULTIMAS LEITURAS
 export async function carregarUltimasLeituras() {
@@ -17,8 +23,6 @@ export async function carregarUltimasLeituras() {
 
   try {
     const data = await fetchData("consumos/ultimas-leituras");
-
-    console.log(data);
 
     Object.entries(LEITURA_CONFIG).forEach(([tipo, { id, unidade }]) => {
       const el = document.querySelector(`#${id}`);
@@ -43,6 +47,8 @@ const TIPO_CONFIG = {
 
 // CARREGAR HISTORICO
 export function carregarHistorico() {
+  const utilizadorAtual = getUtilizadorAtual();
+
   renderTable({
     endpoint: "consumos",
     campos: [
@@ -52,10 +58,10 @@ export function carregarHistorico() {
       "consumoCalculado",
       "observacao",
       "createUser",
+      "acoes",
     ],
     tbodySelector: "#tbodyConsumos",
     renderCampo: {
-      // Coluna tipo — com dot colorido
       tipoConsumo: (item) => {
         const config = TIPO_CONFIG[item.tipoConsumo] ?? {
           classe: "",
@@ -67,21 +73,58 @@ export function carregarHistorico() {
             <span class="dot-tipo"></span>${config.label}
           </span>`;
       },
-      // Coluna leitura — com unidade
+
       valorLeitura: (item) => {
         const config = TIPO_CONFIG[item.tipoConsumo];
         const unidade = config?.unidade ?? "";
         return `${item.valorLeitura.toLocaleString("pt-PT")} <span class="diff">${unidade}</span>`;
       },
-      // Coluna diferença — sempre com sinal
+
       consumoCalculado: (item) => {
         if (item.consumoCalculado == null) return "—";
         const sinal = item.consumoCalculado >= 0 ? "+" : "";
-        const classe = sinal == "+" ? "diff-val" : "diff-val-minus";
+        const classe = sinal === "+" ? "diff-val" : "diff-val-minus";
         return `<span class="${classe}">${sinal}${item.consumoCalculado}</span>`;
       },
+
       dataRegisto: (item) => formatDate(item.createDate),
+
+      // BOTÃO EDITAR — só aparece se foi o utilizador atual que registou
+      acoes: (item) => {
+        if (item.createUser !== utilizadorAtual) return "—";
+        return `
+          <button
+            class="btn btn-sm btn-secondary btn-editar-consumo"
+            data-id="${item.id}"
+          >✏️ Editar</button>
+        `;
+      },
     },
+  });
+
+  // DELEGAR EVENTO — abre modal ao clicar em editar
+  const tbody = document.querySelector("#tbodyConsumos");
+
+  // Remove listener anterior para evitar duplicados
+  const novoTbody = tbody.cloneNode(true);
+  tbody.parentNode.replaceChild(novoTbody, tbody);
+
+  novoTbody.addEventListener("click", async (e) => {
+    const btn = e.target.closest(".btn-editar-consumo");
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.textContent = "A carregar...";
+
+    try {
+      const item = await fetchData(`consumos/${btn.dataset.id}`);
+      abrirModalEdicao(item, tiposConsumo);
+    } catch (err) {
+      console.error("Erro ao carregar consumo:", err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "✏️ Editar";
+    }
   });
 }
 
