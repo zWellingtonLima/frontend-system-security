@@ -8,7 +8,11 @@ import { clearMsg, showMsg } from "../../shared/scripts/UI/messageBox.js";
 // ─────────────────────────────────────────────
 const DEBOUNCE_MS = 300;
 const MIN_CHARS = 2;
+const MAX_CHAVES = 10;
 const _timers = {};
+
+// Lista de chaves selecionadas no form de entrada: [{ id, descricao, tipo }]
+let chavesEntrada = [];
 
 // ─────────────────────────────────────────────
 // INIT
@@ -53,24 +57,24 @@ async function carregarMovimentacoes() {
 }
 
 function renderAcoes(item) {
-  const temChavePendente = item.entregasPendentes?.length > 0;
+  const numChaves = item.entregasPendentes?.length ?? 0;
   const dataAttr = encodeURIComponent(JSON.stringify(item));
 
-  const btnSaida = `
-    <button class="btn btn-sm btn-danger"
-      onclick="confirmarSaida(${item.id_movimentacao})">
-      Registar Saída
-    </button>`;
+  const badge =
+    numChaves > 0
+      ? `<span class="chave-badge" title="${numChaves} chave(s) pendente(s)">
+           🔑${numChaves > 1 ? `<sup>${numChaves}</sup>` : ""}
+         </span>`
+      : "";
 
-  // Só aparece se houver exatamente uma chave pendente
-  const btnChave = temChavePendente
-    ? `<button class="btn btn-sm btn-ghost mt-1"
-        onclick="abrirModalDevolucao(decodeAndParse('${dataAttr}'))">
-        🔑 Devolver Chave
-      </button>`
-    : "";
-
-  return `<div>${btnSaida}${btnChave}</div>`;
+  return `
+    <div class="acoes-cell">
+      ${badge}
+      <button class="btn btn-sm btn-ghost"
+        onclick="abrirModalDetalhes(decodeAndParse('${dataAttr}'))">
+        Ver Detalhes
+      </button>
+    </div>`;
 }
 
 function formatTipo(tipoPessoa, tipoVisita) {
@@ -85,54 +89,141 @@ function formatTipo(tipoPessoa, tipoVisita) {
 }
 
 // ─────────────────────────────────────────────
-// SAÍDA
+// MODAL DETALHES / AÇÕES
 // ─────────────────────────────────────────────
-window.confirmarSaida = async function (idMovimentacao) {
-  if (!confirm("Confirmar saída desta pessoa?")) return;
+window.abrirModalDetalhes = function (movimentacao) {
+  document.getElementById("detNomePessoa").textContent =
+    movimentacao.nomePessoa ?? "—";
+  document.getElementById("detTipo").textContent = formatTipo(
+    movimentacao.tipoPessoa,
+    movimentacao.tipoVisita,
+  );
+  document.getElementById("detHoraEntrada").textContent = formatDate(
+    movimentacao.horaEntrada,
+  );
+  document.getElementById("detSetor").textContent =
+    movimentacao.setorDestino ?? "—";
+  document.getElementById("detObs").textContent =
+    movimentacao.observacoes || "Sem observações";
 
-  try {
-    const res = await fetchData(`movimentacoes/saida/${idMovimentacao}`, {
-      method: "PATCH",
-    });
+  clearMsg("msgBoxDetalhes");
 
-    if (res?.aviso) {
-      alert(`⚠️ ${res.aviso}`);
-    }
+  const pendentes = movimentacao.entregasPendentes ?? [];
+  const secChaves = document.getElementById("detSecChaves");
 
-    carregarMovimentacoes();
-  } catch (err) {
-    alert(err.message ?? "Erro ao registar saída.");
+  if (pendentes.length > 0) {
+    secChaves.innerHTML = `
+      <div class="det-chave-header">
+        🔑 ${pendentes.length} Chave(s) Pendente(s)
+      </div>
+      ${pendentes.map((p) => renderCartaoChave(p)).join("")}`;
+    secChaves.classList.remove("hidden");
+  } else {
+    secChaves.innerHTML = "";
+    secChaves.classList.add("hidden");
+  }
+
+  document.getElementById("detAcoes").innerHTML = renderBotoesDetalhes(
+    movimentacao,
+    pendentes.length,
+  );
+
+  openModal("modalDetalhes");
+};
+
+function renderCartaoChave(pendente) {
+  const uid = `chave_${pendente.idEntrega}`;
+  return `
+    <div class="det-chave-card" id="card_${uid}">
+      <div class="det-chave-card-info">
+        <span class="autocomplete-nome">${pendente.descricao}</span>
+        <span class="autocomplete-detalhe">${pendente.tipo}</span>
+        <button class="btn btn-ghost btn-sm"
+          onclick="toggleDevolucaoInline('${uid}', ${pendente.idEntrega})">
+          Devolver
+        </button>
+      </div>
+      <div class="det-devolucao-inline hidden" id="inline_${uid}">
+        <div class="det-devolucao-inline-header">Devolver — ${pendente.descricao}</div>
+        <div class="form-group">
+          <label>Devolvida por</label>
+          <input type="text" id="devolvidaPor_${uid}"
+            placeholder="Nome de quem entrega a chave"
+            autocomplete="off" />
+        </div>
+        <div id="msg_${uid}" class="alert" style="display:none"></div>
+        <div class="det-devolucao-inline-footer">
+          <button class="btn btn-ghost btn-sm"
+            onclick="toggleDevolucaoInline('${uid}')">
+            Cancelar
+          </button>
+          <button class="btn btn-primary btn-sm"
+            onclick="confirmarDevolucaoInline(${pendente.idEntrega}, '${uid}')">
+            Confirmar Devolução
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderBotoesDetalhes(movimentacao, numPendentes) {
+  const id = movimentacao.id_movimentacao;
+
+  if (numPendentes > 0) {
+    const labelCombinado =
+      numPendentes === 1
+        ? "✓ Registar Saída + Devolver Chave"
+        : `✓ Registar Saída + Devolver ${numPendentes} Chaves`;
+
+    return `
+      <div class="det-acoes-group">
+        <button class="btn btn-primary btn-full"
+          onclick="registrarSaidaComDevolucao(${id})">
+          ${labelCombinado}
+        </button>
+        <button class="btn btn-saida-aviso btn-full"
+          onclick="confirmarSaidaSemDevolver(${id})">
+          ⚠ Só Registar Saída (chave(s) ficam pendentes)
+        </button>
+      </div>`;
+  }
+
+  return `
+    <div class="det-acoes-group">
+      <button class="btn btn-primary btn-full"
+        onclick="confirmarSaidaSimples(${id})">
+        ✓ Registar Saída
+      </button>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+// TOGGLE / CONFIRMAR DEVOLUÇÃO INLINE POR CHAVE
+// ─────────────────────────────────────────────
+window.toggleDevolucaoInline = function (uid) {
+  const inline = document.getElementById(`inline_${uid}`);
+  const isAberto = !inline.classList.contains("hidden");
+
+  if (isAberto) {
+    inline.classList.add("hidden");
+    document.getElementById(`devolvidaPor_${uid}`).value = "";
+    clearMsg(`msg_${uid}`);
+  } else {
+    inline.classList.remove("hidden");
+    inline.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    document.getElementById(`devolvidaPor_${uid}`).focus();
   }
 };
 
-// ─────────────────────────────────────────────
-// MODAL DEVOLUÇÃO — sempre uma única chave
-// ─────────────────────────────────────────────
-window.abrirModalDevolucao = function (movimentacao) {
-  // Garantidamente apenas uma entrada no array
-  const pendente = movimentacao.entregasPendentes[0];
+window.confirmarDevolucaoInline = async function (idEntrega, uid) {
+  clearMsg(`msg_${uid}`);
 
-  document.getElementById("dIdEntrega").value = pendente.idEntrega;
-  document.getElementById("devolucaoNomePessoa").textContent =
-    `Chave pendente de: ${movimentacao.nomePessoa}`;
-  document.getElementById("chavePendenteInfo").innerHTML = `
-    <span class="autocomplete-nome">${pendente.descricao}</span>
-    <span class="autocomplete-detalhe">${pendente.tipo}</span>`;
-
-  document.getElementById("dDevolvidaPor").value = "";
-  clearMsg("msgBoxDevolucao");
-
-  openModal("modalDevolucao");
-};
-
-window.confirmarDevolucao = async function () {
-  clearMsg("msgBoxDevolucao");
-
-  const idEntrega = document.getElementById("dIdEntrega").value;
-  const devolvidaPor = document.getElementById("dDevolvidaPor").value.trim();
+  const devolvidaPor = document
+    .getElementById(`devolvidaPor_${uid}`)
+    .value.trim();
 
   if (!devolvidaPor)
-    return showMsg("msgBoxDevolucao", "Indique quem está a devolver a chave.");
+    return showMsg(`msg_${uid}`, "Indique quem está a devolver a chave.");
 
   try {
     await fetchData(
@@ -140,10 +231,94 @@ window.confirmarDevolucao = async function () {
       { method: "PATCH" },
     );
 
-    closeModal("modalDevolucao");
+    // Remove apenas o cartão desta chave sem fechar o modal
+    document.getElementById(`card_chave_${idEntrega}`)?.remove();
+
+    const uid2 = `chave_${idEntrega}`;
+    document.getElementById(`card_${uid2}`)?.remove();
+
+    carregarMovimentacoes();
+
+    // Fecha o modal se já não restam chaves pendentes
+    const secChaves = document.getElementById("detSecChaves");
+    if (secChaves.querySelectorAll(".det-chave-card").length === 0) {
+      closeModal("modalDetalhes");
+    }
+  } catch (err) {
+    showMsg(
+      `msg_${uid}`,
+      err.message ?? "Erro ao registar devolução.",
+      "error",
+    );
+  }
+};
+
+// ─────────────────────────────────────────────
+// AÇÕES GLOBAIS DO MODAL
+// ─────────────────────────────────────────────
+window.registrarSaidaComDevolucao = async function (idMovimentacao) {
+  clearMsg("msgBoxDetalhes");
+
+  try {
+    const res = await fetchData(
+      `movimentacoes/saida-com-devolucao/${idMovimentacao}`,
+      { method: "PATCH" },
+    );
+    closeModal("modalDetalhes");
+    carregarMovimentacoes();
+    if (res?.aviso) setTimeout(() => alert(`✅ ${res.aviso}`), 150);
+  } catch (err) {
+    showMsg(
+      "msgBoxDetalhes",
+      err.message ?? "Erro ao registar saída.",
+      "error",
+    );
+  }
+};
+
+window.confirmarSaidaSemDevolver = async function (idMovimentacao) {
+  clearMsg("msgBoxDetalhes");
+
+  if (
+    !confirm(
+      "⚠️ As chaves ficarão pendentes de devolução.\nTem a certeza que quer registar apenas a saída?",
+    )
+  )
+    return;
+
+  try {
+    const res = await fetchData(`movimentacoes/saida/${idMovimentacao}`, {
+      method: "PATCH",
+    });
+    closeModal("modalDetalhes");
+    carregarMovimentacoes();
+    if (res?.aviso) setTimeout(() => alert(`⚠️ ${res.aviso}`), 150);
+  } catch (err) {
+    showMsg(
+      "msgBoxDetalhes",
+      err.message ?? "Erro ao registar saída.",
+      "error",
+    );
+  }
+};
+
+window.confirmarSaidaSimples = async function (idMovimentacao) {
+  clearMsg("msgBoxDetalhes");
+
+  if (!confirm("Confirmar saída desta pessoa?")) return;
+
+  try {
+    await fetchData(`movimentacoes/saida/${idMovimentacao}`, {
+      method: "PATCH",
+    });
+    closeModal("modalDetalhes");
     carregarMovimentacoes();
   } catch (err) {
-    showMsg("msgBoxDevolucao", err.message ?? "Erro ao registar devolução.");
+    showMsg(
+      "msgBoxDetalhes",
+      err.message ?? "Erro ao registar saída.",
+      "error",
+    );
   }
 };
 
@@ -181,7 +356,6 @@ function pessoaConfig(tipo) {
 window.onPessoaInput = function (tipo) {
   const cfg = pessoaConfig(tipo);
   const query = document.getElementById(cfg.inputId).value.trim();
-
   document.getElementById(cfg.hiddenId).value = "";
 
   if (query.length < MIN_CHARS) {
@@ -248,7 +422,7 @@ window.selecionarPessoa = function (pessoa, tipo) {
 };
 
 // ─────────────────────────────────────────────
-// AUTOCOMPLETE — CHAVES
+// AUTOCOMPLETE — CHAVES (multi-seleção)
 // ─────────────────────────────────────────────
 window.onChaveInput = function () {
   const query = document.getElementById("eChaveBusca").value.trim();
@@ -268,14 +442,22 @@ window.onChaveInput = function () {
 
 function renderDropdownChave(lista) {
   const dropdown = document.getElementById("dropdownChave");
+  const idsJaSelecionados = new Set(chavesEntrada.map((c) => c.id));
+  const listaFiltrada = lista.filter((c) => !idsJaSelecionados.has(c.idChave));
 
-  if (!lista.length) {
-    dropdown.innerHTML = `<div class="autocomplete-empty">Nenhuma chave disponível.</div>`;
+  if (!listaFiltrada.length) {
+    dropdown.innerHTML = `<div class="autocomplete-empty">
+      ${
+        lista.length === 0
+          ? "Nenhuma chave disponível."
+          : "Todas as chaves encontradas já foram adicionadas."
+      }
+    </div>`;
     dropdown.classList.remove("hidden");
     return;
   }
 
-  dropdown.innerHTML = lista
+  dropdown.innerHTML = listaFiltrada
     .map(
       (c) => `
       <div class="autocomplete-item"
@@ -290,19 +472,45 @@ function renderDropdownChave(lista) {
 }
 
 window.selecionarChave = function (id, descricao, tipo) {
-  document.getElementById("eIdChave").value = id;
+  if (chavesEntrada.length >= MAX_CHAVES) {
+    alert(
+      `Não é possível associar mais de ${MAX_CHAVES} chaves a uma entrada.`,
+    );
+    return;
+  }
+  if (chavesEntrada.some((c) => c.id === id)) return;
+
+  chavesEntrada.push({ id, descricao, tipo });
   document.getElementById("eChaveBusca").value = "";
-  document.getElementById("chaveLabel").textContent = `${descricao} (${tipo})`;
-  document.getElementById("chaveSelecionada").classList.remove("hidden");
   fecharDropdown("dropdownChave");
+  renderChipsChaves();
 };
 
-window.limparChave = function () {
-  document.getElementById("eIdChave").value = "";
-  document.getElementById("eChaveBusca").value = "";
-  document.getElementById("chaveSelecionada").classList.add("hidden");
-  document.getElementById("chaveLabel").textContent = "";
+window.removerChave = function (id) {
+  chavesEntrada = chavesEntrada.filter((c) => c.id !== id);
+  renderChipsChaves();
 };
+
+function renderChipsChaves() {
+  const container = document.getElementById("chavesAdicionadas");
+
+  if (chavesEntrada.length === 0) {
+    container.innerHTML = "";
+    container.classList.add("hidden");
+    return;
+  }
+
+  container.classList.remove("hidden");
+  container.innerHTML = chavesEntrada
+    .map(
+      (c) => `
+      <div class="selected-chip">
+        <span>${c.descricao} <span style="opacity:.6">(${c.tipo})</span></span>
+        <button type="button" onclick="removerChave(${c.id})">✕</button>
+      </div>`,
+    )
+    .join("");
+}
 
 // ─────────────────────────────────────────────
 // DROPDOWN — helper
@@ -320,7 +528,6 @@ function fecharDropdown(id) {
 // ─────────────────────────────────────────────
 window.toggleEntradaTipo = function () {
   clearMsg("msgBoxEntrada");
-
   const isFuncionario =
     document.getElementById("eTipo").value === "funcionario";
   document
@@ -340,8 +547,15 @@ window.toggleKeySection = function () {
   const isOn = toggle.classList.toggle("on");
   document.getElementById("keySection").classList.toggle("hidden", !isOn);
   document.getElementById("keyToggleIcon").textContent = isOn ? "✓" : "";
-  if (!isOn) window.limparChave();
+  if (!isOn) limparTodasChaves();
 };
+
+function limparTodasChaves() {
+  chavesEntrada = [];
+  document.getElementById("eChaveBusca").value = "";
+  renderChipsChaves();
+  fecharDropdown("dropdownChave");
+}
 
 // ─────────────────────────────────────────────
 // SUBMISSÃO
@@ -383,22 +597,19 @@ window.registarEntrada = async function () {
     if (idResp) body.idFuncionarioResponsavel = parseInt(idResp);
   }
 
-  const idChave = document.getElementById("eIdChave").value;
-  if (idChave) {
-    body.entregaChave = { idChave: parseInt(idChave) };
+  if (chavesEntrada.length > 0) {
+    body.entregasChave = chavesEntrada.map((c) => ({ idChave: c.id }));
   }
 
   try {
     await fetchData("movimentacoes/entrada", {
       method: "POST",
-      body: JSON.stringify(body),
+      body: body,
     });
-
     closeModal("modalEntrada");
     clearEntradaForm();
     carregarMovimentacoes();
   } catch (err) {
-    // Mantém o form preenchido para o segurança corrigir sem perder os dados
     showMsg(
       "msgBoxEntrada",
       err.message ?? "Erro ao registar entrada.",
@@ -427,7 +638,7 @@ function limparPessoa() {
 
 function clearEntradaForm() {
   limparPessoa();
-  window.limparChave();
+  limparTodasChaves();
   clearMsg("msgBoxEntrada");
   document.getElementById("eObs").value = "";
   document.getElementById("eTipo").value = "funcionario";

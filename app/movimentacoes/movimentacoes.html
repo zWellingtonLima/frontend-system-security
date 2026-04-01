@@ -13,8 +13,161 @@
       type="module"
       src="../shared/scripts/utils/getSegurancaNome.js"
     ></script>
-
     <script type="module" src="./scripts/movimentacoes.js"></script>
+
+    <style>
+      /* ── BADGE COM CONTADOR DE CHAVES ───────────── */
+      .acoes-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .chave-badge {
+        font-size: 0.85rem;
+        line-height: 1;
+        cursor: default;
+        position: relative;
+      }
+      .chave-badge sup {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: var(--warning);
+        font-weight: 700;
+      }
+
+      /* ── MODAL DETALHES — INFO GRID ─────────────── */
+      .det-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem 1.2rem;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        padding: 1rem 1.1rem;
+        margin-bottom: 1.25rem;
+      }
+      .det-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+      .det-info-item.span-full {
+        grid-column: 1 / -1;
+      }
+      .det-info-label {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+      }
+      .det-info-value {
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      /* ── HEADER DE CHAVES PENDENTES ─────────────── */
+      .det-chave-header {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--warning);
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .det-chave-header::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        background: var(--warning);
+        border-radius: 50%;
+        box-shadow: 0 0 6px var(--warning);
+      }
+
+      /* ── CARTÃO DE CHAVE INDIVIDUAL ─────────────── */
+      .det-chave-card {
+        border: 1px solid rgba(255, 193, 7, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 193, 7, 0.03);
+        margin-bottom: 0.6rem;
+        overflow: hidden;
+      }
+      .det-chave-card-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        gap: 0.5rem;
+      }
+      .det-chave-card-info .autocomplete-nome {
+        flex: 1;
+      }
+
+      /* ── SECÇÃO INLINE DE DEVOLUÇÃO POR CHAVE ───── */
+      .det-devolucao-inline {
+        border-top: 1px solid rgba(255, 193, 7, 0.15);
+        padding: 0.85rem 1rem;
+        background: rgba(0, 229, 160, 0.02);
+        animation: slideUp 0.15s ease;
+      }
+      .det-devolucao-inline .form-group {
+        margin-bottom: 0.75rem;
+      }
+      .det-devolucao-inline-header {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent-dim);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .det-devolucao-inline-footer {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      /* ── GRUPO DE AÇÕES DO FOOTER ───────────────── */
+      .det-acoes-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+      }
+      .btn-saida-aviso {
+        background: transparent;
+        color: var(--warning);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        font-family: var(--mono);
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 0.65rem 1.4rem;
+        transition: all 0.15s;
+      }
+      .btn-saida-aviso:hover {
+        background: rgba(255, 193, 7, 0.08);
+        border-color: rgba(255, 193, 7, 0.55);
+      }
+
+      /* ── CHIPS DE CHAVES NO FORM DE ENTRADA ─────── */
+      .chips-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.6rem;
+      }
+      .chips-wrapper.hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <div class="container-dashboard">
@@ -74,7 +227,67 @@
       </main>
     </div>
 
-    <!-- MODAL ENTRADA                               -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MODAL DETALHES / AÇÕES                                         -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="overlay" id="modalDetalhes">
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal('modalDetalhes')">
+          ✕
+        </button>
+        <div class="modal-title">Detalhes da Movimentação</div>
+
+        <!-- Info da movimentação -->
+        <div class="det-info-grid">
+          <div class="det-info-item">
+            <span class="det-info-label">Pessoa</span>
+            <span class="det-info-value" id="detNomePessoa">—</span>
+          </div>
+          <div class="det-info-item">
+            <span class="det-info-label">Tipo</span>
+            <span class="det-info-value" id="detTipo">—</span>
+          </div>
+          <div class="det-info-item">
+            <span class="det-info-label">Hora de Entrada</span>
+            <span class="det-info-value" id="detHoraEntrada">—</span>
+          </div>
+          <div class="det-info-item">
+            <span class="det-info-label">Destino / Setor</span>
+            <span class="det-info-value" id="detSetor">—</span>
+          </div>
+          <div class="det-info-item span-full">
+            <span class="det-info-label">Observações</span>
+            <span
+              class="det-info-value"
+              id="detObs"
+              style="font-weight: 400; color: var(--text-dim)"
+              >—</span
+            >
+          </div>
+        </div>
+
+        <!-- Chaves pendentes: um cartão por chave, renderizado dinamicamente -->
+        <div id="detSecChaves" class="hidden"></div>
+
+        <div id="msgBoxDetalhes" class="alert" style="display: none"></div>
+
+        <!-- Botões de ação (renderizados dinamicamente) -->
+        <div
+          class="modal-footer"
+          id="detAcoes"
+          style="
+            padding-top: 0;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+          "
+        ></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MODAL ENTRADA                                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <div class="overlay" id="modalEntrada">
       <div class="modal">
         <button class="close-btn" onclick="closeModal('modalEntrada')">
@@ -193,22 +406,21 @@
           </div>
         </div>
 
-        <!-- CHAVE OPCIONAL -->
+        <!-- CHAVES — toggle + multi-seleção -->
         <div class="section-toggle" id="keyToggle" onclick="toggleKeySection()">
           <div class="section-toggle-icon" id="keyToggleIcon"></div>
           <span class="section-toggle-label"
-            >🔑 Incluir entrega de chave (opcional)</span
+            >🔑 Incluir entrega de chave(s) (opcional)</span
           >
         </div>
         <div class="section-body hidden" id="keySection">
-          <input type="hidden" id="eIdChave" />
           <div class="form-group">
             <label>Pesquisar Chave Disponível</label>
             <div class="autocomplete-wrapper">
               <input
                 type="text"
                 id="eChaveBusca"
-                placeholder="Ex: CHV-101 ou Molho TI"
+                placeholder="Ex: CHV-101 ou Molho TI — adicione quantas quiser"
                 autocomplete="off"
                 oninput="onChaveInput()"
               />
@@ -217,10 +429,8 @@
                 id="dropdownChave"
               ></div>
             </div>
-            <div id="chaveSelecionada" class="selected-chip hidden">
-              <span id="chaveLabel"></span>
-              <button type="button" onclick="limparChave()">✕</button>
-            </div>
+            <!-- Chips das chaves selecionadas (renderizados dinamicamente) -->
+            <div id="chavesAdicionadas" class="chips-wrapper hidden"></div>
           </div>
         </div>
 
@@ -240,43 +450,6 @@
           </button>
           <button class="btn btn-primary" onclick="registarEntrada()">
             Confirmar Entrada
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODAL DEVOLUÇÃO DE CHAVE -->
-    <div class="overlay" id="modalDevolucao">
-      <div class="modal">
-        <button class="close-btn" onclick="closeModal('modalDevolucao')">
-          ✕
-        </button>
-        <div class="modal-title">Devolução de Chave</div>
-
-        <p class="modal-subtitle" id="devolucaoNomePessoa"></p>
-
-        <!-- Informação da chave pendente — sempre apenas uma -->
-        <div class="chave-info-card" id="chavePendenteInfo"></div>
-
-        <input type="hidden" id="dIdEntrega" />
-
-        <div class="form-group mt">
-          <label>Devolvida por</label>
-          <input
-            type="text"
-            id="dDevolvidaPor"
-            placeholder="Nome de quem entrega a chave"
-          />
-        </div>
-
-        <div id="msgBoxDevolucao" class="alert" style="display: none"></div>
-
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modalDevolucao')">
-            Cancelar
-          </button>
-          <button class="btn btn-primary" onclick="confirmarDevolucao()">
-            Confirmar Devolução
           </button>
         </div>
       </div>
