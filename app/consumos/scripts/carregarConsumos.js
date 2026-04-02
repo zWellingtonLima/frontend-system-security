@@ -92,41 +92,38 @@ export function carregarHistorico() {
       // BOTÃO EDITAR — só aparece se foi o utilizador atual que registou
       acoes: (item) => {
         if (item.createUser !== utilizadorAtual) return "—";
+
         return `
           <button
-            class="btn btn-sm btn-secondary btn-editar-consumo"
+            class="btn btn-sm btn-ghost btn-editar-consumo"
             data-id="${item.id}"
           >✏️ Editar</button>
         `;
       },
     },
   });
-
-  // DELEGAR EVENTO — abre modal ao clicar em editar
-  const tbody = document.querySelector("#tbodyConsumos");
-
-  // Remove listener anterior para evitar duplicados
-  const novoTbody = tbody.cloneNode(true);
-  tbody.parentNode.replaceChild(novoTbody, tbody);
-
-  novoTbody.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".btn-editar-consumo");
-    if (!btn) return;
-
-    btn.disabled = true;
-    btn.textContent = "A carregar...";
-
-    try {
-      const item = await fetchData(`consumos/${btn.dataset.id}`);
-      abrirModalEdicao(item, tiposConsumo);
-    } catch (err) {
-      console.error("Erro ao carregar consumo:", err);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "✏️ Editar";
-    }
-  });
 }
+
+document.querySelector(".table-wrap").addEventListener("click", async (e) => {
+  const btn = e.target.closest(".btn-editar-consumo");
+  if (!btn) return;
+
+  btn.disabled = true;
+  btn.textContent = "A carregar...";
+
+  try {
+    const item = await fetchData(`consumos/${btn.dataset.id}`);
+    abrirModalEdicao(item, tiposConsumo);
+  } catch (err) {
+    console.error("Erro ao carregar consumo:", err);
+    btn.disabled = false;
+    btn.textContent = "✏️ Editar";
+  } finally {
+    // ← mover para finally para garantir reset em qualquer caso
+    btn.disabled = false;
+    btn.textContent = "✏️ Editar";
+  }
+});
 
 carregarUltimasLeituras();
 carregarHistorico();

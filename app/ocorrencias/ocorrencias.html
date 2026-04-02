@@ -14,7 +14,8 @@
       src="../shared/scripts/utils/getSegurancaNome.js"
     ></script>
     <script type="module" src="./scripts/registarOcorrencia.js"></script>
-    <script type="module" src="./scripts/carregarOcorrencias.js"></script>
+    <script type="module" src="./scripts/editarOcorrencia.js"></script>
+    <script type="module" src="./scripts/eliminarOcorrencia.js"></script>
   </head>
   <body>
     <div class="container-dashboard">
@@ -86,7 +87,7 @@
                   <th>Tipo</th>
                   <th>Descrição</th>
                   <th>Estado</th>
-                  <th>Ações</th> 
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody id="tbodyOcorrencias">
@@ -103,6 +104,70 @@
           </div>
         </div>
       </main>
+    </div>
+
+    <!-- MODAL EDITAR OCORRÊNCIA -->
+    <div class="overlay" id="modalEdicaoOcorrencia">
+      <div class="modal">
+        <button class="close-btn" data-close="modalEdicaoOcorrencia">✕</button>
+        <div class="modal-title">Editar Ocorrência</div>
+        <form id="formEdicaoOcorrencia">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de Ocorrência</label>
+              <input id="editTipoOcorrencia" type="text" disabled />
+            </div>
+            <div class="form-group">
+              <label>Descrição</label>
+              <textarea id="editDescricao" maxlength="500" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <div id="estadoSelector" class="estado-selector"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              data-close="modalEdicaoOcorrencia"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR ELIMINAÇÃO -->
+    <div class="overlay" id="modalEliminarOcorrencia">
+      <div class="modal">
+        <button class="close-btn" data-close="modalEliminarOcorrencia">
+          ✕
+        </button>
+        <div class="modal-title">Eliminar Ocorrência</div>
+        <p class="modal-body-text">
+          Tem a certeza que pretende eliminar esta ocorrência? Esta ação não
+          pode ser revertida.
+        </p>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-ghost"
+            data-close="modalEliminarOcorrencia"
+          >
+            Cancelar
+          </button>
+          <button
+            id="btnConfirmarEliminar"
+            type="button"
+            class="btn btn-danger"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

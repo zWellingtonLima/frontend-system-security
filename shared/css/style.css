@@ -840,11 +840,17 @@ tr:hover td {
 /* ── BADGES DE ESTADO ────────────────────────────── */
 .badge {
   display: inline-block;
+  text-align: center;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.03em;
+}
+
+.estado-neutro {
+  border: 1px solid var(--text-muted);
+  text-transform: uppercase;
 }
 
 .estado-pendente {
@@ -882,11 +888,11 @@ tr:hover td {
 
 .btn-estado.ativo {
   border-color: currentColor;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text, #fff);
   font-weight: 600;
 }
 
 .btn-estado:hover:not(.ativo) {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
