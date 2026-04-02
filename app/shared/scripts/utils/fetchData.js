@@ -26,7 +26,10 @@ export async function fetchData(endpoint, opcoes = {}) {
         ...defaultHeaders,
         ...opcoes.headers,
       },
-      body: opcoes.method === "POST" ? JSON.stringify(opcoes.body) : undefined,
+      body:
+        opcoes.method === "POST" || "PUT" || "PATCH"
+          ? JSON.stringify(opcoes.body)
+          : undefined,
     });
 
     if (response.status === 401 || response.status === 403) {
