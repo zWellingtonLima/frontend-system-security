@@ -3,61 +3,107 @@ import { fetchData } from "../../shared/scripts/utils/fetchData.js";
 const visiForm = document.querySelector("#registerVisitante");
 const funciForm = document.querySelector("#registerFuncionario");
 
-async function registarPessoa(dados, endpoint) {
-  const response = await fetchData(`${endpoint}`, {
-    method: "POST",
-    body: dados,
-  });
+let editIdFuncionario = null;
+let editIdVisitante = null;
 
-  return response.json();
-}
+// ── Edição ────────────────────────────────────────────────────────────────────
 
-// REGISTAR FUNCIONARIO
+window.abrirEdicaoFuncionario = function (itemEncoded) {
+  const item = JSON.parse(decodeURIComponent(itemEncoded));
+  editIdFuncionario = item.id;
+
+  funciForm.fNome.value = item.nomeFuncionario ?? "";
+  funciForm.fNumero.value = item.numeroFuncionario ?? "";
+  funciForm.fSetor.value = item.setor ?? "";
+
+  document.getElementById("titleModalFuncionario").textContent =
+    "Editar Funcionário";
+  openModal("modalFuncionario");
+};
+
+window.abrirEdicaoVisitante = function (itemEncoded) {
+  const item = JSON.parse(decodeURIComponent(itemEncoded));
+  editIdVisitante = item.id;
+
+  visiForm.vNome.value = item.nomeVisitante ?? "";
+  visiForm.vEmpresa.value = item.empresa ?? "";
+  visiForm.vDoc.value = item.documentoIdentificacao ?? "";
+
+  document.getElementById("titleModalVisitante").textContent =
+    "Editar Visitante";
+  openModal("modalVisitante");
+};
+
+// Resetar estado ao fechar modais
+document.getElementById("modalFuncionario").addEventListener("modalClosed", () => {
+  editIdFuncionario = null;
+  funciForm.reset();
+  document.getElementById("titleModalFuncionario").textContent =
+    "Registar Funcionário";
+});
+
+document.getElementById("modalVisitante").addEventListener("modalClosed", () => {
+  editIdVisitante = null;
+  visiForm.reset();
+  document.getElementById("titleModalVisitante").textContent =
+    "Registar Visitante";
+});
+
+// ── Submit Funcionário ────────────────────────────────────────────────────────
+
 funciForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const fNome = e.target.fNome.value.trim();
-  const fNumero = e.target.fNumero.value.trim();
-  const fSetor = e.target.fSetor.value.trim();
-  const funcionarioData = {
-    nomeFuncionario: fNome,
-    numeroFuncionario: fNumero,
-    setor: fSetor,
+  const payload = {
+    nomeFuncionario: e.target.fNome.value.trim(),
+    numeroFuncionario: e.target.fNumero.value.trim(),
+    setor: e.target.fSetor.value.trim(),
   };
 
   try {
-    registarPessoa(funcionarioData, "funcionarios");
+    if (editIdFuncionario) {
+      await fetchData(`funcionarios/${editIdFuncionario}`, {
+        method: "PUT",
+        body: payload,
+      });
+    } else {
+      await fetchData("funcionarios", { method: "POST", body: payload });
+    }
 
-    funciForm.reset();
-    // Poderiamos chamar novamente o renderTable passando todos os dados
-    setTimeout(() => location.reload(), 1000);
+    closeModal("modalFuncionario");
+    setTimeout(() => location.reload(), 500);
   } catch (err) {
-    alert("Ocorreu um erro ao tentar registar o Visitante.");
+    alert("Ocorreu um erro ao guardar o Funcionário.");
     console.error(err);
   }
 });
 
-// REGISTAR VISITANTE
+// ── Submit Visitante ──────────────────────────────────────────────────────────
+
 visiForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const vNome = e.target.vNome.value.trim();
-  const vEmpresa = e.target.vEmpresa.value.trim();
-  const vDoc = e.target.vDoc.value.trim();
-  const visitanteData = {
-    nomeVisitante: vNome,
-    documentoIdentificacao: vDoc,
-    empresa: vEmpresa,
+  const payload = {
+    nomeVisitante: e.target.vNome.value.trim(),
+    documentoIdentificacao: e.target.vDoc.value.trim(),
+    empresa: e.target.vEmpresa.value.trim(),
     observacoes: "",
   };
 
   try {
-    registarPessoa(visitanteData, "visitantes");
+    if (editIdVisitante) {
+      await fetchData(`visitantes/${editIdVisitante}`, {
+        method: "PUT",
+        body: payload,
+      });
+    } else {
+      await fetchData("visitantes", { method: "POST", body: payload });
+    }
 
-    visiForm.reset();
-    setTimeout(() => location.reload(), 1000);
+    closeModal("modalVisitante");
+    setTimeout(() => location.reload(), 500);
   } catch (err) {
-    alert("Ocorreu um erro ao tentar registar o Visitante.");
+    alert("Ocorreu um erro ao guardar o Visitante.");
     console.error(err);
   }
 });
