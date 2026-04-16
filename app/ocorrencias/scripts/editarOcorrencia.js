@@ -1,6 +1,15 @@
 import { fetchData } from "../../shared/scripts/utils/fetchData.js";
 import { carregarOcorrencias } from "./carregarOcorrencias.js";
 
+const TIPO_OCORRENCIA_LABELS = {
+  OBJETO_PERDIDO_ENCONTRADO: "Objeto Perdido / Encontrado",
+  AVARIA_EQUIPAMENTO: "Avaria Equipamento",
+  ACESSO_NAO_AUTORIZADO: "Acesso não Autorizado",
+  INCIDENTE_COM_VISITANTE: "Incidente com Visitante",
+  ALARME_DISPARADO: "Alarme Disparado",
+  OUTROS: "Outros",
+};
+
 const ESTADOS = [
   { valor: "PENDENTE", label: "🟡 Pendente" },
   { valor: "EM_ANALISE", label: "🔵 Em Análise" },
@@ -20,8 +29,12 @@ document
 export function abrirModalEdicaoOcorrencia(item) {
   ocorrenciaAtualId = item.id;
 
-  document.querySelector("#editTipoOcorrencia").value =
-    item.tipoOcorrencia.tipoOcorrencia ?? "";
+  const tipoRaw = item.tipoOcorrencia.tipoOcorrencia ?? "";
+  const selectTipo = document.querySelector("#editTipoOcorrencia");
+  selectTipo.innerHTML = Object.entries(TIPO_OCORRENCIA_LABELS)
+    .map(([valor, label]) => `<option value="${valor}">${label}</option>`)
+    .join("");
+  selectTipo.value = tipoRaw;
   document.querySelector("#editDescricao").value = item.ocorrencia ?? "";
 
   // Renderizar botões de estado

@@ -2,8 +2,6 @@ import { fetchData } from "../../shared/scripts/utils/fetchData.js";
 import { renderTable } from "../../shared/scripts/UI/renderTable.js";
 import { formatDate } from "../../shared/scripts/utils/formatDate.js";
 import { abrirModalEdicaoOcorrencia } from "./editarOcorrencia.js";
-import { abrirModalEliminarOcorrencia } from "./eliminarOcorrencia.js";
-
 const ESTADO_CONFIG = {
   PENDENTE: { label: "Pendente", classe: "estado-pendente" },
   EM_ANALISE: { label: "Em Análise", classe: "estado-ativo" },
@@ -30,11 +28,11 @@ function getUtilizadorAtual() {
   return sessionStorage.getItem("nome") ?? null;
 }
 
-export function carregarOcorrencias() {
+export function carregarOcorrencias(endpoint = "ocorrencias") {
   const utilizadorAtual = getUtilizadorAtual();
 
   renderTable({
-    endpoint: "ocorrencias",
+    endpoint,
     campos: [
       "createDate",
       "createUser",
@@ -63,11 +61,7 @@ export function carregarOcorrencias() {
       },
       acoes: (item) => {
         if (item.createUser !== utilizadorAtual) return "—";
-        return `
-          <div>
-            <button class="btn btn-sm btn-full btn-ghost btn-editar-ocorrencia" data-id="${item.id}">✏️ Editar</button>
-            <button class="btn btn-sm btn-full btn-danger btn-eliminar-ocorrencia" data-id="${item.id}">Eliminar</button>
-          </div>`;
+        return `<button class="btn btn-sm btn-ghost btn-editar-ocorrencia" data-id="${item.id}">✏️ Editar</button>`;
       },
     },
   });
@@ -76,7 +70,6 @@ export function carregarOcorrencias() {
 // Delegação estática — registada uma única vez
 document.querySelector(".table-wrap").addEventListener("click", async (e) => {
   const btnEditar = e.target.closest(".btn-editar-ocorrencia");
-  const btnEliminar = e.target.closest(".btn-eliminar-ocorrencia");
 
   if (btnEditar) {
     btnEditar.disabled = true;
@@ -92,9 +85,15 @@ document.querySelector(".table-wrap").addEventListener("click", async (e) => {
     }
   }
 
-  if (btnEliminar) {
-    abrirModalEliminarOcorrencia(btnEliminar.dataset.id);
-  }
 });
 
-carregarOcorrencias();
+// ── Filtro Todas / Hoje ───────────────────────────────────────────────────
+document.querySelectorAll(".filter-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    carregarOcorrencias(btn.dataset.endpoint);
+  });
+});
+
+carregarOcorrencias("ocorrencias/hoje");
