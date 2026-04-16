@@ -50,7 +50,20 @@
         </div>
 
         <div class="card">
-          <div class="card-title">Histórico do Dia</div>
+          <div class="card-header">
+            <div class="card-title">Histórico de Movimentações</div>
+            <div class="date-filter">
+              <div class="date-filter-group">
+                <label for="filtroDataDe">De</label>
+                <input type="date" id="filtroDataDe" class="date-input" />
+              </div>
+              <div class="date-filter-group">
+                <label for="filtroDataAte">Até</label>
+                <input type="date" id="filtroDataAte" class="date-input" />
+              </div>
+              <button class="btn btn-ghost btn-sm" id="btnLimparFiltro">Limpar</button>
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>

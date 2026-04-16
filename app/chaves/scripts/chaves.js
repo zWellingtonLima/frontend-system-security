@@ -41,6 +41,7 @@ window.abrirDevolucao = function (item) {
   document.getElementById("cDescricaoChave").value = item.descricao;
   document.getElementById("cNomePessoa").value = item.nomePessoa ?? "—";
   document.getElementById("cDevolvidaPor").value = "";
+  document.getElementById("cDevolvidaPorTipo").value = "";
   clearMsg("msgBoxChave");
   openModal("modalDevolucaoChave");
 };
@@ -50,9 +51,13 @@ window.confirmarDevolucaoChave = async function () {
 
   const idEntrega = document.getElementById("cIdEntrega").value;
   const devolvidaPor = document.getElementById("cDevolvidaPor").value.trim();
+  const devolvidaPorTipo = document.getElementById("cDevolvidaPorTipo").value;
 
   if (!devolvidaPor)
     return showMsg("msgBoxChave", "Indique quem está a devolver a chave.");
+
+  if (!devolvidaPorTipo)
+    return showMsg("msgBoxChave", "Selecione uma pessoa da lista de sugestões.");
 
   try {
     await fetchData(
@@ -162,7 +167,7 @@ window.onChaveBuscaEntregaInput = function () {
 
   debounce("busca_chave_entrega", async () => {
     const lista = await fetchData(
-      `busca/chaves?q=${encodeURIComponent(query)}`,
+      `chaves/autocomplete/disponiveis?q=${encodeURIComponent(query)}`,
     );
     renderDropdownChaveEntrega(lista ?? []);
   });
@@ -178,14 +183,16 @@ function renderDropdownChaveEntrega(lista) {
   }
 
   dropdown.innerHTML = lista
-    .map(
-      (c) => `
-      <div class="autocomplete-item"
-        onclick="selecionarChaveEntrega(${c.idChave}, '${c.descricao}', '${c.tipo}')">
-        <span class="autocomplete-nome">${c.descricao}</span>
-        <span class="autocomplete-detalhe">${c.tipo}</span>
-      </div>`,
-    )
+    .map((c) => {
+      const tipoLabel = c.tipo === "CHAVE" ? "Chave" : "Molho";
+      const detalhe = c.sala ? `Sala ${c.sala}` : tipoLabel;
+      return `
+        <div class="autocomplete-item"
+          onclick="selecionarChaveEntrega(${c.id}, '${c.descricao}', '${tipoLabel}')">
+          <span class="autocomplete-nome">${c.descricao}</span>
+          <span class="autocomplete-detalhe">${detalhe}</span>
+        </div>`;
+    })
     .join("");
 
   dropdown.classList.remove("hidden");
@@ -212,6 +219,7 @@ window.limparChaveEntrega = function () {
 
 window.onDevolvidaPorInput = function () {
   const query = document.getElementById("cDevolvidaPor").value.trim();
+  document.getElementById("cDevolvidaPorTipo").value = "";
 
   if (query.length < 2) {
     fecharDropdown("dropdownDevolvidaPor");
@@ -219,7 +227,7 @@ window.onDevolvidaPorInput = function () {
   }
 
   debounce("busca_devolvida_por", async () => {
-    const lista = await fetchData(`busca?nome=${encodeURIComponent(query)}`);
+    const lista = await fetchData(`busca/geral?nome=${encodeURIComponent(query)}`);
     renderDropdownDevolvidaPor(lista ?? []);
   });
 };

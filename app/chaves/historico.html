@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg" href="../../shared/public/favicon.svg" />
-    <script type="module" src="../shared/scripts/sessionIsValid.js"></script>
     <title>Seguranças — Histórico de Chaves</title>
     <script type="module" src="../shared/scripts/sessionIsValid.js"></script>
     <link rel="stylesheet" href="../../shared/css/style.css" />
@@ -53,7 +52,13 @@
         </div>
 
         <div class="card">
-          <div class="card-title">Devoluções Registadas</div>
+          <div class="card-header">
+            <div class="card-title">Devoluções Registadas</div>
+            <div class="filter-bar">
+              <button class="filter-btn active" data-endpoint="chaves/historico">Todas</button>
+              <button class="filter-btn" data-endpoint="chaves/historico/hoje">Hoje</button>
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
