@@ -14,11 +14,18 @@ const _timers = {};
 // Lista de chaves selecionadas no form de entrada: [{ id, descricao, tipo }]
 let chavesEntrada = [];
 
+// Cache das movimentações ativas (para filtro client-side)
+let todasMovimentacoes = [];
+
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   carregarMovimentacoes();
+
+  document.getElementById("searchMovimentacoes").addEventListener("input", (e) => {
+    renderMovimentacoes(e.target.value.trim().toLowerCase());
+  });
 
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".autocomplete-wrapper")) {
@@ -36,36 +43,60 @@ document.addEventListener("DOMContentLoaded", () => {
 // TABELA DE ATIVOS
 // ─────────────────────────────────────────────
 async function carregarMovimentacoes() {
-  await renderTable({
-    endpoint: "lists/movimentacoes/ativas",
-    campos: [
-      "nomePessoa",
-      "tipoPessoa",
-      "horaEntrada",
-      "setorDestino",
-      "acoes",
-    ],
-    tbodySelector: "#tbodyAtivos",
-    renderCampo: {
-      nomePessoa: (item) => item.nomePessoa ?? "—",
-      tipoPessoa: (item) => formatTipo(item.tipoPessoa, item.tipoVisita),
-      horaEntrada: (item) => formatDate(item.horaEntrada),
-      setorDestino: (item) => item.setorDestino ?? "—",
-      acoes: (item) => renderAcoes(item),
-    },
-  });
+  const tbody = document.querySelector("#tbodyAtivos");
+  tbody.innerHTML = `<tr><td colspan="5">A carregar...</td></tr>`;
+
+  try {
+    todasMovimentacoes = await fetchData("lists/movimentacoes/ativas") ?? [];
+  } catch {
+    tbody.innerHTML = `<tr><td colspan="5" class="alert alert-error">Erro ao carregar dados.</td></tr>`;
+    return;
+  }
+
+  const filtroAtual = document.getElementById("searchMovimentacoes")?.value.trim().toLowerCase() ?? "";
+  renderMovimentacoes(filtroAtual);
+}
+
+function renderMovimentacoes(filtro) {
+  const tbody = document.querySelector("#tbodyAtivos");
+  const lista = filtro
+    ? todasMovimentacoes.filter((m) =>
+        m.nomePessoa?.toLowerCase().includes(filtro),
+      )
+    : todasMovimentacoes;
+
+  if (!lista.length) {
+    const msg = filtro ? "Nenhum resultado para essa pesquisa." : "Ninguém no edifício.";
+    tbody.innerHTML = `
+      <tr><td colspan="5">
+        <div class="empty-state">
+          <div class="icon">📊</div>
+          ${msg}
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = lista
+    .map((item) => `
+      <tr>
+        <td>${item.nomePessoa ?? "—"}</td>
+        <td>${formatTipo(item.tipoPessoa, item.tipoVisita)}</td>
+        <td>${formatDate(item.horaEntrada)}</td>
+        <td>${item.setorDestino ?? "—"}</td>
+        <td>${renderAcoes(item)}</td>
+      </tr>`)
+    .join("");
 }
 
 function renderAcoes(item) {
   const numChaves = item.entregasPendentes?.length ?? 0;
   const dataAttr = encodeURIComponent(JSON.stringify(item));
 
-  const badge =
-    numChaves > 0
-      ? `<span class="chave-badge" title="${numChaves} chave(s) pendente(s)">
-           🔑${numChaves > 1 ? `<sup>${numChaves}</sup>` : ""}
-         </span>`
-      : "";
+  const badge = `<span class="chave-badge${numChaves === 0 ? " chave-badge--hidden" : ""}"
+    title="${numChaves} chave(s) pendente(s)">
+    🔑${numChaves > 1 ? `<sup>${numChaves}</sup>` : ""}
+  </span>`;
 
   return `
     <div class="acoes-cell">
@@ -147,9 +178,14 @@ function renderCartaoChave(pendente) {
         <div class="det-devolucao-inline-header">Devolver — ${pendente.descricao}</div>
         <div class="form-group">
           <label>Devolvida por</label>
-          <input type="text" id="devolvidaPor_${uid}"
-            placeholder="Nome de quem entrega a chave"
-            autocomplete="off" />
+          <div class="autocomplete-wrapper">
+            <input type="text" id="devolvidaPor_${uid}"
+              placeholder="Nome de quem entrega a chave"
+              autocomplete="off"
+              oninput="onDevolvidaPorInlineInput('${uid}')" />
+            <div class="autocomplete-dropdown hidden" id="dropdownDevolvidaPor_${uid}"></div>
+          </div>
+          <input type="hidden" id="devolvidaPorTipo_${uid}" />
         </div>
         <div id="msg_${uid}" class="alert" style="display:none"></div>
         <div class="det-devolucao-inline-footer">
@@ -207,6 +243,8 @@ window.toggleDevolucaoInline = function (uid) {
   if (isAberto) {
     inline.classList.add("hidden");
     document.getElementById(`devolvidaPor_${uid}`).value = "";
+    document.getElementById(`devolvidaPorTipo_${uid}`).value = "";
+    fecharDropdown(`dropdownDevolvidaPor_${uid}`);
     clearMsg(`msg_${uid}`);
   } else {
     inline.classList.remove("hidden");
@@ -221,9 +259,14 @@ window.confirmarDevolucaoInline = async function (idEntrega, uid) {
   const devolvidaPor = document
     .getElementById(`devolvidaPor_${uid}`)
     .value.trim();
+  const devolvidaPorTipo = document
+    .getElementById(`devolvidaPorTipo_${uid}`)
+    .value.trim();
 
   if (!devolvidaPor)
     return showMsg(`msg_${uid}`, "Indique quem está a devolver a chave.");
+  if (!devolvidaPorTipo)
+    return showMsg(`msg_${uid}`, "Selecione uma opção da lista.");
 
   try {
     await fetchData(
@@ -251,6 +294,52 @@ window.confirmarDevolucaoInline = async function (idEntrega, uid) {
       "error",
     );
   }
+};
+
+// ─────────────────────────────────────────────
+// AUTOCOMPLETE — DEVOLVIDA POR (INLINE)
+// ─────────────────────────────────────────────
+window.onDevolvidaPorInlineInput = function (uid) {
+  const query = document.getElementById(`devolvidaPor_${uid}`).value.trim();
+  document.getElementById(`devolvidaPorTipo_${uid}`).value = "";
+
+  if (query.length < 2) {
+    fecharDropdown(`dropdownDevolvidaPor_${uid}`);
+    return;
+  }
+
+  debounce(`busca_devolvida_por_${uid}`, async () => {
+    const lista = await fetchData(`busca/geral?nome=${encodeURIComponent(query)}`);
+    renderDropdownDevolvidaPorInline(uid, lista ?? []);
+  });
+};
+
+function renderDropdownDevolvidaPorInline(uid, lista) {
+  const dropdown = document.getElementById(`dropdownDevolvidaPor_${uid}`);
+
+  if (!lista.length) {
+    fecharDropdown(`dropdownDevolvidaPor_${uid}`);
+    return;
+  }
+
+  dropdown.innerHTML = lista
+    .map(
+      (p) => `
+      <div class="autocomplete-item"
+        onclick="selecionarDevolvidaPorInline('${uid}', ${JSON.stringify(p.nome)}, '${p.tipo}')">
+        <span class="autocomplete-nome">${p.nome}</span>
+        <span class="autocomplete-detalhe">${p.tipo}</span>
+      </div>`,
+    )
+    .join("");
+
+  dropdown.classList.remove("hidden");
+}
+
+window.selecionarDevolvidaPorInline = function (uid, nome, tipo) {
+  document.getElementById(`devolvidaPor_${uid}`).value = nome;
+  document.getElementById(`devolvidaPorTipo_${uid}`).value = tipo;
+  fecharDropdown(`dropdownDevolvidaPor_${uid}`);
 };
 
 // ─────────────────────────────────────────────
