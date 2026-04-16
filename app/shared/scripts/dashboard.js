@@ -47,9 +47,13 @@ function renderPresentes(movimentacoes) {
     return;
   }
 
-  container.innerHTML = movimentacoes
-    .map(
-      (m) => `
+  const visiveis = movimentacoes.slice(0, 10);
+  const restantes = movimentacoes.length - visiveis.length;
+
+  container.innerHTML =
+    visiveis
+      .map(
+        (m) => `
       <div class="dash-list-item">
         <div class="dash-list-main">
           <span class="dash-list-nome">${m.nomePessoa}</span>
@@ -60,8 +64,11 @@ function renderPresentes(movimentacoes) {
           <span>${formatDate(m.horaEntrada)}</span>
         </div>
       </div>`,
-    )
-    .join("");
+      )
+      .join("") +
+    (restantes > 0
+      ? `<div class="dash-list-more"><a href="./movimentacoes/movimentacoes.html">+ ${restantes} mais</a></div>`
+      : "");
 }
 
 // ─────────────────────────────────────────────
@@ -79,9 +86,13 @@ function renderChavesAtivas(chaves) {
     return;
   }
 
-  container.innerHTML = chaves
-    .map(
-      (c) => `
+  const visiveis = chaves.slice(0, 10);
+  const restantes = chaves.length - visiveis.length;
+
+  container.innerHTML =
+    visiveis
+      .map(
+        (c) => `
       <div class="dash-list-item">
         <div class="dash-list-main">
           <span class="dash-list-nome">${c.descricao}</span>
@@ -92,8 +103,11 @@ function renderChavesAtivas(chaves) {
           <span>${formatDate(c.horaEntrega)}</span>
         </div>
       </div>`,
-    )
-    .join("");
+      )
+      .join("") +
+    (restantes > 0
+      ? `<div class="dash-list-more"><a href="./chaves/chaves.html">+ ${restantes} mais</a></div>`
+      : "");
 }
 
 // ─────────────────────────────────────────────
