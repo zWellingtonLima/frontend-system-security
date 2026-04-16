@@ -1,7 +1,10 @@
 @import url("reset.css");
 @import url("auth.css");
 
-/* AUTOCOMPLETE */
+/* ─────────────────────────────────────────────────────────
+   AUTOCOMPLETE
+   Dropdown de pesquisa reutilizado em múltiplos formulários
+   ───────────────────────────────────────────────────────── */
 .autocomplete-wrapper {
   position: relative;
 }
@@ -15,7 +18,7 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 9999;
   max-height: 220px;
   overflow-y: auto;
 }
@@ -33,6 +36,7 @@
   background: var(--hover);
 }
 
+/* Nome principal e detalhe secundário dentro de cada item */
 .autocomplete-nome {
   font-weight: 500;
   font-size: 0.9rem;
@@ -50,44 +54,10 @@
   font-style: italic;
 }
 
-/* CHIP DA CHAVE SELECIONADA */
-.selected-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  padding: 6px 12px;
-  background: var(--accent-glow);
-  border-radius: 20px;
-  font-size: 0.85rem;
-  width: fit-content;
-}
-
-.chave-info-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-}
-
-.selected-chip button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 0.9rem;
-  padding: 0;
-  line-height: 1;
-}
-
-.selected-chip button:hover {
-  color: var(--danger);
-}
-
-/* CONTAINER DASHBOARD */
+/* ─────────────────────────────────────────────────────────
+   LAYOUT — ESTRUTURA GERAL
+   Container principal, topbar e navbar de navegação
+   ───────────────────────────────────────────────────────── */
 .container-dashboard {
   display: flex;
   flex-direction: column;
@@ -97,45 +67,6 @@
   max-width: 1280px;
 }
 
-/* ── ITENS DAS LISTAS DO DASHBOARD ───────── */
-.dash-list-item {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.dash-list-item:last-child {
-  border-bottom: none;
-}
-
-.dash-list-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 3px;
-}
-
-.dash-list-nome {
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.dash-list-sub {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.78rem;
-  color: var(--muted);
-}
-
-.dash-list-badge {
-  font-size: 0.72rem;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: var(--accent-glow);
-  color: var(--accent);
-  font-weight: 500;
-}
-
-/* LAYOUT  */
 .topbar {
   display: flex;
   align-items: center;
@@ -157,6 +88,8 @@
   align-items: center;
   gap: 0.6rem;
 }
+
+/* Ponto pulsante ao lado do nome da app */
 .topbar-brand .dot {
   width: 7px;
   height: 7px;
@@ -165,21 +98,14 @@
   box-shadow: 0 0 8px var(--accent);
   animation: pulse 2s infinite;
 }
+
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-.topbar-user {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
-.topbar-user span {
-  color: var(--accent);
-}
 
-/* BARRINHA DE NAVEGACAO */
+/* Barra de navegação entre páginas */
 .navbar {
   display: flex;
   align-items: center;
@@ -215,7 +141,9 @@
   border-bottom-color: var(--accent);
 }
 
-/* MAIN */
+/* ─────────────────────────────────────────────────────────
+   LAYOUT — CONTEÚDO PRINCIPAL
+   ───────────────────────────────────────────────────────── */
 .main {
   padding: 1.75rem 2rem;
   max-width: 1200px;
@@ -241,7 +169,17 @@
   color: var(--text-dim);
 }
 
-/* FORMS  */
+/* Nome do segurança exibido na topbar */
+.segurancaNome {
+  text-transform: uppercase;
+  font-family: var(--mono);
+  font-weight: bold;
+  color: var(--accent-dim);
+}
+
+/* ─────────────────────────────────────────────────────────
+   FORMULÁRIOS
+   ───────────────────────────────────────────────────────── */
 .form-group {
   margin-bottom: 1.4rem;
   font-weight: bold;
@@ -294,14 +232,29 @@ textarea {
   min-height: 75px;
 }
 
-.segurancaNome {
-  text-transform: uppercase;
-  font-family: var(--mono);
-  font-weight: bold;
-  color: var(--accent-dim);
+/* Formulário inline (ex: registar ocorrência, leitura de consumo) */
+.form-inline {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.form-inline .form-row {
+  align-items: flex-end;
+  grid-template-columns: 1fr;
+}
+.form-inline .form-row .form-group {
+  margin-bottom: 0;
+}
+.form-inline-actions {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0;
 }
 
-/* BUTTONS */
+/* ─────────────────────────────────────────────────────────
+   BOTÕES
+   ───────────────────────────────────────────────────────── */
 .btn {
   font-family: var(--mono);
   font-size: 0.9rem;
@@ -311,7 +264,7 @@ textarea {
   cursor: pointer;
   padding: 0.65rem 1.4rem;
   transition: all 0.15s;
-  display: block;
+  display: inline-flex;
   align-items: center;
   gap: 0.45rem;
 }
@@ -320,12 +273,16 @@ textarea {
   width: 100%;
 }
 
+.btn-sm {
+  font-size: 0.8rem;
+  padding: 0.32rem 0.7rem;
+}
+
 .btn-primary {
   background: var(--accent);
   color: #000;
   font-weight: 600;
 }
-
 .btn-primary:hover {
   background: #00ffb3;
 }
@@ -335,7 +292,6 @@ textarea {
   color: var(--text-dim);
   border: 1px solid var(--border2);
 }
-
 .btn-ghost:hover {
   color: var(--text);
   background: var(--accent-glow);
@@ -346,7 +302,6 @@ textarea {
   color: var(--danger);
   border: 1px solid rgba(255, 77, 106, 0.2);
 }
-
 .btn-danger:hover {
   background: rgba(255, 77, 106, 0.2);
 }
@@ -356,17 +311,31 @@ textarea {
   color: var(--accent);
   border: 1px solid rgba(0, 229, 160, 0.2);
 }
-
 .btn-success:hover {
   background: rgba(0, 229, 160, 0.2);
 }
 
-.btn-sm {
-  font-size: 0.8rem;
-  padding: 0.32rem 0.7rem;
+/* Botão de aviso usado no registo de saída sem devolução */
+.btn-saida-aviso {
+  background: transparent;
+  color: var(--warning);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.65rem 1.4rem;
+  transition: all 0.15s;
+}
+.btn-saida-aviso:hover {
+  background: rgba(255, 193, 7, 0.08);
+  border-color: rgba(255, 193, 7, 0.55);
 }
 
-/* GRIDS E CARDS  */
+/* ─────────────────────────────────────────────────────────
+   GRIDS E CARDS
+   ───────────────────────────────────────────────────────── */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -396,6 +365,7 @@ textarea {
   align-items: center;
   gap: 0.45rem;
 }
+/* Ponto decorativo antes do título do card */
 .card-title::before {
   content: "";
   width: 4px;
@@ -404,6 +374,17 @@ textarea {
   border-radius: 50%;
 }
 
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.card-header .card-title {
+  margin-bottom: 0;
+}
+
+/* Stat cards — usados no dashboard */
 .stat-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -431,7 +412,88 @@ textarea {
   opacity: 0.2;
 }
 
-/* ── TABLE ────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────
+   FILTROS E PESQUISA
+   ───────────────────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 0.25rem;
+}
+.filter-btn {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-btn:hover {
+  border-color: var(--accent-dim);
+  color: var(--text);
+}
+.filter-btn.active {
+  background: var(--accent-glow);
+  border-color: rgba(0, 229, 160, 0.35);
+  color: var(--accent);
+}
+
+/* Filtro por intervalo de datas */
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.date-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.date-filter-group label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.date-input {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  color-scheme: dark;
+}
+.date-input:focus {
+  border-color: var(--accent-dim);
+}
+
+/* Campo de pesquisa por texto dentro de tabelas */
+.table-search {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.65rem;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  width: 200px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.table-search::placeholder {
+  color: var(--text-dim);
+}
+.table-search:focus {
+  border-color: var(--accent-dim);
+}
+
+/* ─────────────────────────────────────────────────────────
+   TABELA
+   ───────────────────────────────────────────────────────── */
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border);
@@ -467,7 +529,17 @@ tr:hover td {
   background: var(--surface2);
 }
 
-/* ── MODAL ────────────────────────────────────── */
+/* Célula de ações — botões alinhados horizontalmente */
+.acoes-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────
+   MODAL
+   Overlay + caixa modal reutilizados em toda a app
+   ───────────────────────────────────────────────────────── */
 .overlay {
   display: none;
   position: fixed;
@@ -504,6 +576,8 @@ tr:hover td {
     opacity: 1;
   }
 }
+
+/* Linha de destaque no topo do modal */
 .modal::before {
   content: "";
   position: absolute;
@@ -513,18 +587,27 @@ tr:hover td {
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
+
 .modal-title {
   font-family: var(--mono);
   font-size: 0.95rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
 }
+
+.modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
 .modal-footer {
   display: flex;
   gap: 0.75rem;
   margin-top: 1.5rem;
   justify-content: flex-end;
 }
+
 .close-btn {
   position: absolute;
   top: 1rem;
@@ -541,14 +624,11 @@ tr:hover td {
   color: var(--text);
 }
 
-/* ── SUBTÍTULO DO MODAL ──────────────────── */
-.modal-subtitle {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
-
-/* ── KEY TOGGLE ───────────────────────────────── */
+/* ─────────────────────────────────────────────────────────
+   SECTION TOGGLE
+   Secção colapsável usada no form de entrada de movimentações
+   (ex: adicionar chaves)
+   ───────────────────────────────────────────────────────── */
 .section-toggle {
   display: flex;
   align-items: center;
@@ -604,7 +684,184 @@ tr:hover td {
   margin-bottom: 0;
 }
 
-/* CONSUMOS */
+/* ─────────────────────────────────────────────────────────
+   MOVIMENTAÇÕES — MODAL DE DETALHES
+   Grid de informação e cartões de chaves pendentes
+   ───────────────────────────────────────────────────────── */
+
+/* Grid de campos informativos (nome, tipo, hora, setor, obs) */
+.det-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem 1.2rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+.det-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.det-info-item.span-full {
+  grid-column: 1 / -1;
+}
+.det-info-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.det-info-value {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Cabeçalho da secção de chaves pendentes */
+.det-chave-header {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warning);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.det-chave-header::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  background: var(--warning);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--warning);
+}
+
+/* Cartão individual de cada chave pendente */
+.det-chave-card {
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 193, 7, 0.03);
+  margin-bottom: 0.6rem;
+  overflow: visible;
+}
+.det-chave-card-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  gap: 0.5rem;
+}
+.det-chave-card-info .autocomplete-nome {
+  flex: 1;
+}
+
+/* Secção inline de devolução — expande ao clicar em "Devolver" */
+.det-devolucao-inline {
+  border-top: 1px solid rgba(255, 193, 7, 0.15);
+  padding: 0.85rem 1rem;
+  background: rgba(0, 229, 160, 0.02);
+  animation: slideUp 0.15s ease;
+}
+.det-devolucao-inline .form-group {
+  margin-bottom: 0.75rem;
+}
+.det-devolucao-inline-header {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-dim);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.det-devolucao-inline-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Grupo de botões de ação no footer do modal de detalhes */
+.det-acoes-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────
+   MOVIMENTAÇÕES — TABELA
+   Badge de chave e célula de ações na listagem
+   ───────────────────────────────────────────────────────── */
+
+/* Badge com emoji de chave e contagem sobrescrita */
+.chave-badge {
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: default;
+  position: relative;
+}
+.chave-badge sup {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--warning);
+  font-weight: 700;
+}
+
+/* Oculta o badge quando não há chaves associadas */
+.chave-badge--hidden {
+  visibility: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────
+   CHAVES — CHIPS DE SELEÇÃO
+   Chips exibidos no form de entrada ao adicionar chaves
+   ───────────────────────────────────────────────────────── */
+.chips-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+.chips-wrapper.hidden {
+  display: none;
+}
+
+.selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: var(--accent-glow);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  width: fit-content;
+}
+.selected-chip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0;
+  line-height: 1;
+}
+.selected-chip button:hover {
+  color: var(--danger);
+}
+
+/* ─────────────────────────────────────────────────────────
+   CONSUMOS — TIPOS E DIFERENCIAL
+   ───────────────────────────────────────────────────────── */
+
+/* Ícone de tipo de consumo (água, eletricidade, gás) com ponto colorido */
 .tipo-icon {
   display: inline-flex;
   align-items: center;
@@ -641,27 +898,7 @@ tr:hover td {
   color: var(--danger);
 }
 
-/* ── LEITURA INLINE FORM ────────────────────── */
-.form-inline {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-.form-inline .form-row {
-  align-items: flex-end;
-  grid-template-columns: 1fr;
-}
-.form-inline .form-row .form-group {
-  margin-bottom: 0;
-}
-.form-inline-actions {
-  display: flex;
-  align-items: center;
-  padding-bottom: 0;
-}
-
-/* SUMMARY STRIP */
+/* Summary strip — últimas leituras por tipo */
 .summary-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -700,6 +937,8 @@ tr:hover td {
   color: var(--text-dim);
   margin-left: 0.2rem;
 }
+
+/* Borda lateral colorida por tipo de consumo */
 .summary-item.agua {
   border-left: 3px solid var(--info);
 }
@@ -710,54 +949,141 @@ tr:hover td {
   border-left: 3px solid var(--danger);
 }
 
-/* DIFF BADGE  */
+/* Unidade de medida junto ao valor (m³, kWh) */
 .diff {
   font-family: var(--mono);
   font-size: 0.68rem;
   color: var(--text-muted);
 }
+
+/* Consumo calculado em relação à leitura anterior */
 .diff-val {
   font-family: var(--mono);
   font-size: 0.9rem;
   color: var(--accent);
 }
-
 .diff-val-minus {
   font-family: var(--mono);
   font-size: 0.9rem;
   color: var(--danger);
 }
 
-@media (max-width: 700px) {
-  .summary-strip {
-    grid-template-columns: 1fr;
-  }
+/* ─────────────────────────────────────────────────────────
+   OCORRÊNCIAS — BADGES E ESTADOS
+   ───────────────────────────────────────────────────────── */
+
+/* Badge genérico (estado, tipo) */
+.badge {
+  display: inline-block;
+  text-align: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
-@media (max-width: 700px) {
-  .grid-4 {
-    grid-template-columns: 1fr 1fr;
-  }
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
-  .main {
-    padding: 1.25rem 1rem;
-  }
-  .topbar {
-    padding: 0 1rem;
-  }
-  .navbar {
-    padding: 0 1rem;
-  }
+/* Tipo de ocorrência — badge neutro sem cor de destaque */
+.estado-neutro {
+  border: 1px solid var(--text-muted);
+  text-transform: uppercase;
 }
 
-/* AUXILARES */
-.divider {
-  color: var(--accent-glow);
-  margin: 3rem 0;
+.estado-pendente {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+.estado-ativo {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+.estado-resolvido {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+.estado-cancelado {
+  background: rgba(255, 77, 106, 0.1);
+  color: var(--danger);
 }
 
+/* Seletor de estado no modal de edição de ocorrências */
+.estado-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-estado {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, #2a2a3e);
+  background: transparent;
+  color: var(--text-muted, #888);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.btn-estado.ativo {
+  border-color: currentColor;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text, #fff);
+  font-weight: 600;
+}
+.btn-estado:hover:not(.ativo) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ─────────────────────────────────────────────────────────
+   DASHBOARD — LISTAS
+   Itens de movimentações e chaves no painel principal
+   ───────────────────────────────────────────────────────── */
+.dash-list-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.dash-list-item:last-child {
+  border-bottom: none;
+}
+.dash-list-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+.dash-list-nome {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.dash-list-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.dash-list-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-weight: 500;
+}
+.dash-list-more {
+  padding: 8px 0 2px;
+  font-size: 0.78rem;
+  text-align: right;
+}
+.dash-list-more a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.dash-list-more a:hover {
+  text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────────────────
+   UTILITÁRIOS
+   Classes auxiliares de espaçamento, visibilidade e alertas
+   ───────────────────────────────────────────────────────── */
 .hidden {
   display: none;
 }
@@ -774,6 +1100,12 @@ tr:hover td {
   margin-bottom: 1.25rem;
 }
 
+.divider {
+  color: var(--accent-glow);
+  margin: 3rem 0;
+}
+
+/* Mensagens de feedback inline */
 .alert {
   padding: 0.7rem 0.9rem;
   font-size: 0.78rem;
@@ -797,6 +1129,7 @@ tr:hover td {
   color: var(--accent);
 }
 
+/* Estado vazio de tabelas */
 .empty-state {
   text-align: center;
   padding: 2.5rem 1rem;
@@ -809,90 +1142,27 @@ tr:hover td {
   margin-bottom: 0.6rem;
   opacity: 0.3;
 }
-/* ── MODAL EDIÇÃO ────────────────────────────────── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
 
-.modal-box {
-  background: var(--card-bg, #1a1a2e);
-  border: 1px solid var(--border, #2a2a3e);
-  border-radius: 12px;
-  padding: 2rem;
-  width: min(480px, 92vw);
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-/* ── BADGES DE ESTADO ────────────────────────────── */
-.badge {
-  display: inline-block;
-  text-align: center;
-  padding: 0.25rem 0.65rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-}
-
-.estado-neutro {
-  border: 1px solid var(--text-muted);
-  text-transform: uppercase;
-}
-
-.estado-pendente {
-  background: rgba(234, 179, 8, 0.15);
-  color: #eab308;
-}
-
-.estado-ativo {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-}
-
-.estado-resolvido {
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
-}
-
-/* ── SELETOR DE ESTADO NO MODAL ──────────────────── */
-.estado-selector {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-estado {
-  flex: 1;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--border, #2a2a3e);
-  background: transparent;
-  color: var(--text-muted, #888);
-  cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s;
-}
-
-.btn-estado.ativo {
-  border-color: currentColor;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text, #fff);
-  font-weight: 600;
-}
-
-.btn-estado:hover:not(.ativo) {
-  background: rgba(255, 255, 255, 0.03);
+/* ─────────────────────────────────────────────────────────
+   MEDIA QUERIES
+   ───────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .summary-strip {
+    grid-template-columns: 1fr;
+  }
+  .grid-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .main {
+    padding: 1.25rem 1rem;
+  }
+  .topbar {
+    padding: 0 1rem;
+  }
+  .navbar {
+    padding: 0 1rem;
+  }
 }
