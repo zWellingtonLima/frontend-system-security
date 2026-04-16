@@ -8,11 +8,6 @@ import { abrirModalEdicao } from "./editarConsumos.js";
 const tiposConsumo = await fetchData("lists/tipos-consumo");
 fillSelect("#tipoConsumos", tiposConsumo, "valor", "label");
 
-// UTILIZADOR ATUAL DA SESSÃO
-function getUtilizadorAtual() {
-  return sessionStorage.getItem("nome") ?? null;
-}
-
 // ULTIMAS LEITURAS
 export async function carregarUltimasLeituras() {
   const LEITURA_CONFIG = {
@@ -47,8 +42,6 @@ const TIPO_CONFIG = {
 
 // CARREGAR HISTORICO
 export function carregarHistorico() {
-  const utilizadorAtual = getUtilizadorAtual();
-
   renderTable({
     endpoint: "consumos",
     campos: [
@@ -89,17 +82,8 @@ export function carregarHistorico() {
 
       dataRegisto: (item) => formatDate(item.createDate),
 
-      // BOTÃO EDITAR — só aparece se foi o utilizador atual que registou
-      acoes: (item) => {
-        if (item.createUser !== utilizadorAtual) return "—";
-
-        return `
-          <button
-            class="btn btn-sm btn-ghost btn-editar-consumo"
-            data-id="${item.id}"
-          >✏️ Editar</button>
-        `;
-      },
+      acoes: (item) =>
+        `<button class="btn btn-sm btn-ghost btn-editar-consumo" data-id="${item.id}">✏️ Editar</button>`,
     },
   });
 }
