@@ -75,7 +75,7 @@ function renderHistorico(lista) {
 function formatTipo(tipoPessoa, tipoVisita) {
   if (tipoPessoa === "FUNCIONARIO") return "Funcionário";
   const labels = {
-    visita: "Visita",
+    visitante: "Visitante",
     servico: "Serviço",
     entrega: "Entrega",
     manutencao: "Manutenção",
