@@ -566,6 +566,9 @@ tr:hover td {
   max-height: 90vh;
   overflow-y: auto;
 }
+.modal:has(.autocomplete-dropdown:not(.hidden)) {
+  overflow: visible;
+}
 @keyframes slideUp {
   from {
     transform: translateY(12px);

@@ -160,11 +160,6 @@ function fecharDropdown(id) {
 window.onChaveBuscaEntregaInput = function () {
   const query = document.getElementById("cChaveBuscaEntrega").value.trim();
 
-  if (!query.length) {
-    fecharDropdown("dropdownChaveEntrega");
-    return;
-  }
-
   debounce("busca_chave_entrega", async () => {
     const lista = await fetchData(
       `chaves/autocomplete/disponiveis?q=${encodeURIComponent(query)}`,
@@ -256,12 +251,11 @@ function renderDropdownDevolvidaPor(lista) {
   dropdown.classList.remove("hidden");
 }
 
-function selecionarDevolvidaPor(nome, tipo) {
+window.selecionarDevolvidaPor = function (nome, tipo) {
   document.getElementById("cDevolvidaPor").value = nome;
-  // se precisar guardar o tipo junto:
   document.getElementById("cDevolvidaPorTipo").value = tipo;
   fecharDropdown("dropdownDevolvidaPor");
-}
+};
 // ─────────────────────────────────────────────
 // SUBMISSÃO — ENTREGA AVULSA
 // ─────────────────────────────────────────────
