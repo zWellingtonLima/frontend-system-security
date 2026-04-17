@@ -6,7 +6,7 @@ import { clearMsg, showMsg } from "../../shared/scripts/UI/messageBox.js";
 // ─────────────────────────────────────────────
 // CONFIG
 // ─────────────────────────────────────────────
-const DEBOUNCE_MS = 300;
+const DEBOUNCE_MS = 400;
 const MIN_CHARS = 2;
 const MAX_CHAVES = 10;
 const _timers = {};
@@ -17,15 +17,21 @@ let chavesEntrada = [];
 // Cache das movimentações ativas (para filtro client-side)
 let todasMovimentacoes = [];
 
+// Cache de objetos para evitar serialização em atributos onclick
+const _movimentacaoCache = new Map();
+const _pessoaCache = new Map();
+
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   carregarMovimentacoes();
 
-  document.getElementById("searchMovimentacoes").addEventListener("input", (e) => {
-    renderMovimentacoes(e.target.value.trim().toLowerCase());
-  });
+  document
+    .getElementById("searchMovimentacoes")
+    .addEventListener("input", (e) => {
+      renderMovimentacoes(e.target.value.trim().toLowerCase());
+    });
 
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".autocomplete-wrapper")) {
@@ -47,13 +53,17 @@ async function carregarMovimentacoes() {
   tbody.innerHTML = `<tr><td colspan="5">A carregar...</td></tr>`;
 
   try {
-    todasMovimentacoes = await fetchData("lists/movimentacoes/ativas") ?? [];
+    todasMovimentacoes = (await fetchData("lists/movimentacoes/ativas")) ?? [];
   } catch {
     tbody.innerHTML = `<tr><td colspan="5" class="alert alert-error">Erro ao carregar dados.</td></tr>`;
     return;
   }
 
-  const filtroAtual = document.getElementById("searchMovimentacoes")?.value.trim().toLowerCase() ?? "";
+  const filtroAtual =
+    document
+      .getElementById("searchMovimentacoes")
+      ?.value.trim()
+      .toLowerCase() ?? "";
   renderMovimentacoes(filtroAtual);
 }
 
@@ -66,7 +76,9 @@ function renderMovimentacoes(filtro) {
     : todasMovimentacoes;
 
   if (!lista.length) {
-    const msg = filtro ? "Nenhum resultado para essa pesquisa." : "Ninguém no edifício.";
+    const msg = filtro
+      ? "Nenhum resultado para essa pesquisa."
+      : "Ninguém no edifício.";
     tbody.innerHTML = `
       <tr><td colspan="5">
         <div class="empty-state">
@@ -77,21 +89,25 @@ function renderMovimentacoes(filtro) {
     return;
   }
 
+  _movimentacaoCache.clear();
+  lista.forEach((item) => _movimentacaoCache.set(item.id_movimentacao, item));
+
   tbody.innerHTML = lista
-    .map((item) => `
+    .map(
+      (item) => `
       <tr>
         <td>${item.nomePessoa ?? "—"}</td>
         <td>${formatTipo(item.tipoPessoa, item.tipoVisita)}</td>
         <td>${formatDate(item.horaEntrada)}</td>
         <td>${item.setorDestino ?? "—"}</td>
         <td>${renderAcoes(item)}</td>
-      </tr>`)
+      </tr>`,
+    )
     .join("");
 }
 
 function renderAcoes(item) {
   const numChaves = item.entregasPendentes?.length ?? 0;
-  const dataAttr = encodeURIComponent(JSON.stringify(item));
 
   const badge = `<span class="chave-badge${numChaves === 0 ? " chave-badge--hidden" : ""}"
     title="${numChaves} chave(s) pendente(s)">
@@ -102,7 +118,7 @@ function renderAcoes(item) {
     <div class="acoes-cell">
       ${badge}
       <button class="btn btn-sm btn-ghost"
-        onclick="abrirModalDetalhes(decodeAndParse('${dataAttr}'))">
+        onclick="abrirModalDetalhes(${item.id_movimentacao})">
         Ver Detalhes
       </button>
     </div>`;
@@ -122,7 +138,10 @@ function formatTipo(tipoPessoa, tipoVisita) {
 // ─────────────────────────────────────────────
 // MODAL DETALHES / AÇÕES
 // ─────────────────────────────────────────────
-window.abrirModalDetalhes = function (movimentacao) {
+window.abrirModalDetalhes = function (id) {
+  const movimentacao = _movimentacaoCache.get(id);
+  if (!movimentacao) return;
+
   document.getElementById("detNomePessoa").textContent =
     movimentacao.nomePessoa ?? "—";
   document.getElementById("detTipo").textContent = formatTipo(
@@ -185,7 +204,6 @@ function renderCartaoChave(pendente) {
               oninput="onDevolvidaPorInlineInput('${uid}')" />
             <div class="autocomplete-dropdown hidden" id="dropdownDevolvidaPor_${uid}"></div>
           </div>
-          <input type="hidden" id="devolvidaPorTipo_${uid}" />
         </div>
         <div id="msg_${uid}" class="alert" style="display:none"></div>
         <div class="det-devolucao-inline-footer">
@@ -242,8 +260,9 @@ window.toggleDevolucaoInline = function (uid) {
 
   if (isAberto) {
     inline.classList.add("hidden");
-    document.getElementById(`devolvidaPor_${uid}`).value = "";
-    document.getElementById(`devolvidaPorTipo_${uid}`).value = "";
+    const input = document.getElementById(`devolvidaPor_${uid}`);
+    input.value = "";
+    input.dataset.selecionado = "";
     fecharDropdown(`dropdownDevolvidaPor_${uid}`);
     clearMsg(`msg_${uid}`);
   } else {
@@ -256,16 +275,12 @@ window.toggleDevolucaoInline = function (uid) {
 window.confirmarDevolucaoInline = async function (idEntrega, uid) {
   clearMsg(`msg_${uid}`);
 
-  const devolvidaPor = document
-    .getElementById(`devolvidaPor_${uid}`)
-    .value.trim();
-  const devolvidaPorTipo = document
-    .getElementById(`devolvidaPorTipo_${uid}`)
-    .value.trim();
+  const inputDevolvidaPor = document.getElementById(`devolvidaPor_${uid}`);
+  const devolvidaPor = inputDevolvidaPor.value.trim();
 
   if (!devolvidaPor)
     return showMsg(`msg_${uid}`, "Indique quem está a devolver a chave.");
-  if (!devolvidaPorTipo)
+  if (inputDevolvidaPor.dataset.selecionado !== "1")
     return showMsg(`msg_${uid}`, "Selecione uma opção da lista.");
 
   try {
@@ -275,10 +290,7 @@ window.confirmarDevolucaoInline = async function (idEntrega, uid) {
     );
 
     // Remove apenas o cartão desta chave sem fechar o modal
-    document.getElementById(`card_chave_${idEntrega}`)?.remove();
-
-    const uid2 = `chave_${idEntrega}`;
-    document.getElementById(`card_${uid2}`)?.remove();
+    document.getElementById(`card_${uid}`)?.remove();
 
     carregarMovimentacoes();
 
@@ -300,8 +312,9 @@ window.confirmarDevolucaoInline = async function (idEntrega, uid) {
 // AUTOCOMPLETE — DEVOLVIDA POR (INLINE)
 // ─────────────────────────────────────────────
 window.onDevolvidaPorInlineInput = function (uid) {
-  const query = document.getElementById(`devolvidaPor_${uid}`).value.trim();
-  document.getElementById(`devolvidaPorTipo_${uid}`).value = "";
+  const input = document.getElementById(`devolvidaPor_${uid}`);
+  const query = input.value.trim();
+  input.dataset.selecionado = "";
 
   if (query.length < 2) {
     fecharDropdown(`dropdownDevolvidaPor_${uid}`);
@@ -309,7 +322,9 @@ window.onDevolvidaPorInlineInput = function (uid) {
   }
 
   debounce(`busca_devolvida_por_${uid}`, async () => {
-    const lista = await fetchData(`busca/geral?nome=${encodeURIComponent(query)}`);
+    const lista = await fetchData(
+      `busca/geral?nome=${encodeURIComponent(query)}`,
+    );
     renderDropdownDevolvidaPorInline(uid, lista ?? []);
   });
 };
@@ -326,7 +341,8 @@ function renderDropdownDevolvidaPorInline(uid, lista) {
     .map(
       (p) => `
       <div class="autocomplete-item"
-        onclick="selecionarDevolvidaPorInline('${uid}', ${JSON.stringify(p.nome)}, '${p.tipo}')">
+        data-nome="${p.nome}"
+        onclick="selecionarDevolvidaPorInline('${uid}', this.dataset.nome)">
         <span class="autocomplete-nome">${p.nome}</span>
         <span class="autocomplete-detalhe">${p.tipo}</span>
       </div>`,
@@ -336,9 +352,10 @@ function renderDropdownDevolvidaPorInline(uid, lista) {
   dropdown.classList.remove("hidden");
 }
 
-window.selecionarDevolvidaPorInline = function (uid, nome, tipo) {
-  document.getElementById(`devolvidaPor_${uid}`).value = nome;
-  document.getElementById(`devolvidaPorTipo_${uid}`).value = tipo;
+window.selecionarDevolvidaPorInline = function (uid, nome) {
+  const input = document.getElementById(`devolvidaPor_${uid}`);
+  input.value = nome;
+  input.dataset.selecionado = "1";
   fecharDropdown(`dropdownDevolvidaPor_${uid}`);
 };
 
@@ -472,14 +489,15 @@ function renderDropdownPessoa(lista, tipo, cfg) {
     return;
   }
 
+  lista.forEach((p) => _pessoaCache.set(p.id, p));
+
   dropdown.innerHTML = lista
     .map((p) => {
       const nome = p.nomeFuncionario ?? p.nomeVisitante;
       const detalhe = p.setor ?? p.empresa ?? "";
-      const dataAttr = encodeURIComponent(JSON.stringify(p));
       return `
         <div class="autocomplete-item"
-          onclick="selecionarPessoa(decodeAndParse('${dataAttr}'), '${tipo}')">
+          onclick="selecionarPessoa(${p.id}, '${tipo}')">
           <span class="autocomplete-nome">${nome}</span>
           ${detalhe ? `<span class="autocomplete-detalhe">${detalhe}</span>` : ""}
         </div>`;
@@ -489,9 +507,9 @@ function renderDropdownPessoa(lista, tipo, cfg) {
   dropdown.classList.remove("hidden");
 }
 
-window.decodeAndParse = (encoded) => JSON.parse(decodeURIComponent(encoded));
-
-window.selecionarPessoa = function (pessoa, tipo) {
+window.selecionarPessoa = function (id, tipo) {
+  const pessoa = _pessoaCache.get(id);
+  if (!pessoa) return;
   const cfg = pessoaConfig(tipo);
   document.getElementById(cfg.hiddenId).value = pessoa.id;
 
