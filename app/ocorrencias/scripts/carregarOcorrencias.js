@@ -24,13 +24,7 @@ const TIPO_CONFIG = {
   OUTROS: { label: "Outros" },
 };
 
-function getUtilizadorAtual() {
-  return sessionStorage.getItem("nome") ?? null;
-}
-
 export function carregarOcorrencias(endpoint = "ocorrencias") {
-  const utilizadorAtual = getUtilizadorAtual();
-
   renderTable({
     endpoint,
     campos: [
@@ -60,7 +54,6 @@ export function carregarOcorrencias(endpoint = "ocorrencias") {
         return `<span class="badge estado-neutro">${config.label}</span>`;
       },
       acoes: (item) => {
-        if (item.createUser !== utilizadorAtual) return "—";
         return `<button class="btn btn-sm btn-ghost btn-editar-ocorrencia" data-id="${item.id}">✏️ Editar</button>`;
       },
     },
@@ -84,13 +77,14 @@ document.querySelector(".table-wrap").addEventListener("click", async (e) => {
       btnEditar.textContent = "✏️ Editar";
     }
   }
-
 });
 
 // ── Filtro Todas / Hoje ───────────────────────────────────────────────────
 document.querySelectorAll(".filter-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     carregarOcorrencias(btn.dataset.endpoint);
   });
