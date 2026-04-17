@@ -4,7 +4,7 @@ export async function sessionIsValid() {
   const token = sessionStorage.getItem("token");
 
   if (!token) {
-    window.location.href = "/index.html";
+    window.location.replace("/index.html");
     return false;
   }
 
@@ -26,3 +26,4 @@ export async function sessionIsValid() {
     return false;
   }
 }
+sessionIsValid();
