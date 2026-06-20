@@ -1,0 +1,45 @@
+a{
+  color:#0091be;
+}
+
+.nav-tabs li{
+  line-height: unset;
+  letter-spacing: .5px;
+  font-weight: 400;
+}
+
+form .form-control{
+  border-color: #dee2e6;
+}
+
+.breadcrumb{
+ padding: 0.3em 1em;
+  margin-bottom: 0.5em;
+}
+
+.alert{
+  padding: 0.5em 1em;
+  margin-bottom: 0.5em;
+}
+
+.tab-content{
+  padding:0;
+}
+
+.nav-tabs .nav-link.active{
+  //background-color: #eceeef;
+  background-color:white;
+  color:#0091be;
+}
+
+.nav-tabs{
+  color: #00acc1;
+}
+
+.alert-dismissible .close {
+  padding: 0.5rem 1rem !important;
+}
+
+.app-sidebar .navigation li ul li a{
+  padding: 8px 18px 8px 30px;
+}

@@ -1,0 +1,37 @@
+<nav class="sidebar" [class.isCollapsed]="isCollapsed">
+  <div class="sb-top">
+    <img
+      class="logo-img"
+      src="assets/img/inesctec.png"
+      alt="Logo do InescTEC"
+    />
+    <button
+      class="collapse-btn"
+      (click)="onToggle()"
+      [title]="isCollapsed ? 'Expandir Menu' : 'Colapsar Menu'"
+    >
+      <i [class]="isCollapsed ? 'ft-chevron-right' : 'ft-chevron-left'"></i>
+    </button>
+  </div>
+
+  <div class="nav-wrap">
+    <ul class="nav-list">
+      <li *ngFor="let item of navItems">
+        <a
+          class="nav-item"
+          routerLinkActive="active"
+          [routerLink]="item.path"
+          [title]="item.title"
+        >
+          <i [class]="item.icon"></i>
+          <span>{{ item.title }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sb-footer">
+    <i class="icon-logout"></i>
+    <span>Sair</span>
+  </div>
+</nav>

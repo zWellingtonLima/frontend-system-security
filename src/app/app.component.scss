@@ -1,0 +1,18 @@
+@import "variables";
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: $sidebar-expanded;
+  flex: 1;
+  padding: 24px;
+  background-color: $body-bg;
+  transition: margin-left $transition;
+}
+
+.sidebar-collapsed {
+  margin-left: $sidebar-collapsed;
+}

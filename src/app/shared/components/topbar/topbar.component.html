@@ -1,0 +1,11 @@
+<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm.value)">
+  <input type="email" name="email" id="email" placeholder="login" ngModel />
+  <input
+    type="text"
+    name="password"
+    id="password"
+    placeholder="senha"
+    ngModel
+  />
+  <button type="submit" [disabled]="!loginForm.valid">Mandar</button>
+</form>

@@ -1,0 +1,109 @@
+// Theme Colors
+$theme-colors: (
+  primary: #009da0,
+  success: #0cc27e,
+  info: #1cbcd8,
+  warning: #ff8d60,
+  danger: #ff586b,
+  secondary: #868e96,
+  light: #f8f9fa,
+  dark: #343a40,
+);
+
+// NAVBAR
+$sidebar-expanded: 224px;
+$sidebar-collapsed: 52px;
+
+$transition: 0.22s ease;
+
+$sidebar-bg: #0f172a;
+$accent: #1d4ed8;
+$text-dim: rgba(255, 255, 255, 0.42);
+$text-hover: rgba(255, 255, 255, 0.8);
+$hover-bg: rgba(255, 255, 255, 0.06);
+$separator: rgba(255, 255, 255, 0.06);
+
+// Spacing
+$spacer: 1.5rem;
+
+$spacers: (
+  0: 0,
+  1: (
+    $spacer * 0.25,
+  ),
+  2: (
+    $spacer * 0.5,
+  ),
+  3: $spacer,
+  4: (
+    $spacer * 1.5,
+  ),
+  5: (
+    $spacer * 3,
+  ),
+) !default;
+
+// Colors
+
+$gray-dark: #373a3c !default;
+$gray: #55595c !default;
+$gray-light: #818a91 !default;
+$gray-lighter: #eceeef !default;
+$gray-lightest: #f7f7f9 !default;
+
+// Body
+$body-bg: #f5f7fa;
+
+// Fonts
+$font-family-sans-serif:
+  "Montserrat", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-content:
+  "Rubik", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+$font-size-root: 16px;
+
+// Breadcrumbs
+
+$breadcrumb-padding-vertical: 0.75rem !default;
+$breadcrumb-padding-horizontal: 1rem !default;
+
+$breadcrumb-bg: $gray-lighter !default;
+$breadcrumb-divider-color: $gray-light !default;
+$breadcrumb-active-color: $gray-light !default;
+$breadcrumb-divider: "/" !default;
+
+// Spacing
+//
+// Control the default styling of most Bootstrap elements by modifying these
+// variables. Mostly focused on spacing.
+
+$spacer: 1rem !default;
+$spacer-x: $spacer !default;
+$spacer-y: $spacer !default;
+$spacers: (
+  0: (
+    x: 0,
+    y: 0,
+  ),
+  1: (
+    x: $spacer-x,
+    y: $spacer-y,
+  ),
+  2: (
+    x: (
+      $spacer-x * 1.5,
+    ),
+    y: (
+      $spacer-y * 1.5,
+    ),
+  ),
+  3: (
+    x: (
+      $spacer-x * 3,
+    ),
+    y: (
+      $spacer-y * 3,
+    ),
+  ),
+) !default;
+$border-width: 1px !default;

@@ -1,0 +1,8 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "angular.enable-strict-mode-prompt": false,
+  "nguniversal.ngcc.disabled": true,
+  "terminal.integrated.env.linux": {
+    "PATH": "/home/arch-chicken/.local/share/nvm/v10.24.1/bin:${env:PATH}"
+  }
+}

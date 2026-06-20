@@ -1,0 +1,7 @@
+<div class="app-layout">
+  <app-navbar (navToggled)="toggleNav($event)"></app-navbar>
+  <main class="main-content" [class.sidebar-collapsed]="isNavCollapsed">
+    <app-topbar></app-topbar>
+    <router-outlet></router-outlet>
+  </main>
+</div>
