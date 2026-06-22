@@ -30,12 +30,12 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 0 14px;
-  height: 54px;
-  border-bottom: 1px solid $separator;
+  padding: .9rem .875rem;
+  // border-bottom: 1px solid $separator;
 
   .logo-img {
     height: 32px;
+    filter: brightness(0) invert(1);
   }
 
   .collapse-btn {
@@ -68,7 +68,7 @@
 .sb-footer {
   padding: 14px 8px;
   overflow: hidden;
-  font-weight: 500;
+  font-weight: 450;
   word-spacing: 1px;
 }
 

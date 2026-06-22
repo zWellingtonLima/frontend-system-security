@@ -8,11 +8,14 @@
 .main-content {
   margin-left: $sidebar-expanded;
   flex: 1;
-  padding: 24px;
-  background-color: $body-bg;
+  background-color: $body-bg-security;
   transition: margin-left $transition;
 }
 
 .sidebar-collapsed {
   margin-left: $sidebar-collapsed;
+}
+
+.outlet {
+  margin: 24px;
 }
