@@ -18,10 +18,14 @@ $transition: 0.22s ease;
 
 $sidebar-bg: #0d1f2d;
 $accent: #0083b5;
-$text-dim: rgba(255, 255, 255, .7);
+$text-dim: rgba(255, 255, 255, 0.7);
 $text-hover: rgba(255, 255, 255, 1);
 $hover-bg: rgba(255, 255, 255, 0.06);
 $separator: rgba(255, 255, 255, 0.2);
+
+// TOPBAR
+$border-b-topbar: 1px solid #e2e8f0;
+$brand-separator: #e2e8f0;
 
 // Spacing
 $spacer: 1.5rem;
@@ -53,6 +57,7 @@ $gray-lightest: #f7f7f9 !default;
 
 // Body
 $body-bg: #f5f7fa;
+$body-bg-security: #eef1f7;
 
 // Fonts
 $font-family-sans-serif:

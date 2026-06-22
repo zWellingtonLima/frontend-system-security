@@ -1,11 +1,14 @@
-<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm.value)">
-  <input type="email" name="email" id="email" placeholder="login" ngModel />
-  <input
-    type="text"
-    name="password"
-    id="password"
-    placeholder="senha"
-    ngModel
-  />
-  <button type="submit" [disabled]="!loginForm.valid">Mandar</button>
-</form>
+<div class="topbar">
+  <div class="logo">
+    <img class="logo-img" src="assets/img/inesctec.png" >
+    <div class="brand-sep"></div>
+    <span>Chaves</span>
+  </div>
+
+  <div class="avatar">
+    <span class="avatar-badge">
+      WL
+    </span>
+    <span class="avatar-name">Wellington Lima</span>
+  </div>
+</div>
