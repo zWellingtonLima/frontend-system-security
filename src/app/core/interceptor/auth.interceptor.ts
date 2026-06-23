@@ -12,9 +12,7 @@ import { Router } from "@angular/router";
 import { Injectable } from "@angular/core";
 import { TokenResponse } from "src/app/models/api";
 
-@Injectable({
-  providedIn: "root",
-})
+@Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(

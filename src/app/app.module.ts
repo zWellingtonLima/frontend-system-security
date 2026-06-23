@@ -11,9 +11,7 @@ import { HttpClientModule } from "@angular/common/http";
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    RouterModule.forRoot([
-
-    ]),
+    RouterModule.forRoot([]),
     SharedModule,
     HttpClientModule,
     AuthModule,
