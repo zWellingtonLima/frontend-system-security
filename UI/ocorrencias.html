@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Segurança — Ocorrências</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── PÁGINA-ESPECÍFICO (reset, shell, topbar, sidebar, page, badges vêm de styles.css) ── */
+
+    /* ── REG BTN ── */
+    .reg-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 7px 14px; cursor: pointer; transition: background .13s; font-family: inherit; }
+    .reg-btn:hover { background: var(--accent-hover); }
+    .reg-btn i { font-size: 15px; }
+
+    /* ── STATS ── */
+    .stats-strip { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 18px; }
+    .strip-stat { border: 1px solid #edf0f4; border-radius: 9px; padding: 13px 16px; background: #fafbfc; display: flex; align-items: center; gap: 12px; }
+    .strip-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .si-red    { background: #fee2e2; color: #991b1b; }
+    .si-amber  { background: #fef3c7; color: #92400e; }
+    .si-green  { background: #dcfce7; color: #166534; }
+    .si-gray   { background: #f1f5f9; color: #475569; }
+    .strip-n { font-size: 22px; font-weight: 600; line-height: 1; }
+    .strip-n.red   { color: #991b1b; }
+    .strip-n.amber { color: #92400e; }
+    .strip-n.green { color: #166534; }
+    .strip-n.gray  { color: #374151; }
+    .strip-lbl { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+
+    /* ── TABS COUNT ── */
+    .tab-cnt { font-size: 11px; font-weight: 600; background: #f1f5f9; color: #6b7280; border-radius: 20px; padding: 1px 7px; }
+    .tab.active .tab-cnt { background: var(--accent-pale, #dbeafe); color: var(--accent); }
+
+    /* ── FILTERS ── */
+    .filters { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .search-wrap { flex: 1; position: relative; }
+    .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 15px; color: #9ca3af; pointer-events: none; }
+    .search-input { width: 100%; height: 34px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 10px 0 32px; font-size: 12px; color: #374151; background: #fafbfc; outline: none; transition: border-color .13s; font-family: inherit; }
+    .search-input:focus { border-color: var(--accent); background: #fff; }
+    .filter-select { height: 34px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 10px; font-size: 12px; color: #374151; background: #fafbfc; outline: none; cursor: pointer; font-family: inherit; }
+
+    /* ── CARDS LIST ── */
+    .oc-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .oc-card {
+      border: 1px solid #edf0f4;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      cursor: pointer;
+      transition: border-color .13s, background .13s;
+      position: relative;
+      overflow: hidden;
+    }
+    .oc-card:hover { border-color: #c7deff; background: #fafeff; }
+    .oc-card.selected { border-color: var(--accent); background: #f0f6ff; }
+
+    .oc-side-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+    .sb-red    { background: #ef4444; }
+    .sb-amber  { background: #f59e0b; }
+    .sb-green  { background: #22c55e; }
+    .sb-gray   { background: #94a3b8; }
+
+    .oc-icon-wrap { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; margin-left: 6px; }
+    .oi-red    { background: #fee2e2; color: #991b1b; }
+    .oi-amber  { background: #fef3c7; color: #92400e; }
+    .oi-blue   { background: #dbeafe; color: #1e40af; }
+    .oi-purple { background: #f3e8ff; color: #6b21a8; }
+    .oi-gray   { background: #f1f5f9; color: #475569; }
+    .oi-green  { background: #dcfce7; color: #166534; }
+
+    .oc-main { flex: 1; min-width: 0; }
+    .oc-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .oc-tipo { font-size: 13px; font-weight: 600; color: #111; }
+    .oc-data { font-size: 11px; color: #9ca3af; white-space: nowrap; flex-shrink: 0; }
+    .oc-descricao { font-size: 12px; color: #6b7280; line-height: 1.5; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .oc-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .oc-seg { font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 3px; }
+    .oc-seg i { font-size: 12px; }
+
+    /* badge: override border-radius to pill (styles.css uses 4px) */
+    .badge { border-radius: 20px; font-weight: 500; }
+
+    .oc-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .estado-select-btn {
+      font-size: 11px; font-weight: 500; cursor: pointer;
+      border: 1px solid #dde3ea; border-radius: 6px;
+      padding: 4px 10px; background: #fff; font-family: inherit;
+      display: flex; align-items: center; gap: 4px;
+      transition: background .13s, border-color .13s;
+      color: #374151;
+    }
+    .estado-select-btn:hover { background: #f1f5f9; border-color: #b0bec9; }
+    .estado-select-btn i { font-size: 13px; }
+
+    /* ── EMPTY ── */
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; color: #9ca3af; gap: 10px; }
+    .empty-state i { font-size: 36px; color: #dde3ea; }
+    .empty-state p { font-size: 13px; }
+
+    /* ── PAGINATION ── */
+    .pag-row { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid #edf0f4; }
+    .pag-info { font-size: 12px; color: #9ca3af; }
+    .pag-controls { display: flex; align-items: center; gap: 4px; }
+    .pag-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid #dde3ea; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #374151; transition: background .13s, border-color .13s, color .13s; font-family: inherit; }
+    .pag-btn:hover:not(:disabled) { background: #f0f4f8; border-color: #bcc4ce; }
+    .pag-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    .pag-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pag-btn i { font-size: 14px; }
+
+    /* ── MODAL ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,14,20,.55); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 14px; border: .5px solid var(--border); width: 500px; max-width: calc(100vw - 40px); max-height: calc(100vh - 60px); overflow-y: auto; animation: modalIn .18s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 16px; border-bottom: 1px solid #edf0f4; }
+    .modal-title { font-size: 15px; font-weight: 600; color: #111; }
+    .modal-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+    .modal-close { width: 30px; height: 30px; border-radius: 7px; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 18px; transition: background .13s, color .13s; }
+    .modal-close:hover { background: #f1f5f9; color: #374151; }
+    .modal-body { padding: 20px 22px; }
+    .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 14px 22px 18px; border-top: 1px solid #edf0f4; }
+    .btn-cancel { height: 36px; padding: 0 16px; border-radius: 7px; border: 1px solid #dde3ea; background: #fff; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; font-family: inherit; transition: background .13s; }
+    .btn-cancel:hover { background: #f1f5f9; }
+    .btn-submit { height: 36px; padding: 0 20px; border-radius: 7px; border: none; background: var(--accent); font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; transition: background .13s; }
+    .btn-submit:hover { background: var(--accent-hover); }
+    .btn-submit i { font-size: 15px; }
+
+    /* form */
+    .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .form-label { font-size: 12px; font-weight: 500; color: #374151; }
+    .form-label span { color: #e24b4a; margin-left: 2px; }
+    .form-input, .form-select { height: 36px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 11px; font-size: 13px; color: #111; background: #fafbfc; outline: none; font-family: inherit; transition: border-color .13s, background .13s; width: 100%; }
+    .form-input:focus, .form-select:focus { border-color: var(--accent); background: #fff; }
+    .form-textarea { border: 1px solid #dde3ea; border-radius: 7px; padding: 9px 11px; font-size: 13px; color: #111; background: #fafbfc; outline: none; font-family: inherit; resize: vertical; min-height: 90px; width: 100%; transition: border-color .13s, background .13s; }
+    .form-textarea:focus { border-color: var(--accent); background: #fff; }
+    .form-textarea::placeholder, .form-input::placeholder { color: #c0c8d4; }
+
+    /* tipo grid */
+    .tipo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .tipo-opt { border: 1.5px solid #dde3ea; border-radius: 9px; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 9px; transition: border-color .13s, background .13s; background: #fafbfc; }
+    .tipo-opt:hover { border-color: #b0bec9; }
+    .tipo-opt.selected { border-color: var(--accent); background: #f0f6ff; }
+    .tipo-opt i { font-size: 18px; color: #6b7280; flex-shrink: 0; }
+    .tipo-opt.selected i { color: var(--accent); }
+    .tipo-opt-lbl { font-size: 12px; font-weight: 500; color: #374151; line-height: 1.3; }
+    .tipo-opt.selected .tipo-opt-lbl { color: var(--accent); }
+
+    /* estado modal */
+    .estado-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .estado-opt { border: 1.5px solid #dde3ea; border-radius: 9px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: border-color .13s, background .13s; background: #fafbfc; }
+    .estado-opt.selected-red    { border-color: #ef4444; background: #fff5f5; }
+    .estado-opt.selected-amber  { border-color: #f59e0b; background: #fffbeb; }
+    .estado-opt.selected-green  { border-color: #22c55e; background: #f0fdf4; }
+    .estado-opt.selected-gray   { border-color: #94a3b8; background: #f8fafc; }
+    .estado-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-amber { background: #f59e0b; }
+    .dot-gray  { background: #94a3b8; }
+    .estado-opt-lbl { font-size: 13px; font-weight: 500; color: #374151; }
+    .estado-opt-sub { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 28px; right: 28px; background: #111; color: #fff; font-size: 13px; font-weight: 500; padding: 11px 18px; border-radius: 9px; display: flex; align-items: center; gap: 8px; z-index: 200; opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast i { font-size: 16px; color: #4ade80; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="logo-mark">IN</div>
+      <span class="logo-txt">INESC TEC</span>
+      <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()" aria-label="Recolher menu">
+        <i class="ti ti-layout-sidebar-left-collapse"></i>
+      </button>
+    </div>
+    <div class="nav-wrap">
+      <div class="nav-lbl">Principal</div>
+      <a href="dashboard_gestao_seguranca.html" class="nav-item"><i class="ti ti-dashboard"></i><span>Dashboard</span></a>
+      <a href="movimentacoes.html" class="nav-item"><i class="ti ti-users"></i><span>Movimentações</span></a>
+      <a href="chaves.html" class="nav-item"><i class="ti ti-key"></i><span>Chaves</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Registos</div>
+      <a href="#" class="nav-item active"><i class="ti ti-file-alert"></i><span>Ocorrências</span></a>
+      <a href="consumos.html" class="nav-item"><i class="ti ti-chart-bar"></i><span>Consumos</span></a>
+      <a href="#" class="nav-item"><i class="ti ti-building"></i><span>Salas</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Sistema</div>
+      <a href="#" class="nav-item"><i class="ti ti-shield-check"></i><span>Utilizadores</span></a>
+    </div>
+    <div class="sb-footer">
+      <a href="#" class="nav-item"><i class="ti ti-logout"></i><span>Sair</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-lm">IN</div>
+        <span class="brand-name-big">INESC TEC</span>
+        <div class="brand-sep"></div>
+        <span class="brand-sub">Ocorrências</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn" aria-label="Notificações"><i class="ti ti-bell"></i></button>
+        <div class="user-pill">
+          <div class="user-avatar">WM</div>
+          <span class="user-name">Wagner Machado</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="content-block">
+
+        <div class="page-header">
+          <div>
+            <div class="page-title">Ocorrências</div>
+            <div class="page-subtitle">Registo e acompanhamento de ocorrências no edifício</div>
+          </div>
+          <button class="reg-btn" onclick="openNovaModal()">
+            <i class="ti ti-plus"></i> Registar ocorrência
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-strip">
+          <div class="strip-stat">
+            <div class="strip-icon si-red"><i class="ti ti-clock-exclamation"></i></div>
+            <div><div class="strip-n red" id="statPend">0</div><div class="strip-lbl">Pendentes</div></div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-icon si-amber"><i class="ti ti-search"></i></div>
+            <div><div class="strip-n amber" id="statAnalise">0</div><div class="strip-lbl">Em análise</div></div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-icon si-green"><i class="ti ti-circle-check"></i></div>
+            <div><div class="strip-n green" id="statResolvida">0</div><div class="strip-lbl">Resolvidas</div></div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-icon si-gray"><i class="ti ti-ban"></i></div>
+            <div><div class="strip-n gray" id="statCancelada">0</div><div class="strip-lbl">Canceladas</div></div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <div class="tab active" id="tabTodas"     onclick="setTab('TODAS')">Todas <span class="tab-cnt" id="cntTodas">0</span></div>
+          <div class="tab"        id="tabPend"      onclick="setTab('PENDENTE')">Pendentes <span class="tab-cnt" id="cntPend">0</span></div>
+          <div class="tab"        id="tabAnalise"   onclick="setTab('EM_ANALISE')">Em análise <span class="tab-cnt" id="cntAnalise">0</span></div>
+          <div class="tab"        id="tabResolvida" onclick="setTab('RESOLVIDA')">Resolvidas <span class="tab-cnt" id="cntResolvida">0</span></div>
+          <div class="tab"        id="tabCancelada" onclick="setTab('CANCELADA')">Canceladas <span class="tab-cnt" id="cntCancelada">0</span></div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input class="search-input" id="searchInput" type="text" placeholder="Pesquisar por descrição ou tipo..." />
+          </div>
+          <select class="filter-select" id="filterTipo" onchange="applyFilters()">
+            <option value="">Todos os tipos</option>
+            <option value="ACESSO_NAO_AUTORIZADO">Acesso não autorizado</option>
+            <option value="AVARIA_EQUIPAMENTO">Avaria de equipamento</option>
+            <option value="OBJETO_PERDIDO_ENCONTRADO">Objeto perdido/encontrado</option>
+            <option value="INCIDENTE_COM_VISITANTE">Incidente com visitante</option>
+            <option value="ALARME_DISPARADO">Alarme disparado</option>
+            <option value="OUTROS">Outros</option>
+          </select>
+        </div>
+
+        <!-- List -->
+        <div class="oc-list" id="ocList"></div>
+
+        <!-- Empty state (hidden) -->
+        <div class="empty-state" id="emptyState" style="display:none;">
+          <i class="ti ti-clipboard-x"></i>
+          <p>Nenhuma ocorrência encontrada.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pag-row">
+          <span class="pag-info" id="pagInfo"></span>
+          <div class="pag-controls" id="pagControls"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ── MODAL: NOVA OCORRÊNCIA ── -->
+<div class="modal-overlay" id="modalNova" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Registar ocorrência</div>
+        <div class="modal-sub">Preencha os dados do incidente ocorrido</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalNova')" aria-label="Fechar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="section-label">Tipo de ocorrência</div>
+      <div class="tipo-grid" id="tipoGrid">
+        <div class="tipo-opt selected" data-tipo="ACESSO_NAO_AUTORIZADO" onclick="selectTipo(this)">
+          <i class="ti ti-shield-x"></i>
+          <div class="tipo-opt-lbl">Acesso não autorizado</div>
+        </div>
+        <div class="tipo-opt" data-tipo="AVARIA_EQUIPAMENTO" onclick="selectTipo(this)">
+          <i class="ti ti-tool"></i>
+          <div class="tipo-opt-lbl">Avaria de equipamento</div>
+        </div>
+        <div class="tipo-opt" data-tipo="OBJETO_PERDIDO_ENCONTRADO" onclick="selectTipo(this)">
+          <i class="ti ti-search"></i>
+          <div class="tipo-opt-lbl">Objeto perdido / encontrado</div>
+        </div>
+        <div class="tipo-opt" data-tipo="INCIDENTE_COM_VISITANTE" onclick="selectTipo(this)">
+          <i class="ti ti-user-exclamation"></i>
+          <div class="tipo-opt-lbl">Incidente com visitante</div>
+        </div>
+        <div class="tipo-opt" data-tipo="ALARME_DISPARADO" onclick="selectTipo(this)">
+          <i class="ti ti-bell-ringing"></i>
+          <div class="tipo-opt-lbl">Alarme disparado</div>
+        </div>
+        <div class="tipo-opt" data-tipo="OUTROS" onclick="selectTipo(this)">
+          <i class="ti ti-dots-circle-horizontal"></i>
+          <div class="tipo-opt-lbl">Outros</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="nLocal">Local / localização <span>*</span></label>
+        <input class="form-input" id="nLocal" type="text" placeholder="Ex: Piso 3 — corredor Norte, Sala 204..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="nDesc">Descrição da ocorrência <span>*</span></label>
+        <textarea class="form-textarea" id="nDesc" placeholder="Descreva detalhadamente o que aconteceu..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalNova')">Cancelar</button>
+      <button class="btn-submit" onclick="submitNova()"><i class="ti ti-file-plus"></i> Registar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: ALTERAR ESTADO ── -->
+<div class="modal-overlay" id="modalEstado" role="dialog" aria-modal="true">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Alterar estado</div>
+        <div class="modal-sub" id="estadoModalSub">Ocorrência #—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalEstado')" aria-label="Fechar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="section-label" style="margin-bottom:12px;">Novo estado</div>
+      <div class="estado-grid" id="estadoGrid">
+        <div class="estado-opt" data-estado="PENDENTE" onclick="selectEstado(this)">
+          <div class="estado-dot dot-red"></div>
+          <div><div class="estado-opt-lbl">Pendente</div><div class="estado-opt-sub">Aguarda análise</div></div>
+        </div>
+        <div class="estado-opt" data-estado="EM_ANALISE" onclick="selectEstado(this)">
+          <div class="estado-dot dot-amber"></div>
+          <div><div class="estado-opt-lbl">Em análise</div><div class="estado-opt-sub">Em investigação</div></div>
+        </div>
+        <div class="estado-opt" data-estado="RESOLVIDA" onclick="selectEstado(this)">
+          <div class="estado-dot dot-green"></div>
+          <div><div class="estado-opt-lbl">Resolvida</div><div class="estado-opt-sub">Situação encerrada</div></div>
+        </div>
+        <div class="estado-opt" data-estado="CANCELADA" onclick="selectEstado(this)">
+          <div class="estado-dot dot-gray"></div>
+          <div><div class="estado-opt-lbl">Cancelada</div><div class="estado-opt-sub">Ocorrência anulada</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalEstado')">Cancelar</button>
+      <button class="btn-submit" onclick="submitEstado()"><i class="ti ti-check"></i> Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="ti ti-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+  /* ── CONFIGURAÇÕES ── */
+  const TIPO_META = {
+    ACESSO_NAO_AUTORIZADO:      { label: 'Acesso não autorizado',      icon: 'ti-shield-x',             css: 'oi-red'    },
+    AVARIA_EQUIPAMENTO:         { label: 'Avaria de equipamento',       icon: 'ti-tool',                 css: 'oi-amber'  },
+    OBJETO_PERDIDO_ENCONTRADO:  { label: 'Objeto perdido/encontrado',   icon: 'ti-search',               css: 'oi-blue'   },
+    INCIDENTE_COM_VISITANTE:    { label: 'Incidente com visitante',     icon: 'ti-user-exclamation',     css: 'oi-purple' },
+    ALARME_DISPARADO:           { label: 'Alarme disparado',            icon: 'ti-bell-ringing',         css: 'oi-red'    },
+    OUTROS:                     { label: 'Outros',                      icon: 'ti-dots-circle-horizontal',css: 'oi-gray'  },
+  };
+
+  const ESTADO_META = {
+    PENDENTE:    { label: 'Pendente',    badge: 'badge-red',   bar: 'sb-red',   dot: 'dot-red',   selCls: 'selected-red'   },
+    EM_ANALISE:  { label: 'Em análise',  badge: 'badge-amber', bar: 'sb-amber', dot: 'dot-amber', selCls: 'selected-amber' },
+    RESOLVIDA:   { label: 'Resolvida',   badge: 'badge-green', bar: 'sb-green', dot: 'dot-green', selCls: 'selected-green' },
+    CANCELADA:   { label: 'Cancelada',   badge: 'badge-gray',  bar: 'sb-gray',  dot: 'dot-gray',  selCls: 'selected-gray'  },
+  };
+
+  /* ── DADOS ── */
+  let DATA = [
+    { id:1,  tipo:'ACESSO_NAO_AUTORIZADO',     local:'Piso 3 — corredor Norte',  descricao:'Indivíduo sem identificação tentou aceder à área restrita do piso 3 através da escada de emergência.',  estado:'PENDENTE',   hora:'2 Jun, 11:34', seg:'Wagner Machado' },
+    { id:2,  tipo:'AVARIA_EQUIPAMENTO',        local:'Sala 104',                  descricao:'O sistema de videovigilância da sala 104 deixou de funcionar. Monitor sem imagem e LED vermelho activo.', estado:'EM_ANALISE', hora:'2 Jun, 09:58', seg:'Wagner Machado' },
+    { id:3,  tipo:'OBJETO_PERDIDO_ENCONTRADO', local:'Receção — piso 0',          descricao:'Encontrada carteira com documentos junto à cadeira de espera da receção. Entregue ao posto de segurança.', estado:'RESOLVIDA',  hora:'1 Jun, 17:10', seg:'Seg. Lima'       },
+    { id:4,  tipo:'ALARME_DISPARADO',          local:'Piso 2 — ala B',            descricao:'Alarme de incêndio disparado na ala B do piso 2. Verificação realizada — falso alarme, causado por poeira no sensor.', estado:'RESOLVIDA', hora:'1 Jun, 14:22', seg:'Seg. Lima' },
+    { id:5,  tipo:'INCIDENTE_COM_VISITANTE',   local:'Sala de reuniões 203',      descricao:'Visitante recusou abandonar a sala de reuniões após o período autorizado. Situação gerida com apoio do responsável.', estado:'RESOLVIDA', hora:'1 Jun, 10:05', seg:'Seg. Moura' },
+    { id:6,  tipo:'ACESSO_NAO_AUTORIZADO',     local:'Parque de estacionamento',  descricao:'Veículo não identificado estacionado na zona reservada. Condutor não localizável.', estado:'EM_ANALISE', hora:'31 Mai, 16:40', seg:'Seg. Moura' },
+    { id:7,  tipo:'AVARIA_EQUIPAMENTO',        local:'Entrada principal',          descricao:'Torniquete de entrada com falha intermitente no leitor de cartão. Alguns cartões não são reconhecidos.', estado:'PENDENTE',   hora:'31 Mai, 08:12', seg:'Seg. Lima'  },
+    { id:8,  tipo:'OUTROS',                    local:'Corredor piso 1',            descricao:'Detetado odor a fumo no corredor do piso 1 próximo da sala de servidores. Verificação não identificou origem.', estado:'CANCELADA', hora:'30 Mai, 22:30', seg:'Wagner Machado' },
+    { id:9,  tipo:'OBJETO_PERDIDO_ENCONTRADO', local:'WC — piso 2',               descricao:'Telemóvel encontrado no WC do piso 2. Entregue na receção aguardando reclamação.',  estado:'PENDENTE',   hora:'30 Mai, 15:18', seg:'Seg. Moura' },
+    { id:10, tipo:'ALARME_DISPARADO',          local:'Laboratório 3 — piso 3',    descricao:'Alarme de intrusão acionado no lab 3 fora do horário. Verificação confirmou porta mal fechada.', estado:'RESOLVIDA', hora:'29 Mai, 23:55', seg:'Seg. Lima' },
+    { id:11, tipo:'INCIDENTE_COM_VISITANTE',   local:'Receção',                   descricao:'Visitante sem marcação prévia insistiu em aceder sem autorização de funcionário responsável.', estado:'RESOLVIDA', hora:'29 Mai, 11:30', seg:'Seg. Moura' },
+    { id:12, tipo:'ACESSO_NAO_AUTORIZADO',     local:'Sala servidores — piso 2',  descricao:'Porta da sala de servidores encontrada entreaberta sem registo de acesso. Sala verificada e segura.', estado:'RESOLVIDA', hora:'28 Mai, 20:10', seg:'Wagner Machado' },
+  ];
+
+  const PAGE_SIZE = 8;
+  let currentPage = 1;
+  let currentTab = 'TODAS';
+  let filtered = [];
+  let selectedTipo = 'ACESSO_NAO_AUTORIZADO';
+  let editingId = null;
+  let selectedEstadoKey = null;
+
+  /* ── TABS ── */
+  function setTab(tab) {
+    currentTab = tab;
+    currentPage = 1;
+    const map = { TODAS:'tabTodas', PENDENTE:'tabPend', EM_ANALISE:'tabAnalise', RESOLVIDA:'tabResolvida', CANCELADA:'tabCancelada' };
+    Object.values(map).forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(map[tab]).classList.add('active');
+    applyFilters();
+  }
+
+  /* ── FILTERS ── */
+  function applyFilters() {
+    const q    = document.getElementById('searchInput').value.toLowerCase();
+    const tipo = document.getElementById('filterTipo').value;
+
+    filtered = DATA.filter(o => {
+      const matchTab  = currentTab === 'TODAS' || o.estado === currentTab;
+      const matchTipo = !tipo || o.tipo === tipo;
+      const matchQ    = !q || o.descricao.toLowerCase().includes(q)
+                           || TIPO_META[o.tipo].label.toLowerCase().includes(q)
+                           || o.local.toLowerCase().includes(q);
+      return matchTab && matchTipo && matchQ;
+    });
+
+    updateCounts();
+    render();
+  }
+
+  function updateCounts() {
+    const cnt = s => DATA.filter(o => o.estado === s).length;
+    document.getElementById('statPend').textContent      = cnt('PENDENTE');
+    document.getElementById('statAnalise').textContent   = cnt('EM_ANALISE');
+    document.getElementById('statResolvida').textContent = cnt('RESOLVIDA');
+    document.getElementById('statCancelada').textContent = cnt('CANCELADA');
+    document.getElementById('cntTodas').textContent     = DATA.length;
+    document.getElementById('cntPend').textContent      = cnt('PENDENTE');
+    document.getElementById('cntAnalise').textContent   = cnt('EM_ANALISE');
+    document.getElementById('cntResolvida').textContent = cnt('RESOLVIDA');
+    document.getElementById('cntCancelada').textContent = cnt('CANCELADA');
+  }
+
+  /* ── RENDER ── */
+  function render() {
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const slice = filtered.slice(start, start + PAGE_SIZE);
+    const list  = document.getElementById('ocList');
+    const empty = document.getElementById('emptyState');
+
+    if (slice.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'flex';
+    } else {
+      empty.style.display = 'none';
+      const em = ESTADO_META;
+      list.innerHTML = slice.map(o => {
+        const tm = TIPO_META[o.tipo];
+        const es = em[o.estado];
+        return `
+        <div class="oc-card" onclick="cardClick(${o.id})">
+          <div class="oc-side-bar ${es.bar}"></div>
+          <div class="oc-icon-wrap ${tm.css}"><i class="ti ${tm.icon}"></i></div>
+          <div class="oc-main">
+            <div class="oc-head">
+              <div class="oc-tipo">${tm.label}</div>
+              <div class="oc-data">${o.hora}</div>
+            </div>
+            <div class="oc-descricao" title="${o.descricao}">${o.local} — ${o.descricao}</div>
+            <div class="oc-foot">
+              <span class="badge ${es.badge}"><i class="ti ${statIcon(o.estado)}"></i> ${es.label}</span>
+              <span class="oc-seg"><i class="ti ti-shield-check"></i> ${o.seg}</span>
+            </div>
+          </div>
+          <div class="oc-actions" onclick="event.stopPropagation()">
+            <button class="estado-select-btn" onclick="openEstadoModal(${o.id})">
+              <i class="ti ti-pencil"></i> Alterar estado
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    document.getElementById('pagInfo').textContent = filtered.length === 0
+      ? '0 ocorrências'
+      : `${start + 1}–${Math.min(currentPage * PAGE_SIZE, filtered.length)} de ${filtered.length} ocorrências`;
+
+    renderPag(totalPages);
+  }
+
+  function statIcon(estado) {
+    return { PENDENTE:'ti-clock', EM_ANALISE:'ti-search', RESOLVIDA:'ti-circle-check', CANCELADA:'ti-ban' }[estado] || 'ti-circle';
+  }
+
+  function cardClick(id) { /* future: expand detail panel */ }
+
+  /* ── PAGINATION ── */
+  function renderPag(totalPages) {
+    const ctrl = document.getElementById('pagControls');
+    let html = `<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''} aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+        html += `<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      } else if ((p === 2 && currentPage > 4) || (p === totalPages - 1 && currentPage < totalPages - 3)) {
+        html += `<button class="pag-btn" disabled style="border:none;background:none;cursor:default;color:#9ca3af">…</button>`;
+      }
+    }
+    html += `<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''} aria-label="Seguinte"><i class="ti ti-chevron-right"></i></button>`;
+    ctrl.innerHTML = html;
+  }
+
+  function goPage(p) {
+    const tp = Math.ceil(filtered.length / PAGE_SIZE);
+    if (p < 1 || p > tp) return;
+    currentPage = p;
+    render();
+  }
+
+  /* ── MODAL NOVA ── */
+  function openNovaModal() {
+    selectedTipo = 'ACESSO_NAO_AUTORIZADO';
+    document.getElementById('nLocal').value = '';
+    document.getElementById('nDesc').value  = '';
+    document.querySelectorAll('#tipoGrid .tipo-opt').forEach(el => {
+      el.classList.toggle('selected', el.dataset.tipo === selectedTipo);
+    });
+    openModal('modalNova');
+  }
+
+  function selectTipo(el) {
+    selectedTipo = el.dataset.tipo;
+    document.querySelectorAll('#tipoGrid .tipo-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function submitNova() {
+    const local = document.getElementById('nLocal').value.trim();
+    const desc  = document.getElementById('nDesc').value.trim();
+    if (!local) { highlight('nLocal'); return; }
+    if (!desc)  { highlight('nDesc');  return; }
+
+    const now = new Date();
+    const label = `${now.getDate()} ${['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][now.getMonth()]}, ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    DATA.unshift({
+      id: DATA.length + 1,
+      tipo: selectedTipo,
+      local,
+      descricao: desc,
+      estado: 'PENDENTE',
+      hora: label,
+      seg: 'Wagner Machado'
+    });
+
+    closeModal('modalNova');
+    applyFilters();
+    showToast('Ocorrência registada com sucesso.');
+  }
+
+  /* ── MODAL ESTADO ── */
+  function openEstadoModal(id) {
+    editingId = id;
+    const o = DATA.find(x => x.id === id);
+    if (!o) return;
+    document.getElementById('estadoModalSub').textContent = `Ocorrência #${id} — ${TIPO_META[o.tipo].label}`;
+    selectedEstadoKey = o.estado;
+    document.querySelectorAll('#estadoGrid .estado-opt').forEach(el => {
+      const em = ESTADO_META[el.dataset.estado];
+      el.className = 'estado-opt';
+      if (el.dataset.estado === o.estado) el.classList.add(em.selCls);
+    });
+    openModal('modalEstado');
+  }
+
+  function selectEstado(el) {
+    selectedEstadoKey = el.dataset.estado;
+    document.querySelectorAll('#estadoGrid .estado-opt').forEach(e => {
+      e.className = 'estado-opt';
+      if (e.dataset.estado === selectedEstadoKey) e.classList.add(ESTADO_META[selectedEstadoKey].selCls);
+    });
+  }
+
+  function submitEstado() {
+    if (!selectedEstadoKey || !editingId) return;
+    const o = DATA.find(x => x.id === editingId);
+    if (o) o.estado = selectedEstadoKey;
+    closeModal('modalEstado');
+    applyFilters();
+    showToast(`Estado alterado para "${ESTADO_META[selectedEstadoKey].label}".`);
+  }
+
+  /* ── HELPERS ── */
+  function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow = 'hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+  function highlight(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = '#e24b4a'; el.focus();
+    setTimeout(() => el.style.borderColor = '', 1600);
+  }
+
+  function showToast(msg) {
+    document.getElementById('toastMsg').textContent = msg;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3400);
+  }
+
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const btn = document.getElementById('collapseBtn');
+    const collapsed = sb.classList.toggle('collapsed');
+    btn.querySelector('i').className = collapsed ? 'ti ti-layout-sidebar-left-expand' : 'ti ti-layout-sidebar-left-collapse';
+    btn.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+  }
+
+  ['modalNova','modalEstado'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) closeModal(id); });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal('modalNova'); closeModal('modalEstado'); }
+  });
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+  /* ── INIT ── */
+  applyFilters();
+</script>
+</body>
+</html>

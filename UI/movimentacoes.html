@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Segurança — Movimentações</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── PÁGINA-ESPECÍFICO (reset, shell, topbar, sidebar, page, badges vêm de styles.css) ── */
+
+    .hist-link { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--accent); background: #f0f6ff; border: 1px solid #c7deff; border-radius: 7px; padding: 7px 13px; cursor: pointer; text-decoration: none; transition: background 0.13s; }
+    .hist-link:hover { background: #dbeafe; }
+    .hist-link i { font-size: 14px; }
+
+    .reg-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 7px 14px; cursor: pointer; transition: background 0.13s; }
+    .reg-btn:hover { background: var(--accent-hover); }
+    .reg-btn i { font-size: 15px; }
+
+    /* STATS STRIP */
+    .stats-strip { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 18px; }
+    .strip-stat { border: 1px solid #edf0f4; border-radius: 9px; padding: 13px 16px; background: #fafbfc; }
+    .strip-n { font-size: 24px; font-weight: 600; line-height: 1; }
+    .strip-n.blue { color: var(--accent); }
+    .strip-n.green { color: #166534; }
+    .strip-n.gray { color: #374151; }
+    .strip-n.amber { color: #92400e; }
+    .strip-lbl { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+    /* FILTERS */
+    .filters { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .search-wrap { flex: 1; position: relative; }
+    .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 15px; color: #9ca3af; pointer-events: none; }
+    .search-input { width: 100%; height: 34px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 10px 0 32px; font-size: 12px; color: #374151; background: #fafbfc; outline: none; transition: border-color 0.13s; }
+    .search-input:focus { border-color: var(--accent); background: #fff; }
+    .filter-select { height: 34px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 10px; font-size: 12px; color: #374151; background: #fafbfc; outline: none; cursor: pointer; }
+
+    /* TABLE */
+    .tbl-wrap { overflow-x: auto; }
+    .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 700px; }
+    .tbl thead { background: #f8fafc; }
+    .tbl th { font-size: 11px; font-weight: 600; color: #6b7280; padding: 10px 12px; text-align: left; border-bottom: 1px solid #edf0f4; border-top: 1px solid #edf0f4; }
+    .tbl td { font-size: 12px; color: #374151; padding: 10px 12px; border-bottom: 1px solid #f3f5f7; vertical-align: middle; }
+    .tbl tbody tr:last-child td { border-bottom: none; }
+    .tbl tbody tr:hover td { background: #f8fafc; }
+
+    /* PERSON CELL */
+    .person-cell { display: flex; align-items: center; gap: 9px; }
+    .p-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+    .av-blue { background: #dbeafe; color: #1e40af; }
+    .av-green { background: #dcfce7; color: #166534; }
+    .av-purple { background: #ede9fe; color: #5b21b6; }
+    .av-amber { background: #fef3c7; color: #92400e; }
+    .av-pink { background: #fce7f3; color: #9d174d; }
+    .p-name { font-size: 12px; font-weight: 500; color: #111; }
+    .p-num { font-size: 11px; color: #9ca3af; }
+
+    .tipo-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+    .tipo-func { background: #dbeafe; color: #1e40af; }
+    .tipo-visit { background: #f3e8ff; color: #6b21a8; }
+
+    .badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+
+    .setor-tag { font-size: 11px; color: #6b7280; background: #f1f5f9; border-radius: 4px; padding: 2px 7px; }
+
+    /* PAGINATION */
+    .pag-row { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid #edf0f4; }
+    .pag-info { font-size: 12px; color: #9ca3af; }
+    .pag-controls { display: flex; align-items: center; gap: 4px; }
+    .pag-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid #dde3ea; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #374151; transition: background 0.13s, border-color 0.13s, color 0.13s; font-family: inherit; }
+    .pag-btn:hover:not(:disabled) { background: #f0f4f8; border-color: #bcc4ce; }
+    .pag-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    .pag-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .pag-btn i { font-size: 14px; }
+
+    /* MODAL OVERLAY */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(10, 14, 20, 0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 14px;
+      border: 0.5px solid var(--border);
+      width: 520px;
+      max-width: calc(100vw - 40px);
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+      animation: modalIn 0.18s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px 16px;
+      border-bottom: 1px solid #edf0f4;
+    }
+    .modal-title { font-size: 15px; font-weight: 600; color: #111; }
+    .modal-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+    .modal-close {
+      width: 30px; height: 30px; border-radius: 7px;
+      background: none; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #9ca3af; font-size: 18px;
+      transition: background 0.13s, color 0.13s;
+    }
+    .modal-close:hover { background: #f1f5f9; color: #374151; }
+
+    .modal-body { padding: 20px 22px; }
+
+    /* tipo toggle */
+    .tipo-toggle {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 20px;
+    }
+    .tipo-opt {
+      border: 1.5px solid #dde3ea; border-radius: 9px;
+      padding: 12px 14px; cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+      transition: border-color 0.13s, background 0.13s;
+      background: #fafbfc;
+    }
+    .tipo-opt.selected { border-color: var(--accent); background: #f0f6ff; }
+    .tipo-opt-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .opt-icon-blue { background: #dbeafe; color: #1e40af; }
+    .opt-icon-purple { background: #f3e8ff; color: #6b21a8; }
+    .tipo-opt.selected .opt-icon-blue { background: var(--accent); color: #fff; }
+    .tipo-opt.selected .opt-icon-purple { background: #7c3aed; color: #fff; }
+    .tipo-opt-lbl { font-size: 13px; font-weight: 500; color: #374151; }
+    .tipo-opt-sub { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+    .tipo-opt.selected .tipo-opt-lbl { color: var(--accent); }
+
+    /* form */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-label { font-size: 12px; font-weight: 500; color: #374151; }
+    .form-label span { color: #e24b4a; margin-left: 2px; }
+    .form-input, .form-select {
+      height: 36px; border: 1px solid #dde3ea; border-radius: 7px;
+      padding: 0 11px; font-size: 13px; color: #111;
+      background: #fafbfc; outline: none; font-family: inherit;
+      transition: border-color 0.13s, background 0.13s;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--accent); background: #fff; }
+    .form-input::placeholder { color: #c0c8d4; }
+    .form-textarea {
+      border: 1px solid #dde3ea; border-radius: 7px;
+      padding: 9px 11px; font-size: 13px; color: #111;
+      background: #fafbfc; outline: none; font-family: inherit;
+      resize: vertical; min-height: 72px; width: 100%;
+      transition: border-color 0.13s, background 0.13s;
+    }
+    .form-textarea:focus { border-color: var(--accent); background: #fff; }
+    .form-textarea::placeholder { color: #c0c8d4; }
+
+    .divider { border: none; border-top: 1px solid #edf0f4; margin: 18px 0; }
+
+    .section-label {
+      font-size: 11px; font-weight: 600; color: #9ca3af;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    /* chave toggle */
+    .chave-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border: 1px solid #dde3ea; border-radius: 9px;
+      background: #fafbfc; margin-bottom: 12px; cursor: pointer;
+      transition: border-color 0.13s;
+    }
+    .chave-toggle:hover { border-color: #b0bec9; }
+    .chave-toggle-left { display: flex; align-items: center; gap: 10px; }
+    .chave-toggle-icon { font-size: 17px; color: #6b7280; }
+    .chave-toggle-lbl { font-size: 13px; font-weight: 500; color: #374151; }
+    .chave-toggle-sub { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+    .switch {
+      width: 36px; height: 20px; border-radius: 10px;
+      background: #dde3ea; position: relative; transition: background 0.2s;
+      flex-shrink: 0; cursor: pointer; border: none;
+    }
+    .switch::after {
+      content: ''; position: absolute;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+    .switch.on { background: var(--accent); }
+    .switch.on::after { transform: translateX(16px); }
+
+    .chave-fields { display: none; margin-bottom: 4px; }
+    .chave-fields.visible { display: block; }
+
+    .modal-footer {
+      display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+      padding: 14px 22px 18px;
+      border-top: 1px solid #edf0f4;
+    }
+    .btn-cancel {
+      height: 36px; padding: 0 16px; border-radius: 7px;
+      border: 1px solid #dde3ea; background: #fff;
+      font-size: 13px; font-weight: 500; color: #374151;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.13s;
+    }
+    .btn-cancel:hover { background: #f1f5f9; }
+    .btn-submit {
+      height: 36px; padding: 0 20px; border-radius: 7px;
+      border: none; background: var(--accent);
+      font-size: 13px; font-weight: 600; color: #fff;
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.13s;
+    }
+    .btn-submit:hover { background: var(--accent-hover); }
+    .btn-submit i { font-size: 15px; }
+
+    /* toast */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: #111; color: #fff;
+      font-size: 13px; font-weight: 500;
+      padding: 11px 18px; border-radius: 9px;
+      display: flex; align-items: center; gap: 8px;
+      z-index: 200; opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast i { font-size: 16px; color: #4ade80; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="logo-mark">IN</div>
+      <span class="logo-txt">INESC TEC</span>
+      <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()" aria-label="Recolher menu">
+        <i class="ti ti-layout-sidebar-left-collapse"></i>
+      </button>
+    </div>
+    <div class="nav-wrap">
+      <div class="nav-lbl">Principal</div>
+      <a href="dashboard_gestao_seguranca.html" class="nav-item"><i class="ti ti-dashboard"></i><span>Dashboard</span></a>
+      <a href="#" class="nav-item active"><i class="ti ti-users"></i><span>Movimentações</span></a>
+      <a href="chaves.html" class="nav-item"><i class="ti ti-key"></i><span>Chaves</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Registos</div>
+      <a href="ocorrencias.html" class="nav-item"><i class="ti ti-file-alert"></i><span>Ocorrências</span></a>
+      <a href="consumos.html" class="nav-item"><i class="ti ti-chart-bar"></i><span>Consumos</span></a>
+      <a href="#" class="nav-item"><i class="ti ti-building"></i><span>Salas</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Sistema</div>
+      <a href="#" class="nav-item"><i class="ti ti-shield-check"></i><span>Utilizadores</span></a>
+    </div>
+    <div class="sb-footer">
+      <a href="#" class="nav-item"><i class="ti ti-logout"></i><span>Sair</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-lm">IN</div>
+        <span class="brand-name-big">INESC TEC</span>
+        <div class="brand-sep"></div>
+        <span class="brand-sub">Movimentações</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn" aria-label="Notificações"><i class="ti ti-bell"></i></button>
+        <div class="user-pill">
+          <div class="user-avatar">WM</div>
+          <span class="user-name">Wagner Machado</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="content-block">
+
+        <div class="page-header">
+          <div>
+            <div class="page-title">Movimentações</div>
+            <div class="page-subtitle">Entradas e saídas do edifício hoje</div>
+          </div>
+          <div class="header-actions">
+            <a href="#" class="hist-link">
+              <i class="ti ti-clock-history"></i> Histórico de movimentações
+            </a>
+            <button class="reg-btn" onclick="openModal()"><i class="ti ti-plus"></i> Registar entrada</button>
+          </div>
+        </div>
+
+        <div class="stats-strip">
+          <div class="strip-stat"><div class="strip-n blue">14</div><div class="strip-lbl">No edifício agora</div></div>
+          <div class="strip-stat"><div class="strip-n green">31</div><div class="strip-lbl">Entradas hoje</div></div>
+          <div class="strip-stat"><div class="strip-n gray">17</div><div class="strip-lbl">Saídas hoje</div></div>
+          <div class="strip-stat"><div class="strip-n amber">4</div><div class="strip-lbl">Visitantes ativos</div></div>
+        </div>
+
+        <div class="filters">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input class="search-input" type="text" id="searchInput" placeholder="Pesquisar por nome ou número..." />
+          </div>
+          <select class="filter-select" id="filterTipo" onchange="applyFilters()">
+            <option value="">Todos os tipos</option>
+            <option value="func">Funcionário</option>
+            <option value="visit">Visitante</option>
+          </select>
+          <select class="filter-select" id="filterEstado" onchange="applyFilters()">
+            <option value="">Todos os estados</option>
+            <option value="inside">No edifício</option>
+            <option value="out">Saiu</option>
+          </select>
+        </div>
+
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:24%">Pessoa</th>
+                <th style="width:14%">Tipo</th>
+                <th style="width:14%">Setor / Destino</th>
+                <th style="width:11%">Entrada</th>
+                <th style="width:11%">Saída</th>
+                <th style="width:13%">Estado</th>
+                <th style="width:13%">Responsável</th>
+              </tr>
+            </thead>
+            <tbody id="tblBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pag-row">
+          <span class="pag-info" id="pagInfo"></span>
+          <div class="pag-controls" id="pagControls"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  const ALL_DATA = [
+    { nome:'Ana Costa',        num:'#F-102', tipo:'func',  setor:'RH',          entrada:'08:12', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'Carlos Neves',     num:'#F-045', tipo:'func',  setor:'Informática', entrada:'08:30', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'Rita Sousa',       num:'#F-078', tipo:'func',  setor:'Financeiro',  entrada:'08:45', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'João Ferreira',    num:'#V-011', tipo:'visit', setor:'Direção',     entrada:'09:00', saida:'11:30', estado:'out',    resp:'Seg. Moura' },
+    { nome:'Marta Lopes',      num:'#F-201', tipo:'func',  setor:'Lab. 2',      entrada:'09:15', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+    { nome:'Tiago Alves',      num:'#V-022', tipo:'visit', setor:'Receção',     entrada:'09:40', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+    { nome:'Sandra Ribeiro',   num:'#F-033', tipo:'func',  setor:'Contabilid.', entrada:'09:55', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'Paulo Monteiro',   num:'#V-033', tipo:'visit', setor:'Piso 3',      entrada:'10:10', saida:'12:00', estado:'out',    resp:'Seg. Lima'  },
+    { nome:'Inês Gomes',       num:'#F-155', tipo:'func',  setor:'Marketing',   entrada:'10:20', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+    { nome:'Rui Baptista',     num:'#F-088', tipo:'func',  setor:'Engenharia',  entrada:'10:35', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+    { nome:'Filipa Correia',   num:'#V-044', tipo:'visit', setor:'Sala 203',    entrada:'10:50', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'André Peixoto',    num:'#F-067', tipo:'func',  setor:'Direção',     entrada:'11:00', saida:'13:15', estado:'out',    resp:'Seg. Lima'  },
+    { nome:'Catarina Vieira',  num:'#F-112', tipo:'func',  setor:'RH',          entrada:'11:10', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+    { nome:'Bruno Teixeira',   num:'#V-055', tipo:'visit', setor:'Lab. 1',      entrada:'11:25', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'Leonor Fonseca',   num:'#F-190', tipo:'func',  setor:'Financeiro',  entrada:'11:40', saida:'14:00', estado:'out',    resp:'Seg. Moura' },
+    { nome:'Miguel Cunha',     num:'#F-044', tipo:'func',  setor:'Informática', entrada:'11:55', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'Sara Mendes',      num:'#F-133', tipo:'func',  setor:'Engenharia',  entrada:'12:05', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+    { nome:'Diogo Cardoso',    num:'#V-066', tipo:'visit', setor:'Piso 2',      entrada:'12:20', saida:'—',     estado:'inside', resp:'Seg. Lima'  },
+    { nome:'Vera Oliveira',    num:'#F-022', tipo:'func',  setor:'Contabilid.', entrada:'12:35', saida:'15:10', estado:'out',    resp:'Seg. Lima'  },
+    { nome:'Hugo Martins',     num:'#F-177', tipo:'func',  setor:'Lab. 3',      entrada:'12:50', saida:'—',     estado:'inside', resp:'Seg. Moura' },
+  ];
+
+  const PAGE_SIZE = 10;
+  const AV_CLASSES = ['av-blue','av-green','av-purple','av-amber','av-pink'];
+  let currentPage = 1;
+  let filtered = [...ALL_DATA];
+
+  function initials(name) {
+    return name.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function applyFilters() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const tipo = document.getElementById('filterTipo').value;
+    const estado = document.getElementById('filterEstado').value;
+
+    filtered = ALL_DATA.filter(r => {
+      const matchQ = !q || r.nome.toLowerCase().includes(q) || r.num.toLowerCase().includes(q);
+      const matchTipo = !tipo || r.tipo === tipo;
+      const matchEstado = !estado || r.estado === estado;
+      return matchQ && matchTipo && matchEstado;
+    });
+
+    currentPage = 1;
+    render();
+  }
+
+  function render() {
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const slice = filtered.slice(start, start + PAGE_SIZE);
+    const body = document.getElementById('tblBody');
+
+    if (slice.length === 0) {
+      body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#9ca3af;font-size:13px">Nenhum registo encontrado.</td></tr>';
+    } else {
+      body.innerHTML = slice.map((r, i) => {
+        const av = AV_CLASSES[(start + i) % AV_CLASSES.length];
+        const tipoHtml = r.tipo === 'func'
+          ? `<span class="tipo-chip tipo-func"><i class="ti ti-id-badge" style="font-size:12px"></i> Funcionário</span>`
+          : `<span class="tipo-chip tipo-visit"><i class="ti ti-user" style="font-size:12px"></i> Visitante</span>`;
+        const estadoHtml = r.estado === 'inside'
+          ? `<span class="badge badge-green"><i class="ti ti-circle-check" style="font-size:11px;margin-right:3px"></i>No edifício</span>`
+          : `<span class="badge badge-gray"><i class="ti ti-circle-x" style="font-size:11px;margin-right:3px"></i>Saiu</span>`;
+        return `<tr>
+          <td>
+            <div class="person-cell">
+              <div class="p-avatar ${av}">${initials(r.nome)}</div>
+              <div><div class="p-name">${r.nome}</div><div class="p-num">${r.num}</div></div>
+            </div>
+          </td>
+          <td>${tipoHtml}</td>
+          <td><span class="setor-tag">${r.setor}</span></td>
+          <td>${r.entrada}</td>
+          <td style="color:${r.saida === '—' ? '#cbd5e1' : '#374151'}">${r.saida}</td>
+          <td>${estadoHtml}</td>
+          <td style="font-size:11px;color:#6b7280">${r.resp}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    document.getElementById('pagInfo').textContent = filtered.length === 0
+      ? '0 registos'
+      : `${start + 1}–${Math.min(currentPage * PAGE_SIZE, filtered.length)} de ${filtered.length} registos`;
+
+    renderPag(totalPages);
+  }
+
+  function renderPag(totalPages) {
+    const ctrl = document.getElementById('pagControls');
+    let html = `<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''} aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>`;
+
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1) {
+        html += `<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      } else if (p === 2 && currentPage > 4) {
+        html += `<button class="pag-btn" disabled style="border:none;background:none;cursor:default;color:#9ca3af">…</button>`;
+      } else if (p === totalPages - 1 && currentPage < totalPages - 3) {
+        html += `<button class="pag-btn" disabled style="border:none;background:none;cursor:default;color:#9ca3af">…</button>`;
+      }
+    }
+
+    html += `<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''} aria-label="Seguinte"><i class="ti ti-chevron-right"></i></button>`;
+    ctrl.innerHTML = html;
+  }
+
+  function goPage(p) {
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+    if (p < 1 || p > totalPages) return;
+    currentPage = p;
+    render();
+  }
+
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const btn = document.getElementById('collapseBtn');
+    const collapsed = sb.classList.toggle('collapsed');
+    btn.querySelector('i').className = collapsed
+      ? 'ti ti-layout-sidebar-left-expand'
+      : 'ti ti-layout-sidebar-left-collapse';
+    btn.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+  }
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+  render();
+
+  /* ── MODAL ── */
+  let chaveAtiva = false;
+  let tipoSelecionado = 'func';
+
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    updateTipoUI();
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+    resetModal();
+  }
+
+  function resetModal() {
+    document.getElementById('modalForm').reset();
+    chaveAtiva = false;
+    tipoSelecionado = 'func';
+    updateTipoUI();
+    updateChaveUI();
+  }
+
+  function selectTipo(tipo) {
+    tipoSelecionado = tipo;
+    updateTipoUI();
+  }
+
+  function updateTipoUI() {
+    document.getElementById('optFunc').classList.toggle('selected', tipoSelecionado === 'func');
+    document.getElementById('optVisit').classList.toggle('selected', tipoSelecionado === 'visit');
+    document.getElementById('numLabel').textContent = tipoSelecionado === 'func' ? 'Número de funcionário' : 'Número de identificação';
+    document.getElementById('numInput').placeholder = tipoSelecionado === 'func' ? 'Ex: 102' : 'Ex: BI 12345678';
+    document.getElementById('setorLabel').textContent = tipoSelecionado === 'func' ? 'Setor' : 'Destino / motivo';
+    document.getElementById('respField').style.display = tipoSelecionado === 'visit' ? 'flex' : 'none';
+  }
+
+  function toggleChave() {
+    chaveAtiva = !chaveAtiva;
+    document.getElementById('switchBtn').classList.toggle('on', chaveAtiva);
+    updateChaveUI();
+  }
+
+  function updateChaveUI() {
+    document.getElementById('chaveFields').classList.toggle('visible', chaveAtiva);
+  }
+
+  function submitEntrada() {
+    const nome = document.getElementById('nomeInput').value.trim();
+    const num  = document.getElementById('numInput').value.trim();
+
+    if (!nome || !num) {
+      document.getElementById('nomeInput').focus();
+      document.getElementById('nomeInput').style.borderColor = '#e24b4a';
+      setTimeout(() => document.getElementById('nomeInput').style.borderColor = '', 1500);
+      return;
+    }
+
+    const now = new Date();
+    const hora = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    const setor = document.getElementById('setorInput').value.trim() || '—';
+    const prefix = tipoSelecionado === 'func' ? '#F-' : '#V-';
+    const numFmt = prefix + num.replace(/\D/g,'').slice(-3).padStart(3,'0');
+
+    ALL_DATA.unshift({
+      nome, num: numFmt, tipo: tipoSelecionado,
+      setor, entrada: hora, saida: '—',
+      estado: 'inside', resp: 'Seg. Wagner'
+    });
+
+    filtered = [...ALL_DATA];
+    currentPage = 1;
+    render();
+    closeModal();
+    showToast(nome);
+  }
+
+  function showToast(nome) {
+    const t = document.getElementById('toast');
+    t.querySelector('.toast-name').textContent = nome + ' registado com sucesso.';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Registar entrada</div>
+        <div class="modal-sub">Preencha os dados da pessoa que entra no edifício</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar"><i class="ti ti-x"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <form id="modalForm" onsubmit="return false;">
+
+        <!-- Tipo -->
+        <div class="section-label">Tipo de pessoa</div>
+        <div class="tipo-toggle">
+          <div class="tipo-opt selected" id="optFunc" onclick="selectTipo('func')">
+            <div class="tipo-opt-icon opt-icon-blue"><i class="ti ti-id-badge"></i></div>
+            <div>
+              <div class="tipo-opt-lbl">Funcionário</div>
+              <div class="tipo-opt-sub">Colaborador interno</div>
+            </div>
+          </div>
+          <div class="tipo-opt" id="optVisit" onclick="selectTipo('visit')">
+            <div class="tipo-opt-icon opt-icon-purple"><i class="ti ti-user"></i></div>
+            <div>
+              <div class="tipo-opt-lbl">Visitante</div>
+              <div class="tipo-opt-sub">Pessoa externa</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Dados pessoais -->
+        <div class="section-label">Dados pessoais</div>
+        <div class="form-row">
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label" for="nomeInput">Nome completo <span>*</span></label>
+            <input class="form-input" id="nomeInput" type="text" placeholder="Ex: Maria Silva" autocomplete="off" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="numInput" id="numLabel">Número de funcionário <span>*</span></label>
+            <input class="form-input" id="numInput" type="text" placeholder="Ex: 102" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="setorInput" id="setorLabel">Setor</label>
+            <input class="form-input" id="setorInput" type="text" placeholder="Ex: Informática" autocomplete="off" />
+          </div>
+        </div>
+
+        <!-- Campo responsável (só visitante) -->
+        <div class="form-row" id="respField" style="display:none;">
+          <div class="form-group" style="grid-column: span 2;">
+            <label class="form-label" for="respInput">Funcionário responsável pela visita</label>
+            <input class="form-input" id="respInput" type="text" placeholder="Nome ou número do responsável" autocomplete="off" />
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Chave -->
+        <div class="section-label">Entrega de chave</div>
+        <div class="chave-toggle" onclick="toggleChave()">
+          <div class="chave-toggle-left">
+            <i class="ti ti-key chave-toggle-icon"></i>
+            <div>
+              <div class="chave-toggle-lbl">Entregar chave no momento da entrada</div>
+              <div class="chave-toggle-sub">Ativa os campos de registo de chave</div>
+            </div>
+          </div>
+          <button type="button" class="switch" id="switchBtn" aria-label="Ativar entrega de chave"></button>
+        </div>
+
+        <div class="chave-fields" id="chaveFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="chaveSelect">Chave / Sala</label>
+              <select class="form-select" id="chaveSelect">
+                <option value="">Selecionar chave...</option>
+                <option>Sala 101 — Piso 1</option>
+                <option>Sala 102 — Piso 1</option>
+                <option>Sala 201 — Piso 2</option>
+                <option>Sala 203 — Piso 2</option>
+                <option>Sala 305 — Piso 3</option>
+                <option>Molho A3 — Geral</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="chaveObs">Observações</label>
+              <input class="form-input" id="chaveObs" type="text" placeholder="Opcional" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Observações gerais -->
+        <div class="form-group" style="margin-top: 4px;">
+          <label class="form-label" for="obsInput">Observações gerais</label>
+          <textarea class="form-textarea" id="obsInput" placeholder="Notas adicionais sobre esta entrada (opcional)..."></textarea>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-submit" onclick="submitEntrada()">
+        <i class="ti ti-login"></i> Confirmar entrada
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="ti ti-circle-check"></i>
+  <span class="toast-name"></span>
+</div>
+</body>
+</html>

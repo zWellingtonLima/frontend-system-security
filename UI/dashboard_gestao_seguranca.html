@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Segurança — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo-wrap">
+        <img src="../../src/assets/img/inesctec.png" alt="INESCTEC" class="sb-logo-img" />
+      </div>
+      <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()" aria-label="Recolher menu">
+        <i class="ti ti-layout-sidebar-left-collapse"></i>
+      </button>
+    </div>
+    <div class="nav-wrap">
+      <div class="nav-lbl">Principal</div>
+      <a href="dashboard_gestao_seguranca.html" class="nav-item active"><i class="ti ti-dashboard"></i><span>Dashboard</span></a>
+      <a href="movimentacoes.html" class="nav-item"><i class="ti ti-users"></i><span>Movimentações</span></a>
+      <a href="chaves.html" class="nav-item"><i class="ti ti-key"></i><span>Chaves</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Registos</div>
+      <a href="ocorrencias.html" class="nav-item"><i class="ti ti-file-alert"></i><span>Ocorrências</span></a>
+      <a href="consumos.html" class="nav-item"><i class="ti ti-chart-bar"></i><span>Consumos</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Sistema</div>
+      <a href="#" class="nav-item"><i class="ti ti-shield-check"></i><span>Utilizadores</span></a>
+    </div>
+    <div class="sb-footer">
+      <a href="#" class="nav-item"><i class="ti ti-logout"></i><span>Sair</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img src="../../src/assets/img/inesctec.png" alt="INESCTEC" class="topbar-logo" />
+        <div class="brand-sep"></div>
+        <span class="brand-sub">Gestão de Segurança</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn" aria-label="Notificações"><i class="ti ti-bell"></i></button>
+        <div class="user-pill">
+          <div class="user-avatar">WM</div>
+          <span class="user-name">Wagner Machado</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE -->
+    <main class="page">
+      <div class="content-block">
+
+        <div class="page-header">
+          <div>
+            <div class="page-eyebrow">Segurança · Visão Geral</div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle">Resumo do turno em curso</div>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">Ocorrências abertas</div>
+            <div class="kpi-value">2</div>
+            <div class="kpi-sub red">1 pendente</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Chaves fora</div>
+            <div class="kpi-value">3</div>
+            <div class="kpi-sub amber">1 em atraso</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Visitas hoje</div>
+            <div class="kpi-value">7</div>
+            <div class="kpi-sub">registadas</div>
+          </div>
+        </div>
+
+        <!-- Mini-tabelas -->
+        <div class="inner-row">
+
+          <!-- Chaves em uso -->
+          <div class="inner-card">
+            <div class="inner-card-header">
+              <span class="inner-card-title">Chaves em uso</span>
+              <a href="chaves.html" class="view-all-link">Ver todas →</a>
+            </div>
+            <table class="mini-tbl">
+              <tbody>
+                <tr>
+                  <td>Sala 201</td>
+                  <td style="color:var(--text-muted)">Ana Costa</td>
+                  <td><span class="badge badge-amber">Em uso</span></td>
+                </tr>
+                <tr>
+                  <td>Molho A3</td>
+                  <td style="color:var(--text-muted)">Carlos Neves</td>
+                  <td><span class="badge badge-amber">Em uso</span></td>
+                </tr>
+                <tr>
+                  <td>Sala 305</td>
+                  <td style="color:var(--text-muted)">Rita Sousa</td>
+                  <td><span class="badge badge-red">Atrasada</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Ocorrências recentes -->
+          <div class="inner-card">
+            <div class="inner-card-header">
+              <span class="inner-card-title">Ocorrências recentes</span>
+              <a href="ocorrencias.html" class="view-all-link">Ver todas →</a>
+            </div>
+            <table class="mini-tbl">
+              <tbody>
+                <tr>
+                  <td>Acesso não autorizado — Piso 3</td>
+                  <td style="color:var(--text-muted)">Hoje, 11:34</td>
+                  <td><span class="badge badge-red">Pendente</span></td>
+                </tr>
+                <tr>
+                  <td>Avaria de equipamento — Sala 104</td>
+                  <td style="color:var(--text-muted)">Hoje, 09:58</td>
+                  <td><span class="badge badge-orange">Em análise</span></td>
+                </tr>
+                <tr>
+                  <td>Objeto perdido — Receção</td>
+                  <td style="color:var(--text-muted)">Ontem, 17:10</td>
+                  <td><span class="badge badge-green">Resolvida</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const btn = document.getElementById('collapseBtn');
+    const collapsed = sidebar.classList.toggle('collapsed');
+    const icon = btn.querySelector('i');
+    icon.className = collapsed
+      ? 'ti ti-layout-sidebar-left-expand'
+      : 'ti ti-layout-sidebar-left-collapse';
+    btn.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+  }
+</script>
+</body>
+</html>

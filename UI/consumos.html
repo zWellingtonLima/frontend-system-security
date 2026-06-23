@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Segurança — Consumos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── PÁGINA-ESPECÍFICO (reset, shell, topbar, sidebar, page, badges vêm de styles.css) ── */
+
+    /* ── REG BTN ── */
+    .reg-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #fff; background: var(--accent); border: none; border-radius: 7px; padding: 7px 14px; cursor: pointer; transition: background .13s; font-family: inherit; }
+    .reg-btn:hover { background: var(--accent-hover); }
+    .reg-btn i { font-size: 15px; }
+
+    /* ── LEITURAS ACTUAIS ── */
+    .leituras-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
+
+    .leitura-card { border-radius: 11px; padding: 18px 20px; border: 1px solid transparent; }
+    .lc-agua        { background: #eff8ff; border-color: #bae0fd; }
+    .lc-eletricidade{ background: #fefce8; border-color: #fde68a; }
+    .lc-gas         { background: #fff1f2; border-color: #fecdd3; }
+
+    .lc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .lc-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .li-agua        { background: var(--accent); color: #fff; }
+    .li-elet        { background: #ca8a04; color: #fff; }
+    .li-gas         { background: #e11d48; color: #fff; }
+    .lc-tipo { font-size: 13px; font-weight: 600; }
+    .lc-tipo.agua        { color: #0c447c; }
+    .lc-tipo.elet        { color: #713f12; }
+    .lc-tipo.gas         { color: #881337; }
+    .lc-unidade { font-size: 11px; margin-top: 1px; }
+    .lc-unidade.agua     { color: #185fa5; }
+    .lc-unidade.elet     { color: #92400e; }
+    .lc-unidade.gas      { color: #9f1239; }
+
+    .lc-valor { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+    .lc-valor.agua        { color: #0c447c; }
+    .lc-valor.elet        { color: #713f12; }
+    .lc-valor.gas         { color: #881337; }
+
+    .lc-delta { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+    .lc-delta.agua { color: #185fa5; }
+    .lc-delta.elet { color: #92400e; }
+    .lc-delta.gas  { color: #9f1239; }
+    .lc-delta i { font-size: 14px; }
+    .lc-date { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+    /* ── TABS (base → styles.css) ── */
+    .tab-cnt { font-size: 11px; font-weight: 600; background: #f1f5f9; color: #6b7280; border-radius: 20px; padding: 1px 7px; }
+    .tab.active .tab-cnt { background: #dbeafe; color: #1e40af; }
+
+    /* ── FILTERS ── */
+    .filters { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .search-wrap { flex: 1; position: relative; }
+    .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 15px; color: #9ca3af; pointer-events: none; }
+    .search-input { width: 100%; height: 34px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 10px 0 32px; font-size: 12px; color: #374151; background: #fafbfc; outline: none; transition: border-color .13s; font-family: inherit; }
+    .search-input:focus { border-color: var(--accent); background: #fff; }
+    .filter-select { height: 34px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 10px; font-size: 12px; color: #374151; background: #fafbfc; outline: none; cursor: pointer; font-family: inherit; }
+
+    /* ── TABLE ── */
+    .tbl-wrap { overflow-x: auto; }
+    .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 640px; }
+    .tbl thead { background: #f8fafc; }
+    .tbl th { font-size: 11px; font-weight: 600; color: #6b7280; padding: 10px 12px; text-align: left; border-bottom: 1px solid #edf0f4; border-top: 1px solid #edf0f4; }
+    .tbl td { font-size: 12px; color: #374151; padding: 10px 12px; border-bottom: 1px solid #f3f5f7; vertical-align: middle; }
+    .tbl tbody tr:last-child td { border-bottom: none; }
+    .tbl tbody tr:hover td { background: #f8fafc; }
+
+    /* tipo cell */
+    .tipo-cell { display: flex; align-items: center; gap: 9px; }
+    .tipo-dot { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .td-agua { background: #dbeafe; color: #1e40af; }
+    .td-elet { background: #fef9c3; color: #713f12; }
+    .td-gas  { background: #ffe4e6; color: #9f1239; }
+    .tipo-lbl { font-size: 12px; font-weight: 500; color: #111; }
+
+    /* valor leitura */
+    .valor-leitura { font-size: 13px; font-weight: 600; color: #111; font-variant-numeric: tabular-nums; }
+    .valor-unidade { font-size: 11px; color: #9ca3af; }
+
+    /* delta */
+    .delta-wrap { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; }
+    .delta-pos { color: #166534; }
+    .delta-null { color: #9ca3af; font-weight: 400; }
+    .delta-wrap i { font-size: 13px; }
+
+    .obs-cell { font-size: 11px; color: #6b7280; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .action-btn { background: none; border: 1px solid #dde3ea; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; transition: background .13s, border-color .13s; color: #374151; }
+    .action-btn:hover { background: #f1f5f9; border-color: #b0bec9; }
+    .action-btn.edit { color: var(--accent); border-color: #c7deff; background: #f0f6ff; }
+    .action-btn.edit:hover { background: #dbeafe; }
+    .action-btn.del { color: #991b1b; border-color: #fecaca; background: #fff5f5; }
+    .action-btn.del:hover { background: #fee2e2; }
+    .action-btn i { font-size: 13px; }
+    .actions-cell { display: flex; gap: 5px; }
+
+    /* ── PAGINATION ── */
+    .pag-row { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid #edf0f4; }
+    .pag-info { font-size: 12px; color: #9ca3af; }
+    .pag-controls { display: flex; align-items: center; gap: 4px; }
+    .pag-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid #dde3ea; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #374151; transition: background .13s, border-color .13s, color .13s; font-family: inherit; }
+    .pag-btn:hover:not(:disabled) { background: #f0f4f8; border-color: #bcc4ce; }
+    .pag-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    .pag-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .pag-btn i { font-size: 14px; }
+
+    /* ── MODAL ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,14,20,.55); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 14px; border: .5px solid var(--border); width: 460px; max-width: calc(100vw - 40px); max-height: calc(100vh - 60px); overflow-y: auto; animation: modalIn .18s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 16px; border-bottom: 1px solid #edf0f4; }
+    .modal-title { font-size: 15px; font-weight: 600; color: #111; }
+    .modal-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+    .modal-close { width: 30px; height: 30px; border-radius: 7px; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 18px; transition: background .13s; }
+    .modal-close:hover { background: #f1f5f9; color: #374151; }
+    .modal-body { padding: 20px 22px; }
+    .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 14px 22px 18px; border-top: 1px solid #edf0f4; }
+    .btn-cancel { height: 36px; padding: 0 16px; border-radius: 7px; border: 1px solid #dde3ea; background: #fff; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; font-family: inherit; transition: background .13s; }
+    .btn-cancel:hover { background: #f1f5f9; }
+    .btn-submit { height: 36px; padding: 0 20px; border-radius: 7px; border: none; background: var(--accent); font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; transition: background .13s; }
+    .btn-submit:hover { background: var(--accent-hover); }
+    .btn-submit i { font-size: 15px; }
+    .btn-danger { height: 36px; padding: 0 20px; border-radius: 7px; border: none; background: #dc2626; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; transition: background .13s; }
+    .btn-danger:hover { background: #b91c1c; }
+
+    /* form */
+    .section-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .form-label { font-size: 12px; font-weight: 500; color: #374151; }
+    .form-label span { color: #e24b4a; margin-left: 2px; }
+    .form-input, .form-select { height: 36px; border: 1px solid #dde3ea; border-radius: 7px; padding: 0 11px; font-size: 13px; color: #111; background: #fafbfc; outline: none; font-family: inherit; transition: border-color .13s, background .13s; width: 100%; }
+    .form-input:focus, .form-select:focus { border-color: var(--accent); background: #fff; }
+    .form-input::placeholder { color: #c0c8d4; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-textarea { border: 1px solid #dde3ea; border-radius: 7px; padding: 9px 11px; font-size: 13px; color: #111; background: #fafbfc; outline: none; font-family: inherit; resize: vertical; min-height: 68px; width: 100%; transition: border-color .13s, background .13s; }
+    .form-textarea:focus { border-color: var(--accent); background: #fff; }
+    .form-textarea::placeholder { color: #c0c8d4; }
+
+    /* tipo selector */
+    .tipo-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+    .tipo-opt { border: 1.5px solid #dde3ea; border-radius: 9px; padding: 12px 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: border-color .13s, background .13s; background: #fafbfc; }
+    .tipo-opt i { font-size: 22px; color: #9ca3af; }
+    .tipo-opt-lbl { font-size: 11px; font-weight: 500; color: #374151; }
+    .tipo-opt.sel-agua  { border-color: var(--accent); background: #eff8ff; }
+    .tipo-opt.sel-agua i  { color: var(--accent); }
+    .tipo-opt.sel-elet  { border-color: #ca8a04; background: #fefce8; }
+    .tipo-opt.sel-elet i  { color: #ca8a04; }
+    .tipo-opt.sel-gas   { border-color: #e11d48; background: #fff1f2; }
+    .tipo-opt.sel-gas i   { color: #e11d48; }
+
+    /* leitura anterior preview */
+    .prev-box { background: #f8fafc; border: 1px solid #edf0f4; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+    .prev-lbl { font-size: 11px; color: #9ca3af; }
+    .prev-val { font-size: 15px; font-weight: 600; color: #111; margin-top: 2px; }
+    .prev-sep { width: 1px; height: 32px; background: #edf0f4; }
+    .prev-delta-lbl { font-size: 11px; color: #9ca3af; }
+    .prev-delta-val { font-size: 13px; font-weight: 600; color: #166534; margin-top: 2px; }
+
+    /* delete confirm */
+    .delete-warn { background: #fff5f5; border: 1px solid #fecaca; border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 6px; }
+    .delete-warn i { font-size: 20px; color: #dc2626; flex-shrink: 0; margin-top: 1px; }
+    .delete-warn-txt { font-size: 13px; color: #374151; line-height: 1.5; }
+    .delete-warn-txt strong { color: #111; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 28px; right: 28px; background: #111; color: #fff; font-size: 13px; font-weight: 500; padding: 11px 18px; border-radius: 9px; display: flex; align-items: center; gap: 8px; z-index: 200; opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast i { font-size: 16px; color: #4ade80; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="logo-mark">IN</div>
+      <span class="logo-txt">INESC TEC</span>
+      <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()" aria-label="Recolher menu">
+        <i class="ti ti-layout-sidebar-left-collapse"></i>
+      </button>
+    </div>
+    <div class="nav-wrap">
+      <div class="nav-lbl">Principal</div>
+      <a href="dashboard_gestao_seguranca.html" class="nav-item"><i class="ti ti-dashboard"></i><span>Dashboard</span></a>
+      <a href="movimentacoes.html" class="nav-item"><i class="ti ti-users"></i><span>Movimentações</span></a>
+      <a href="chaves.html" class="nav-item"><i class="ti ti-key"></i><span>Chaves</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Registos</div>
+      <a href="ocorrencias.html" class="nav-item"><i class="ti ti-file-alert"></i><span>Ocorrências</span></a>
+      <a href="#" class="nav-item active"><i class="ti ti-chart-bar"></i><span>Consumos</span></a>
+      <a href="#" class="nav-item"><i class="ti ti-building"></i><span>Salas</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Sistema</div>
+      <a href="#" class="nav-item"><i class="ti ti-shield-check"></i><span>Utilizadores</span></a>
+    </div>
+    <div class="sb-footer">
+      <a href="#" class="nav-item"><i class="ti ti-logout"></i><span>Sair</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-lm">IN</div>
+        <span class="brand-name-big">INESC TEC</span>
+        <div class="brand-sep"></div>
+        <span class="brand-sub">Consumos</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn" aria-label="Notificações"><i class="ti ti-bell"></i></button>
+        <div class="user-pill">
+          <div class="user-avatar">WM</div>
+          <span class="user-name">Wagner Machado</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="content-block">
+
+        <!-- Header -->
+        <div class="page-header">
+          <div>
+            <div class="page-title">Consumos</div>
+            <div class="page-subtitle">Registo de leituras de água, eletricidade e gás</div>
+          </div>
+          <button class="reg-btn" onclick="openNovoModal()">
+            <i class="ti ti-plus"></i> Registar leitura
+          </button>
+        </div>
+
+        <!-- Últimas leituras -->
+        <div class="leituras-grid">
+          <div class="leitura-card lc-agua">
+            <div class="lc-header">
+              <div class="lc-icon li-agua"><i class="ti ti-droplet"></i></div>
+              <div>
+                <div class="lc-tipo agua">Água</div>
+                <div class="lc-unidade agua">m³ — contador</div>
+              </div>
+            </div>
+            <div class="lc-valor agua" id="lcAgua">—</div>
+            <div class="lc-delta agua" id="lcAguaDelta"><i class="ti ti-minus"></i> sem dados anteriores</div>
+            <div class="lc-date" id="lcAguaDate">—</div>
+          </div>
+          <div class="leitura-card lc-eletricidade">
+            <div class="lc-header">
+              <div class="lc-icon li-elet"><i class="ti ti-bolt"></i></div>
+              <div>
+                <div class="lc-tipo elet">Eletricidade</div>
+                <div class="lc-unidade elet">kWh — contador</div>
+              </div>
+            </div>
+            <div class="lc-valor elet" id="lcElet">—</div>
+            <div class="lc-delta elet" id="lcEletDelta"><i class="ti ti-minus"></i> sem dados anteriores</div>
+            <div class="lc-date" id="lcEletDate">—</div>
+          </div>
+          <div class="leitura-card lc-gas">
+            <div class="lc-header">
+              <div class="lc-icon li-gas"><i class="ti ti-flame"></i></div>
+              <div>
+                <div class="lc-tipo gas">Gás</div>
+                <div class="lc-unidade gas">m³ — contador</div>
+              </div>
+            </div>
+            <div class="lc-valor gas" id="lcGas">—</div>
+            <div class="lc-delta gas" id="lcGasDelta"><i class="ti ti-minus"></i> sem dados anteriores</div>
+            <div class="lc-date" id="lcGasDate">—</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <div class="tab active" id="tabTodas"    onclick="setTab('TODAS')">Todas <span class="tab-cnt" id="cntTodas">0</span></div>
+          <div class="tab"        id="tabAgua"     onclick="setTab('AGUA')">Água <span class="tab-cnt" id="cntAgua">0</span></div>
+          <div class="tab"        id="tabElet"     onclick="setTab('ELETRICIDADE')">Eletricidade <span class="tab-cnt" id="cntElet">0</span></div>
+          <div class="tab"        id="tabGas"      onclick="setTab('GAS')">Gás <span class="tab-cnt" id="cntGas">0</span></div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="search-wrap">
+            <i class="ti ti-search"></i>
+            <input class="search-input" id="searchInput" type="text" placeholder="Pesquisar por observação ou segurança..." />
+          </div>
+          <select class="filter-select" id="filterPeriodo" onchange="applyFilters()">
+            <option value="">Todo o período</option>
+            <option value="hoje">Hoje</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mês</option>
+          </select>
+        </div>
+
+        <!-- Table -->
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th style="width:16%">Tipo</th>
+                <th style="width:16%">Leitura actual</th>
+                <th style="width:14%">Consumo</th>
+                <th style="width:14%">Data / hora</th>
+                <th style="width:20%">Observação</th>
+                <th style="width:12%">Segurança</th>
+                <th style="width:8%">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tblBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pag-row">
+          <span class="pag-info" id="pagInfo"></span>
+          <div class="pag-controls" id="pagControls"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ── MODAL: NOVA LEITURA ── -->
+<div class="modal-overlay" id="modalNovo" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Registar leitura</div>
+        <div class="modal-sub">Insira o valor actual do contador</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalNovo')" aria-label="Fechar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="section-label">Tipo de consumo</div>
+      <div class="tipo-selector">
+        <div class="tipo-opt sel-agua" data-tipo="AGUA" onclick="selectNovoTipo(this)">
+          <i class="ti ti-droplet"></i><div class="tipo-opt-lbl">Água</div>
+        </div>
+        <div class="tipo-opt" data-tipo="ELETRICIDADE" onclick="selectNovoTipo(this)">
+          <i class="ti ti-bolt"></i><div class="tipo-opt-lbl">Eletricidade</div>
+        </div>
+        <div class="tipo-opt" data-tipo="GAS" onclick="selectNovoTipo(this)">
+          <i class="ti ti-flame"></i><div class="tipo-opt-lbl">Gás</div>
+        </div>
+      </div>
+
+      <!-- Preview leitura anterior -->
+      <div class="prev-box" id="prevBox">
+        <div>
+          <div class="prev-lbl">Leitura anterior</div>
+          <div class="prev-val" id="prevVal">—</div>
+        </div>
+        <div class="prev-sep"></div>
+        <div>
+          <div class="prev-delta-lbl">Consumo calculado</div>
+          <div class="prev-delta-val" id="prevDelta">introduza um valor</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" for="nValor">Valor da leitura <span>*</span></label>
+          <input class="form-input" id="nValor" type="number" min="0" step="0.01" placeholder="Ex: 1250.50" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Unidade</label>
+          <input class="form-input" id="nUnidade" type="text" value="m³" readonly style="color:#9ca3af;cursor:default;" />
+        </div>
+      </div>
+      <div style="margin-top:14px;" class="form-group">
+        <label class="form-label" for="nObs">Observação</label>
+        <textarea class="form-textarea" id="nObs" placeholder="Notas sobre esta leitura (opcional)..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalNovo')">Cancelar</button>
+      <button class="btn-submit" onclick="submitNovo()"><i class="ti ti-plus"></i> Registar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: EDITAR ── -->
+<div class="modal-overlay" id="modalEditar" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Editar leitura</div>
+        <div class="modal-sub" id="editSub">Leitura #—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalEditar')" aria-label="Fechar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="section-label">Tipo de consumo</div>
+      <div class="tipo-selector" id="editTipoSelector">
+        <div class="tipo-opt" data-tipo="AGUA" onclick="selectEditTipo(this)">
+          <i class="ti ti-droplet"></i><div class="tipo-opt-lbl">Água</div>
+        </div>
+        <div class="tipo-opt" data-tipo="ELETRICIDADE" onclick="selectEditTipo(this)">
+          <i class="ti ti-bolt"></i><div class="tipo-opt-lbl">Eletricidade</div>
+        </div>
+        <div class="tipo-opt" data-tipo="GAS" onclick="selectEditTipo(this)">
+          <i class="ti ti-flame"></i><div class="tipo-opt-lbl">Gás</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" for="eValor">Valor da leitura <span>*</span></label>
+          <input class="form-input" id="eValor" type="number" min="0" step="0.01" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label" for="eData">Data / hora</label>
+          <input class="form-input" id="eData" type="datetime-local" />
+        </div>
+      </div>
+      <div style="margin-top:14px;" class="form-group">
+        <label class="form-label" for="eObs">Observação</label>
+        <textarea class="form-textarea" id="eObs" placeholder="Observação (opcional)..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalEditar')">Cancelar</button>
+      <button class="btn-submit" onclick="submitEditar()"><i class="ti ti-check"></i> Guardar alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: ELIMINAR ── -->
+<div class="modal-overlay" id="modalEliminar" role="dialog" aria-modal="true">
+  <div class="modal" style="width:420px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Eliminar leitura</div>
+        <div class="modal-sub" id="delSub">Leitura #—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('modalEliminar')" aria-label="Fechar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="delete-warn">
+        <i class="ti ti-alert-triangle"></i>
+        <div class="delete-warn-txt">
+          Esta ação vai <strong>eliminar permanentemente</strong> o registo desta leitura. 
+          O consumo calculado das leituras adjacentes será recalculado automaticamente.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modalEliminar')">Cancelar</button>
+      <button class="btn-danger" onclick="submitEliminar()"><i class="ti ti-trash"></i> Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="ti ti-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+  /* ── DADOS (replicam os dados reais do SQL) ── */
+  let DATA = [
+    { id:10, tipo:'ELETRICIDADE', valor:1200.00, obs:'Sem observações',                              seg:'Wagner Machado', data:'2026-04-17T15:26' },
+    { id:9,  tipo:'GAS',          valor:145.00,  obs:'Teste do ó o gás 1',                           seg:'Seg. Lima',      data:'2026-04-02T13:58' },
+    { id:8,  tipo:'AGUA',         valor:450.00,  obs:'Pouca Água',                                    seg:'Seg. Lima',      data:'2026-04-01T17:01' },
+    { id:7,  tipo:'AGUA',         valor:550.00,  obs:'Muita água',                                    seg:'Seg. Lima',      data:'2026-04-01T17:00' },
+    { id:6,  tipo:'GAS',          valor:123.00,  obs:'Ó o gás',                                      seg:'Seg. Lima',      data:'2026-03-26T23:45' },
+    { id:5,  tipo:'GAS',          valor:1100.00, obs:'Cano Danificado',                               seg:'Franciscojesse', data:'2026-03-24T14:47' },
+    { id:4,  tipo:'GAS',          valor:100.00,  obs:'Fábio fez um churrasco no escritório',         seg:'Seg. Lima',      data:'2026-03-22T20:23' },
+    { id:3,  tipo:'ELETRICIDADE', valor:1000.00, obs:'Fábio esqueceu as luzes do escritório acesas', seg:'Seg. Lima',      data:'2026-03-22T20:23' },
+    { id:2,  tipo:'AGUA',         valor:300.00,  obs:'Vazou ainda mais',                             seg:'Seg. Lima',      data:'2026-03-22T20:22' },
+    { id:1,  tipo:'AGUA',         valor:123.00,  obs:'Cano estourou',                                seg:'Seg. Lima',      data:'2026-03-22T20:22' },
+  ];
+
+  const PAGE_SIZE = 8;
+  let currentPage = 1;
+  let currentTab  = 'TODAS';
+  let filtered    = [];
+  let novoTipo    = 'AGUA';
+  let editId      = null;
+  let editTipo    = 'AGUA';
+  let deleteId    = null;
+
+  /* ── TIPO META ── */
+  const TIPO = {
+    AGUA:         { label:'Água',         icon:'ti-droplet', dotCss:'td-agua', selCls:'sel-agua', unidade:'m³'  },
+    ELETRICIDADE: { label:'Eletricidade', icon:'ti-bolt',    dotCss:'td-elet', selCls:'sel-elet', unidade:'kWh' },
+    GAS:          { label:'Gás',          icon:'ti-flame',   dotCss:'td-gas',  selCls:'sel-gas',  unidade:'m³'  },
+  };
+
+  /* ── CÁLCULO CONSUMO ── */
+  function calcDelta(item) {
+    const mesmaTipo = DATA.filter(d => d.tipo === item.tipo && d.data < item.data).sort((a,b) => b.data.localeCompare(a.data));
+    if (!mesmaTipo.length) return null;
+    return +(item.valor - mesmaTipo[0].valor).toFixed(2);
+  }
+
+  function ultimaPorTipo(tipo) {
+    return DATA.filter(d => d.tipo === tipo).sort((a,b) => b.data.localeCompare(a.data))[0] || null;
+  }
+
+  /* ── LEITURAS ACTUAIS ── */
+  function updateLeiturasCards() {
+    [['AGUA','lcAgua','lcAguaDelta','lcAguaDate'],
+     ['ELETRICIDADE','lcElet','lcEletDelta','lcEletDate'],
+     ['GAS','lcGas','lcGasDelta','lcGasDate']].forEach(([tipo, vId, dId, dtId]) => {
+      const u = ultimaPorTipo(tipo);
+      const tm = TIPO[tipo];
+      if (!u) {
+        document.getElementById(vId).textContent  = '—';
+        document.getElementById(dId).innerHTML    = '<i class="ti ti-minus"></i> sem dados';
+        document.getElementById(dtId).textContent = '—';
+        return;
+      }
+      document.getElementById(vId).textContent  = u.valor.toLocaleString('pt-PT', {minimumFractionDigits:2}) + ' ' + tm.unidade;
+      const delta = calcDelta(u);
+      const dEl = document.getElementById(dId);
+      if (delta === null) {
+        dEl.innerHTML = '<i class="ti ti-minus"></i> primeira leitura';
+      } else {
+        dEl.innerHTML = `<i class="ti ti-arrow-up"></i> +${delta.toLocaleString('pt-PT',{minimumFractionDigits:2})} ${tm.unidade} desde anterior`;
+      }
+      document.getElementById(dtId).textContent = 'Última: ' + fmtData(u.data);
+    });
+  }
+
+  /* ── TABS ── */
+  function setTab(tab) {
+    currentTab = tab;
+    currentPage = 1;
+    const map = { TODAS:'tabTodas', AGUA:'tabAgua', ELETRICIDADE:'tabElet', GAS:'tabGas' };
+    Object.values(map).forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById(map[tab]).classList.add('active');
+    applyFilters();
+  }
+
+  /* ── FILTERS ── */
+  function applyFilters() {
+    const q       = document.getElementById('searchInput').value.toLowerCase();
+    const periodo = document.getElementById('filterPeriodo').value;
+    const hoje    = new Date(); hoje.setHours(0,0,0,0);
+    const semana  = new Date(hoje); semana.setDate(semana.getDate() - semana.getDay());
+    const mes     = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+
+    filtered = DATA.filter(d => {
+      const matchTab = currentTab === 'TODAS' || d.tipo === currentTab;
+      const matchQ   = !q || d.obs.toLowerCase().includes(q) || d.seg.toLowerCase().includes(q);
+      let matchP = true;
+      if (periodo) {
+        const dt = new Date(d.data);
+        if (periodo === 'hoje')   matchP = dt >= hoje;
+        if (periodo === 'semana') matchP = dt >= semana;
+        if (periodo === 'mes')    matchP = dt >= mes;
+      }
+      return matchTab && matchQ && matchP;
+    });
+
+    updateCounts();
+    render();
+  }
+
+  function updateCounts() {
+    const cnt = t => DATA.filter(d => d.tipo === t).length;
+    document.getElementById('cntTodas').textContent = DATA.length;
+    document.getElementById('cntAgua').textContent  = cnt('AGUA');
+    document.getElementById('cntElet').textContent  = cnt('ELETRICIDADE');
+    document.getElementById('cntGas').textContent   = cnt('GAS');
+  }
+
+  /* ── FORMAT ── */
+  function fmtData(s) {
+    const d = new Date(s);
+    return d.toLocaleDateString('pt-PT', { day:'2-digit', month:'short', year:'numeric' })
+      + ', ' + d.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  /* ── RENDER ── */
+  function render() {
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const slice = filtered.slice(start, start + PAGE_SIZE);
+    const body  = document.getElementById('tblBody');
+
+    if (slice.length === 0) {
+      body.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:28px;color:#9ca3af;font-size:13px">Nenhum registo encontrado.</td></tr>`;
+    } else {
+      body.innerHTML = slice.map(d => {
+        const tm    = TIPO[d.tipo];
+        const delta = calcDelta(d);
+        const deltaHtml = delta === null
+          ? `<span class="delta-null">—</span>`
+          : `<span class="delta-wrap delta-pos"><i class="ti ti-arrow-up"></i> +${delta.toLocaleString('pt-PT',{minimumFractionDigits:2})} ${tm.unidade}</span>`;
+        return `<tr>
+          <td>
+            <div class="tipo-cell">
+              <div class="tipo-dot ${tm.dotCss}"><i class="ti ${tm.icon}"></i></div>
+              <div class="tipo-lbl">${tm.label}</div>
+            </div>
+          </td>
+          <td>
+            <span class="valor-leitura">${d.valor.toLocaleString('pt-PT',{minimumFractionDigits:2})}</span>
+            <span class="valor-unidade"> ${tm.unidade}</span>
+          </td>
+          <td>${deltaHtml}</td>
+          <td style="font-size:12px;color:#374151">${fmtData(d.data)}</td>
+          <td><div class="obs-cell" title="${d.obs}">${d.obs || '—'}</div></td>
+          <td style="font-size:11px;color:#6b7280">${d.seg}</td>
+          <td>
+            <div class="actions-cell">
+              <button class="action-btn edit" onclick="openEditar(${d.id})"><i class="ti ti-pencil"></i></button>
+              <button class="action-btn del"  onclick="openEliminar(${d.id})"><i class="ti ti-trash"></i></button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    document.getElementById('pagInfo').textContent = filtered.length === 0
+      ? '0 registos'
+      : `${start + 1}–${Math.min(currentPage * PAGE_SIZE, filtered.length)} de ${filtered.length} leituras`;
+
+    renderPag(totalPages);
+  }
+
+  /* ── PAGINATION ── */
+  function renderPag(total) {
+    const ctrl = document.getElementById('pagControls');
+    let h = `<button class="pag-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''} aria-label="Anterior"><i class="ti ti-chevron-left"></i></button>`;
+    for (let p = 1; p <= total; p++) {
+      if (p === 1 || p === total || Math.abs(p - currentPage) <= 1)
+        h += `<button class="pag-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+      else if ((p === 2 && currentPage > 4) || (p === total - 1 && currentPage < total - 3))
+        h += `<button class="pag-btn" disabled style="border:none;background:none;cursor:default;color:#9ca3af">…</button>`;
+    }
+    h += `<button class="pag-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''} aria-label="Seguinte"><i class="ti ti-chevron-right"></i></button>`;
+    ctrl.innerHTML = h;
+  }
+
+  function goPage(p) {
+    const tp = Math.ceil(filtered.length / PAGE_SIZE);
+    if (p < 1 || p > tp) return;
+    currentPage = p; render();
+  }
+
+  /* ── MODAL NOVO ── */
+  function openNovoModal() {
+    novoTipo = 'AGUA';
+    document.getElementById('nValor').value = '';
+    document.getElementById('nObs').value   = '';
+    syncNovoSelector();
+    updatePrevBox();
+    openModal('modalNovo');
+  }
+
+  function selectNovoTipo(el) {
+    novoTipo = el.dataset.tipo;
+    syncNovoSelector();
+    updatePrevBox();
+    updateUnidade('nUnidade', novoTipo);
+  }
+
+  function syncNovoSelector() {
+    document.querySelectorAll('#modalNovo .tipo-opt').forEach(e => {
+      e.className = 'tipo-opt';
+      if (e.dataset.tipo === novoTipo) e.classList.add(TIPO[novoTipo].selCls);
+    });
+  }
+
+  function updatePrevBox() {
+    const u = ultimaPorTipo(novoTipo);
+    document.getElementById('prevVal').textContent = u
+      ? u.valor.toLocaleString('pt-PT',{minimumFractionDigits:2}) + ' ' + TIPO[novoTipo].unidade
+      : 'Sem leitura anterior';
+    recalcDelta();
+  }
+
+  function recalcDelta() {
+    const v   = parseFloat(document.getElementById('nValor').value);
+    const u   = ultimaPorTipo(novoTipo);
+    const el  = document.getElementById('prevDelta');
+    if (!u || isNaN(v)) { el.textContent = 'introduza um valor'; el.style.color = '#9ca3af'; return; }
+    const d   = +(v - u.valor).toFixed(2);
+    el.textContent = (d >= 0 ? '+' : '') + d.toLocaleString('pt-PT',{minimumFractionDigits:2}) + ' ' + TIPO[novoTipo].unidade;
+    el.style.color = d < 0 ? '#dc2626' : '#166534';
+  }
+
+  document.getElementById('nValor').addEventListener('input', recalcDelta);
+
+  function updateUnidade(id, tipo) {
+    document.getElementById(id).value = TIPO[tipo].unidade;
+  }
+
+  function submitNovo() {
+    const v = parseFloat(document.getElementById('nValor').value);
+    if (isNaN(v) || v < 0) { highlight('nValor'); return; }
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const dataStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    DATA.unshift({ id: DATA.length + 1, tipo: novoTipo, valor: v, obs: document.getElementById('nObs').value.trim(), seg: 'Wagner Machado', data: dataStr });
+    closeModal('modalNovo');
+    updateLeiturasCards();
+    applyFilters();
+    showToast('Leitura de ' + TIPO[novoTipo].label + ' registada.');
+  }
+
+  /* ── MODAL EDITAR ── */
+  function openEditar(id) {
+    editId = id;
+    const d = DATA.find(x => x.id === id);
+    editTipo = d.tipo;
+    document.getElementById('editSub').textContent = `Leitura #${id} — ${TIPO[d.tipo].label}`;
+    document.getElementById('eValor').value = d.valor;
+    document.getElementById('eData').value  = d.data;
+    document.getElementById('eObs').value   = d.obs;
+    document.querySelectorAll('#editTipoSelector .tipo-opt').forEach(e => {
+      e.className = 'tipo-opt';
+      if (e.dataset.tipo === editTipo) e.classList.add(TIPO[editTipo].selCls);
+    });
+    openModal('modalEditar');
+  }
+
+  function selectEditTipo(el) {
+    editTipo = el.dataset.tipo;
+    document.querySelectorAll('#editTipoSelector .tipo-opt').forEach(e => {
+      e.className = 'tipo-opt';
+      if (e.dataset.tipo === editTipo) e.classList.add(TIPO[editTipo].selCls);
+    });
+  }
+
+  function submitEditar() {
+    const v = parseFloat(document.getElementById('eValor').value);
+    if (isNaN(v) || v < 0) { highlight('eValor'); return; }
+    const d = DATA.find(x => x.id === editId);
+    d.tipo  = editTipo;
+    d.valor = v;
+    d.obs   = document.getElementById('eObs').value.trim();
+    d.data  = document.getElementById('eData').value;
+    closeModal('modalEditar');
+    updateLeiturasCards();
+    applyFilters();
+    showToast('Leitura actualizada com sucesso.');
+  }
+
+  /* ── MODAL ELIMINAR ── */
+  function openEliminar(id) {
+    deleteId = id;
+    const d  = DATA.find(x => x.id === id);
+    document.getElementById('delSub').textContent = `Leitura #${id} — ${TIPO[d.tipo].label}, ${d.valor.toLocaleString('pt-PT',{minimumFractionDigits:2})} ${TIPO[d.tipo].unidade}`;
+    openModal('modalEliminar');
+  }
+
+  function submitEliminar() {
+    DATA = DATA.filter(x => x.id !== deleteId);
+    closeModal('modalEliminar');
+    updateLeiturasCards();
+    applyFilters();
+    showToast('Leitura eliminada.');
+  }
+
+  /* ── HELPERS ── */
+  function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow = 'hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+
+  function highlight(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = '#e24b4a'; el.focus();
+    setTimeout(() => el.style.borderColor = '', 1600);
+  }
+
+  function showToast(msg) {
+    document.getElementById('toastMsg').textContent = msg;
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3400);
+  }
+
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const btn = document.getElementById('collapseBtn');
+    const collapsed = sb.classList.toggle('collapsed');
+    btn.querySelector('i').className = collapsed ? 'ti ti-layout-sidebar-left-expand' : 'ti ti-layout-sidebar-left-collapse';
+    btn.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+  }
+
+  ['modalNovo','modalEditar','modalEliminar'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) closeModal(id); });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') ['modalNovo','modalEditar','modalEliminar'].forEach(closeModal);
+  });
+
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+  /* ── INIT ── */
+  updateLeiturasCards();
+  applyFilters();
+</script>
+</body>
+</html>

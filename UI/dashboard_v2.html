@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestão de Segurança — Dashboard v2</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #e8ecf0; color: #111; }
+    .shell { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { width: 224px; min-width: 224px; background: #0e1117; display: flex; flex-direction: column; transition: width .22s ease, min-width .22s ease; overflow: hidden; }
+    .sidebar.collapsed { width: 52px; min-width: 52px; }
+    .sb-top { display: flex; align-items: center; gap: 10px; padding: 0 14px; height: 54px; border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
+    .logo-mark { width: 26px; height: 26px; min-width: 26px; background: #1a6fd4; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; }
+    .logo-txt { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.85); white-space: nowrap; letter-spacing: .04em; }
+    .sidebar.collapsed .logo-txt { display: none; }
+    .collapse-btn { margin-left: auto; background: none; border: none; cursor: pointer; color: rgba(255,255,255,.3); font-size: 17px; padding: 4px; border-radius: 4px; display: flex; align-items: center; transition: color .15s, background .15s; flex-shrink: 0; }
+    .collapse-btn:hover { color: #fff; background: rgba(255,255,255,.07); }
+    .nav-wrap { flex: 1; padding: 14px 8px; overflow: hidden; }
+    .nav-lbl { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.22); letter-spacing: .1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; white-space: nowrap; }
+    .sidebar.collapsed .nav-lbl { visibility: hidden; }
+    .nav-gap { margin-top: 18px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 7px; cursor: pointer; color: rgba(255,255,255,.42); font-size: 13px; white-space: nowrap; margin-bottom: 1px; transition: background .13s, color .13s; text-decoration: none; }
+    .nav-item i { font-size: 17px; min-width: 20px; flex-shrink: 0; }
+    .nav-item span { overflow: hidden; }
+    .nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.8); }
+    .nav-item.active { background: #1a6fd4; color: #fff; }
+    .sidebar.collapsed .nav-item span { display: none; }
+    .sb-footer { padding: 10px 8px; border-top: 1px solid rgba(255,255,255,.06); flex-shrink: 0; }
+
+    /* ── TOPBAR ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .topbar { height: 54px; background: #111418; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
+    .topbar-brand { display: flex; align-items: center; gap: 14px; }
+    .brand-lm { width: 22px; height: 22px; background: #1a6fd4; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+    .brand-name-big { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); letter-spacing: .06em; }
+    .brand-sep { width: 1px; height: 18px; background: rgba(255,255,255,.12); }
+    .brand-sub { font-size: 13px; color: rgba(255,255,255,.45); }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .tb-icon-btn { width: 32px; height: 32px; border-radius: 7px; background: rgba(255,255,255,.06); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.45); font-size: 17px; transition: background .13s, color .13s; }
+    .tb-icon-btn:hover { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); }
+    .user-pill { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 10px 4px 4px; border-radius: 20px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); transition: background .13s; }
+    .user-pill:hover { background: rgba(255,255,255,.09); }
+    .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: #1a6fd4; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: #fff; }
+    .user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.7); }
+
+    /* ── PAGE ── */
+    .page { flex: 1; overflow-y: auto; padding: 20px; }
+    .content-block { background: #fff; border-radius: 12px; border: .5px solid #d0d5dc; padding: 26px; min-height: 100%; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+    .page-title { font-size: 18px; font-weight: 600; color: #111; }
+    .page-subtitle { font-size: 13px; color: #6b7280; margin-top: 3px; }
+    .date-chip { font-size: 12px; background: #f0f4f8; color: #374151; border: 1px solid #dde3ea; border-radius: 20px; padding: 5px 13px; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+    .date-chip i { font-size: 14px; }
+
+    /* ── TURNO BANNER ── */
+    .turno-banner {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .turno-left { display: flex; align-items: center; gap: 14px; }
+    .turno-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+    .turno-lbl { font-size: 11px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
+    .turno-val { font-size: 14px; font-weight: 600; color: #fff; }
+    .turno-divider { width: 1px; height: 32px; background: rgba(255,255,255,.08); }
+    .turno-seg { display: flex; align-items: center; gap: 10px; }
+    .seg-avatar { width: 30px; height: 30px; border-radius: 50%; background: #1a6fd4; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; }
+    .seg-info { font-size: 13px; font-weight: 500; color: #fff; }
+    .seg-num { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
+    .turno-time { text-align: right; }
+    .turno-time-val { font-size: 20px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+    .turno-time-lbl { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 2px; }
+
+    /* ── MAIN GRID ── */
+    .main-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,340px); gap: 16px; }
+
+    /* ── LEFT COLUMN ── */
+    .left-col { display: flex; flex-direction: column; gap: 16px; }
+
+    /* stat row 2x2 */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card {
+      border-radius: 10px;
+      border: 1px solid #edf0f4;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card-top { display: flex; align-items: center; justify-content: space-between; }
+    .stat-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+    .si-blue   { background: #1a6fd4; color: #fff; }
+    .si-amber  { background: #fef3c7; color: #92400e; }
+    .si-green  { background: #dcfce7; color: #166534; }
+    .si-red    { background: #fee2e2; color: #991b1b; }
+    .stat-trend { font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+    .trend-up   { color: #166534; }
+    .trend-down { color: #991b1b; }
+    .trend-neu  { color: #6b7280; }
+    .stat-n { font-size: 32px; font-weight: 600; color: #111; line-height: 1; }
+    .stat-n.accent { color: #1a6fd4; }
+    .stat-lbl { font-size: 12px; color: #6b7280; }
+    .stat-bar-track { height: 3px; background: #f1f5f9; border-radius: 2px; margin-top: 4px; }
+    .stat-bar-fill  { height: 3px; border-radius: 2px; }
+    .bar-blue  { background: #1a6fd4; }
+    .bar-amber { background: #f59e0b; }
+    .bar-green { background: #22c55e; }
+    .bar-red   { background: #ef4444; }
+
+    /* pessoas presentes list */
+    .section-card { border: 1px solid #edf0f4; border-radius: 10px; overflow: hidden; }
+    .sc-header { padding: 13px 16px; border-bottom: 1px solid #edf0f4; display: flex; align-items: center; justify-content: space-between; }
+    .sc-title { font-size: 13px; font-weight: 600; color: #111; display: flex; align-items: center; gap: 7px; }
+    .sc-title i { font-size: 15px; color: #1a6fd4; }
+    .sc-link { font-size: 11px; font-weight: 500; color: #1a6fd4; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+    .sc-link:hover { text-decoration: underline; }
+    .sc-link i { font-size: 12px; }
+    .sc-body { padding: 0 16px; }
+
+    .pessoa-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f3f5f7; }
+    .pessoa-row:last-child { border-bottom: none; }
+    .p-av { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+    .av-b { background: #dbeafe; color: #1e40af; }
+    .av-g { background: #dcfce7; color: #166534; }
+    .av-p { background: #ede9fe; color: #5b21b6; }
+    .av-a { background: #fef3c7; color: #92400e; }
+    .av-k { background: #fce7f3; color: #9d174d; }
+    .p-name-sm { font-size: 12px; font-weight: 500; color: #111; }
+    .p-setor { font-size: 11px; color: #9ca3af; }
+    .p-hora { font-size: 11px; color: #9ca3af; margin-left: auto; white-space: nowrap; }
+    .p-badge { margin-left: 6px; }
+
+    .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 500; padding: 1px 7px; border-radius: 20px; }
+    .badge-blue  { background: #dbeafe; color: #1e40af; }
+    .badge-purple { background: #f3e8ff; color: #6b21a8; }
+
+    .mais-chip { display: flex; align-items: center; justify-content: center; padding: 9px; font-size: 11px; color: #9ca3af; gap: 4px; cursor: pointer; }
+    .mais-chip:hover { color: #1a6fd4; }
+
+    /* ── RIGHT COLUMN ── */
+    .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+    /* chaves */
+    .chave-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f3f5f7; }
+    .chave-row:last-child { border-bottom: none; }
+    .chave-row-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .ki-amber  { background: #fef3c7; color: #92400e; }
+    .ki-red    { background: #fee2e2; color: #991b1b; }
+    .chave-cod { font-size: 12px; font-weight: 600; color: #111; font-family: 'Courier New', monospace; }
+    .chave-who { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .chave-desde { font-size: 11px; color: #9ca3af; margin-left: auto; white-space: nowrap; text-align: right; }
+    .chave-desde.late { color: #991b1b; font-weight: 500; }
+    .chave-late-tag { font-size: 10px; background: #fee2e2; color: #991b1b; border-radius: 4px; padding: 1px 5px; margin-top: 2px; display: inline-block; }
+
+    /* ocorrências */
+    .oc-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f3f5f7; }
+    .oc-row:last-child { border-bottom: none; }
+    .oc-bar { width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0; }
+    .ob-red   { background: #ef4444; }
+    .ob-amber { background: #f59e0b; }
+    .ob-blue  { background: #3b82f6; }
+    .oc-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .oi-red   { background: #fee2e2; color: #991b1b; }
+    .oi-amber { background: #fef3c7; color: #92400e; }
+    .oi-blue  { background: #dbeafe; color: #1e40af; }
+    .oc-title { font-size: 12px; font-weight: 500; color: #111; line-height: 1.3; }
+    .oc-meta  { font-size: 11px; color: #9ca3af; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+
+    .estado-badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 500; padding: 1px 7px; border-radius: 20px; }
+    .eb-red    { background: #fee2e2; color: #991b1b; }
+    .eb-amber  { background: #fef3c7; color: #92400e; }
+    .eb-green  { background: #dcfce7; color: #166534; }
+
+    /* acesso rápido */
+    .acesso-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 14px 16px; }
+    .acesso-btn {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 7px; padding: 14px 10px;
+      border: 1px solid #edf0f4; border-radius: 9px;
+      background: #fafbfc; cursor: pointer;
+      font-size: 11px; font-weight: 500; color: #374151;
+      transition: background .13s, border-color .13s, color .13s;
+      font-family: inherit; text-align: center;
+    }
+    .acesso-btn:hover { background: #f0f6ff; border-color: #c7deff; color: #1a6fd4; }
+    .acesso-btn i { font-size: 20px; color: #1a6fd4; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="logo-mark">IN</div>
+      <span class="logo-txt">INESC TEC</span>
+      <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()" aria-label="Recolher menu">
+        <i class="ti ti-layout-sidebar-left-collapse"></i>
+      </button>
+    </div>
+    <div class="nav-wrap">
+      <div class="nav-lbl">Principal</div>
+      <a href="#" class="nav-item active"><i class="ti ti-dashboard"></i><span>Dashboard</span></a>
+      <a href="movimentacoes.html" class="nav-item"><i class="ti ti-users"></i><span>Movimentações</span></a>
+      <a href="chaves.html" class="nav-item"><i class="ti ti-key"></i><span>Chaves</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Registos</div>
+      <a href="#" class="nav-item"><i class="ti ti-file-alert"></i><span>Ocorrências</span></a>
+      <a href="#" class="nav-item"><i class="ti ti-chart-bar"></i><span>Consumos</span></a>
+      <a href="#" class="nav-item"><i class="ti ti-building"></i><span>Salas</span></a>
+      <div class="nav-gap"></div>
+      <div class="nav-lbl">Sistema</div>
+      <a href="#" class="nav-item"><i class="ti ti-shield-check"></i><span>Utilizadores</span></a>
+    </div>
+    <div class="sb-footer">
+      <a href="#" class="nav-item"><i class="ti ti-logout"></i><span>Sair</span></a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-brand">
+        <div class="brand-lm">IN</div>
+        <span class="brand-name-big">INESC TEC</span>
+        <div class="brand-sep"></div>
+        <span class="brand-sub">Gestão de Segurança</span>
+      </div>
+      <div class="topbar-right">
+        <button class="tb-icon-btn" aria-label="Notificações"><i class="ti ti-bell"></i></button>
+        <div class="user-pill">
+          <div class="user-avatar">WM</div>
+          <span class="user-name">Wagner Machado</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="content-block">
+
+        <!-- Header -->
+        <div class="page-header">
+          <div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle">Visão geral do turno</div>
+          </div>
+          <div class="date-chip">
+            <i class="ti ti-calendar"></i> Segunda, 2 Jun 2026
+          </div>
+        </div>
+
+        <!-- Turno banner -->
+        <div class="turno-banner">
+          <div class="turno-left">
+            <div class="turno-dot"></div>
+            <div>
+              <div class="turno-lbl">Turno activo</div>
+              <div class="turno-val">Manhã — 08:00 às 16:00</div>
+            </div>
+            <div class="turno-divider"></div>
+            <div class="turno-seg">
+              <div class="seg-avatar">WM</div>
+              <div>
+                <div class="seg-info">Wagner Machado</div>
+                <div class="seg-num">Nº 32</div>
+              </div>
+            </div>
+          </div>
+          <div class="turno-time">
+            <div class="turno-time-val" id="clock">--:--</div>
+            <div class="turno-time-lbl">hora actual</div>
+          </div>
+        </div>
+
+        <!-- Main grid -->
+        <div class="main-grid">
+
+          <!-- LEFT -->
+          <div class="left-col">
+
+            <!-- 4 stat cards -->
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon si-blue"><i class="ti ti-building"></i></div>
+                  <div class="stat-trend trend-up"><i class="ti ti-trending-up" style="font-size:13px"></i> +3 hoje</div>
+                </div>
+                <div>
+                  <div class="stat-n accent">14</div>
+                  <div class="stat-lbl">Pessoas no edifício</div>
+                </div>
+                <div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill bar-blue" style="width:54%"></div></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon si-green"><i class="ti ti-walk"></i></div>
+                  <div class="stat-trend trend-up"><i class="ti ti-trending-up" style="font-size:13px"></i> 31 entradas</div>
+                </div>
+                <div>
+                  <div class="stat-n">7</div>
+                  <div class="stat-lbl">Visitas hoje</div>
+                </div>
+                <div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill bar-green" style="width:35%"></div></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon si-amber"><i class="ti ti-key"></i></div>
+                  <div class="stat-trend trend-neu"><i class="ti ti-minus" style="font-size:13px"></i> sem alterações</div>
+                </div>
+                <div>
+                  <div class="stat-n">3</div>
+                  <div class="stat-lbl">Chaves emprestadas</div>
+                </div>
+                <div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill bar-amber" style="width:12%"></div></div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card-top">
+                  <div class="stat-icon si-red"><i class="ti ti-alert-triangle"></i></div>
+                  <div class="stat-trend trend-down"><i class="ti ti-alert-circle" style="font-size:13px"></i> requer atenção</div>
+                </div>
+                <div>
+                  <div class="stat-n">2</div>
+                  <div class="stat-lbl">Ocorrências pendentes</div>
+                </div>
+                <div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill bar-red" style="width:8%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pessoas presentes -->
+            <div class="section-card">
+              <div class="sc-header">
+                <div class="sc-title"><i class="ti ti-users"></i> Pessoas no edifício agora</div>
+                <a href="movimentacoes.html" class="sc-link">Ver todas <i class="ti ti-arrow-right"></i></a>
+              </div>
+              <div class="sc-body">
+                <div class="pessoa-row">
+                  <div class="p-av av-b">AC</div>
+                  <div><div class="p-name-sm">Ana Costa</div><div class="p-setor">RH</div></div>
+                  <div class="p-hora">08:12</div>
+                  <div class="p-badge"><span class="badge badge-blue">Func.</span></div>
+                </div>
+                <div class="pessoa-row">
+                  <div class="p-av av-g">CN</div>
+                  <div><div class="p-name-sm">Carlos Neves</div><div class="p-setor">Informática</div></div>
+                  <div class="p-hora">08:30</div>
+                  <div class="p-badge"><span class="badge badge-blue">Func.</span></div>
+                </div>
+                <div class="pessoa-row">
+                  <div class="p-av av-p">RS</div>
+                  <div><div class="p-name-sm">Rita Sousa</div><div class="p-setor">Financeiro</div></div>
+                  <div class="p-hora">08:45</div>
+                  <div class="p-badge"><span class="badge badge-blue">Func.</span></div>
+                </div>
+                <div class="pessoa-row">
+                  <div class="p-av av-a">TA</div>
+                  <div><div class="p-name-sm">Tiago Alves</div><div class="p-setor">Receção</div></div>
+                  <div class="p-hora">09:40</div>
+                  <div class="p-badge"><span class="badge badge-purple">Visit.</span></div>
+                </div>
+                <div class="pessoa-row">
+                  <div class="p-av av-k">ML</div>
+                  <div><div class="p-name-sm">Marta Lopes</div><div class="p-setor">Lab. 2</div></div>
+                  <div class="p-hora">09:15</div>
+                  <div class="p-badge"><span class="badge badge-blue">Func.</span></div>
+                </div>
+                <div class="mais-chip" onclick="location.href='movimentacoes.html'">
+                  <i class="ti ti-dots" style="font-size:14px"></i> mais 9 pessoas
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT -->
+          <div class="right-col">
+
+            <!-- Acesso rápido -->
+            <div class="section-card">
+              <div class="sc-header">
+                <div class="sc-title"><i class="ti ti-bolt"></i> Acesso rápido</div>
+              </div>
+              <div class="acesso-grid">
+                <button class="acesso-btn" onclick="location.href='movimentacoes.html'">
+                  <i class="ti ti-login"></i> Registar entrada
+                </button>
+                <button class="acesso-btn" onclick="location.href='chaves.html'">
+                  <i class="ti ti-key"></i> Entregar chave
+                </button>
+                <button class="acesso-btn">
+                  <i class="ti ti-file-alert"></i> Nova ocorrência
+                </button>
+                <button class="acesso-btn">
+                  <i class="ti ti-chart-bar"></i> Registar consumo
+                </button>
+              </div>
+            </div>
+
+            <!-- Chaves em uso -->
+            <div class="section-card">
+              <div class="sc-header">
+                <div class="sc-title"><i class="ti ti-key"></i> Chaves em uso</div>
+                <a href="chaves.html" class="sc-link">Gerir <i class="ti ti-arrow-right"></i></a>
+              </div>
+              <div class="sc-body">
+                <div class="chave-row">
+                  <div class="chave-row-icon ki-amber"><i class="ti ti-key"></i></div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="chave-cod">CHV-105</div>
+                    <div class="chave-who">Ana Costa · Sala 105</div>
+                  </div>
+                  <div class="chave-desde">08:30</div>
+                </div>
+                <div class="chave-row">
+                  <div class="chave-row-icon ki-amber"><i class="ti ti-key"></i></div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="chave-cod">CHV-201</div>
+                    <div class="chave-who">Carlos Neves · Sala 201</div>
+                  </div>
+                  <div class="chave-desde">10:02</div>
+                </div>
+                <div class="chave-row">
+                  <div class="chave-row-icon ki-red"><i class="ti ti-key"></i></div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="chave-cod">MOLHO-A3</div>
+                    <div class="chave-who">Tiago Alves · Geral</div>
+                    <div class="chave-late-tag">Atrasada</div>
+                  </div>
+                  <div class="chave-desde late">07:50</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ocorrências -->
+            <div class="section-card">
+              <div class="sc-header">
+                <div class="sc-title"><i class="ti ti-file-alert"></i> Ocorrências recentes</div>
+                <a href="#" class="sc-link">Ver todas <i class="ti ti-arrow-right"></i></a>
+              </div>
+              <div class="sc-body">
+                <div class="oc-row">
+                  <div class="oc-bar ob-red"></div>
+                  <div class="oc-icon oi-red"><i class="ti ti-shield-x"></i></div>
+                  <div>
+                    <div class="oc-title">Acesso não autorizado — Piso 3</div>
+                    <div class="oc-meta">11:34 <span class="estado-badge eb-red">Pendente</span></div>
+                  </div>
+                </div>
+                <div class="oc-row">
+                  <div class="oc-bar ob-amber"></div>
+                  <div class="oc-icon oi-amber"><i class="ti ti-tool"></i></div>
+                  <div>
+                    <div class="oc-title">Avaria de equipamento — Sala 104</div>
+                    <div class="oc-meta">09:58 <span class="estado-badge eb-amber">Em análise</span></div>
+                  </div>
+                </div>
+                <div class="oc-row">
+                  <div class="oc-bar ob-blue"></div>
+                  <div class="oc-icon oi-blue"><i class="ti ti-search"></i></div>
+                  <div>
+                    <div class="oc-title">Objeto perdido — Receção</div>
+                    <div class="oc-meta">Ontem, 17:10 <span class="estado-badge eb-green">Resolvida</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const btn = document.getElementById('collapseBtn');
+    const collapsed = sb.classList.toggle('collapsed');
+    btn.querySelector('i').className = collapsed
+      ? 'ti ti-layout-sidebar-left-expand'
+      : 'ti ti-layout-sidebar-left-collapse';
+    btn.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+  }
+
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2, '0');
+    const m = now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('clock').textContent = h + ':' + m;
+  }
+  updateClock();
+  setInterval(updateClock, 10000);
+</script>
+</body>
+</html>
