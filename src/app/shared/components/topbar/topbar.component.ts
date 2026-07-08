@@ -17,11 +17,11 @@ export class TopbarComponent implements OnInit {
   user: User | null = null;
 
   ngOnInit() {
-    this.user = this.authService.getLoggedInUser();
+    // this.user = this.authService.getLoggedInUser();
   }
 
   getInitials(name: string): string {
-    if (!name) return "IT"
+    if (!name) return "WL"
     const names = name.split(" ");
     const initials = names.map((n) => n.charAt(0).toUpperCase())
     return initials.join("")
