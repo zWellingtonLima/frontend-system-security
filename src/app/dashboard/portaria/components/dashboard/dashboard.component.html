@@ -1,0 +1,60 @@
+<div class="dashboard-wrapper">
+
+  <div class="titulo-dashboard">
+    <h5>SEGURANÇA . VISÃO GERAL</h5>
+    <h3>Dashboard</h3>
+    <p>Resumo do turno em curso</p>
+  </div>
+
+  <div class="dashboard-blocks-container">
+    <div class="dashboard-blocks">
+      <h5>OCORRÊNCIAS ABERTAS</h5>
+      <h3>2</h3>
+      <p>1 pendente</p>
+    </div>
+
+    <div class="dashboard-blocks">
+      <h5>CHAVES FORA</h5>
+      <h3>2</h3>
+      <p>1 em atraso</p>
+    </div>
+
+    <div class="dashboard-blocks">
+      <h5>VISITAS HOJE</h5>
+      <h3>2</h3>
+      <p>1 registadas</p>
+    </div>
+
+  </div>
+
+  <div class="dashboard-blocks-container">
+    <div class="dashboard-blocks">
+      <div class="titulos-lista-chaves">
+        <span>Chaves em uso</span>
+        <span><a href="">Ver todas →</a></span>
+      </div>
+
+      <div class="teste" *ngFor="let item of chaves">
+        <span class="margin">{{ item.descricao }}</span>
+        <span class="margin">{{ item.nomePessoa }}</span>
+        <span></span>
+      </div>
+
+    </div>
+
+  <div class="dashboard-blocks">
+    <div class="titulos-lista-chaves ">
+      <span>Ocorrências recentes</span>
+      <span><a href="">Ver todas →</a></span>
+    </div>
+
+    <div *ngFor="let item of chaves">
+      <span class="margin">{{ item.descricao }}</span>
+      <span class="margin">{{ item.nomePessoa }}</span>
+      <span>em uso</span>
+    </div>
+  </div>
+
+  </div>
+
+</div>

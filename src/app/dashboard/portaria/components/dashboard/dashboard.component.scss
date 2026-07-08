@@ -1,0 +1,68 @@
+@import "src/app/dashboard/portaria/portaria.component.scss";
+
+
+.titulo-dashboard{
+  padding: 24px 20px 10px;
+}
+
+.titulo-dashboard p, h3, h5{
+  margin: 5px;
+  font-size: medium;
+}
+
+.titulo-dashboard p{
+  color: $teletrabalho-color-text-muted;
+}
+.titulo-dashboard h3{
+  font-weight: bold;
+  color: $teletrabalho-color-text-muted;
+}
+
+.titulo-dashboard h5{
+  font-weight: bold;
+  font-size: small;
+  color: $teletrabalho-color-accent;
+}
+
+.dashboard-blocks-container{
+  display: flex;
+  padding: 0 24px 24px;
+  width: 100%;
+}
+
+/*       */
+.dashboard-blocks{
+  position: relative;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px 10px 10px;
+  margin-right: 12px;
+  width: 35%;
+  border: 1px solid $teletrabalho-color-border-soft;
+}
+
+.dashboard-blocks h3{
+  font-weight: bold;
+}
+
+.dashboard-blocks h5{
+  font-weight: bold;
+  color: $teletrabalho-color-text-muted;
+  font-size: small;
+}
+
+.dashboard-blocks p{
+  font-size: small;
+}
+
+
+
+
+.teste-container {
+  display: flex;
+  width: 100vw;  /* 100% da largura da tela */
+}
+/*       */
+
+
+
