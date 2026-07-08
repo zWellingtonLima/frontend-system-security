@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Reference — gestao-seguranca</title>
+
+  <!-- Feather icons (ft-) — aponta para os assets do projeto -->
+  <link href="../src/assets/fonts/feather/style.min.css" rel="stylesheet">
+  <!-- Simple Line Icons (icon-) -->
+  <link href="../src/assets/fonts/simple-line-icons/style.css" rel="stylesheet">
+  <!-- Font Awesome 5.15 (fas / far / fab) — versão que já inclui running, hammer, tools -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .subtitle kbd {
+      background: #1e2535;
+      border: 1px solid #2d3748;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-family: inherit;
+    }
+
+    .search-bar {
+      width: 100%;
+      max-width: 420px;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #2d3748;
+      background: #1a1f2e;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      outline: none;
+      transition: border-color 0.2s;
+      display: block;
+    }
+    .search-bar:focus { border-color: #4f6ef7; }
+    .search-bar::placeholder { color: #4a5568; }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #2d3748;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+    .tab:hover { border-color: #4f6ef7; color: #fff; }
+    .tab.active { background: #4f6ef7; border-color: #4f6ef7; color: #fff; }
+
+    .section { display: none; }
+    .section.visible { display: block; }
+
+    .section-header {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4a5568;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-header code {
+      font-family: 'Courier New', monospace;
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: #7b9fff;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .count {
+      color: #4a5568;
+      font-size: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .icon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 0.5rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #1e2535;
+      background: #141824;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .icon-card:hover {
+      border-color: #4f6ef7;
+      background: #1a2040;
+      transform: translateY(-1px);
+    }
+    .icon-card i {
+      font-size: 1.4rem;
+      color: #a0aec0;
+      width: 24px;
+      text-align: center;
+    }
+    .icon-card:hover i { color: #7b9fff; }
+
+    .icon-name {
+      font-size: 0.62rem;
+      color: #4a5568;
+      text-align: center;
+      word-break: break-all;
+      line-height: 1.3;
+    }
+    .icon-card:hover .icon-name { color: #94a3b8; }
+
+    .copied-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #4f6ef7;
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .copied-toast.show { opacity: 1; transform: translateY(0); }
+
+    .no-results {
+      padding: 3rem;
+      text-align: center;
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
+
+    .hidden { display: none !important; }
+
+    .warning-banner {
+      background: #1e1a0a;
+      border: 1px solid #4a3800;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: #a08040;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .warning-banner.show { display: block; }
+  </style>
+</head>
+<body>
+
+<h1>Icon Reference</h1>
+<p class="subtitle">Clique em qualquer ícone para copiar a classe. Pressiona <kbd>/</kbd> para focar na busca, <kbd>Esc</kbd> para sair.</p>
+
+<div class="warning-banner" id="feather-warning">
+  ⚠️ Os ícones Feather (ft-) precisam das fonts locais do projeto. Abre este ficheiro a partir da pasta <code>src/</code> do projeto para os ver.
+</div>
+
+<input type="text" class="search-bar" id="search" placeholder="Buscar ícone... ex: arrow, user, file, fa-" autocomplete="off">
+
+<div class="tabs">
+  <button class="tab active" data-tab="all">Todos</button>
+  <button class="tab" data-tab="feather">Feather <span style="opacity:.5;font-size:.8em">ft-</span></button>
+  <button class="tab" data-tab="sli">Simple Line <span style="opacity:.5;font-size:.8em">icon-</span></button>
+  <button class="tab" data-tab="fa">Font Awesome <span style="opacity:.5;font-size:.8em">fas/far/fab</span></button>
+</div>
+
+<!-- FEATHER -->
+<div class="section visible" id="section-feather">
+  <div class="section-header">Feather Icons — prefixo: <code>ft-</code></div>
+  <div class="count" id="count-feather"></div>
+  <div class="grid" id="grid-feather"></div>
+</div>
+
+<!-- SIMPLE LINE ICONS -->
+<div class="section visible" id="section-sli">
+  <div class="section-header">Simple Line Icons — prefixo: <code>icon-</code></div>
+  <div class="count" id="count-sli"></div>
+  <div class="grid" id="grid-sli"></div>
+</div>
+
+<!-- FONT AWESOME -->
+<div class="section visible" id="section-fa">
+  <div class="section-header">Font Awesome 5 — prefixos: <code>fas fa-</code> &nbsp;/&nbsp; <code>far fa-</code> &nbsp;/&nbsp; <code>fab fa-</code></div>
+  <div class="count" id="count-fa"></div>
+  <div class="grid" id="grid-fa"></div>
+</div>
+
+<div class="no-results hidden" id="no-results">Nenhum ícone encontrado para "<span id="no-results-query"></span>"</div>
+
+<div class="copied-toast" id="toast">Copiado!</div>
+
+<script>
+// ─── FEATHER (ft-) ───────────────────────────────────────────────────────────
+const featherIcons = [
+  "ft-activity","ft-airplay","ft-alert-circle","ft-alert-octagon","ft-alert-triangle",
+  "ft-align-center","ft-align-justify","ft-align-left","ft-align-right","ft-anchor",
+  "ft-aperture","ft-arrow-down","ft-arrow-down-left","ft-arrow-down-right","ft-arrow-left",
+  "ft-arrow-right","ft-arrow-up","ft-arrow-up-left","ft-arrow-up-right","ft-at-sign",
+  "ft-award","ft-bar-chart","ft-bar-chart-2","ft-battery","ft-battery-charging",
+  "ft-bell","ft-bell-off","ft-bluetooth","ft-bold","ft-book","ft-bookmark","ft-box",
+  "ft-briefcase","ft-calendar","ft-camera","ft-camera-off","ft-cast","ft-check",
+  "ft-check-circle","ft-check-square","ft-chevron-down","ft-chevron-left","ft-chevron-right",
+  "ft-chevrons-down","ft-chevrons-left","ft-chevrons-right","ft-chevrons-up","ft-chevron-up",
+  "ft-chrome","ft-circle","ft-clipboard","ft-clock","ft-cloud","ft-cloud-drizzle",
+  "ft-cloud-lightning","ft-cloud-off","ft-cloud-rain","ft-cloud-snow","ft-codepen",
+  "ft-command","ft-compass","ft-copy","ft-corner-down-left","ft-corner-down-right",
+  "ft-corner-left-down","ft-corner-left-up","ft-corner-right-down","ft-corner-right-up",
+  "ft-corner-up-left","ft-corner-up-right","ft-cpu","ft-credit-card","ft-crop",
+  "ft-crosshair","ft-database","ft-delete","ft-disc","ft-download","ft-download-cloud",
+  "ft-droplet","ft-edit","ft-edit-2","ft-edit-3","ft-external-link","ft-eye","ft-eye-off",
+  "ft-facebook","ft-fast-forward","ft-feather","ft-file","ft-file-minus","ft-file-plus",
+  "ft-file-text","ft-film","ft-filter","ft-flag","ft-folder","ft-github","ft-gitlab",
+  "ft-globe","ft-grid","ft-hash","ft-headphones","ft-heart","ft-help-circle","ft-home",
+  "ft-image","ft-inbox","ft-info","ft-instagram","ft-italic","ft-layers","ft-layout",
+  "ft-life-buoy","ft-link","ft-link-2","ft-list","ft-loader","ft-lock","ft-log-in",
+  "ft-log-out","ft-mail","ft-map","ft-map-pin","ft-maximize","ft-maximize-2","ft-menu",
+  "ft-message-circle","ft-message-square","ft-mic","ft-mic-off","ft-minimize","ft-minimize-2",
+  "ft-minus","ft-minus-circle","ft-minus-square","ft-monitor","ft-moon","ft-more-horizontal",
+  "ft-more-vertical","ft-move","ft-music","ft-navigation","ft-navigation-2","ft-octagon",
+  "ft-package","ft-paperclip","ft-pause","ft-pause-circle","ft-percent","ft-phone",
+  "ft-phone-call","ft-phone-forwarded","ft-phone-incoming","ft-phone-missed","ft-phone-off",
+  "ft-phone-outgoing","ft-pie-chart","ft-play","ft-play-circle","ft-plus","ft-plus-circle",
+  "ft-plus-square","ft-pocket","ft-power","ft-printer","ft-radio","ft-refresh-ccw",
+  "ft-refresh-cw","ft-repeat","ft-rewind","ft-rotate-ccw","ft-rotate-cw","ft-save",
+  "ft-scissors","ft-search","ft-server","ft-settings","ft-share","ft-share-2","ft-shield",
+  "ft-shopping-cart","ft-shuffle","ft-sidebar","ft-skip-back","ft-skip-forward","ft-slack",
+  "ft-slash","ft-sliders","ft-smartphone","ft-speaker","ft-square","ft-star","ft-stop-circle",
+  "ft-sun","ft-sunrise","ft-sunset","ft-tablet","ft-tag","ft-target","ft-thermometer",
+  "ft-thumbs-down","ft-thumbs-up","ft-toggle-left","ft-toggle-right","ft-trash","ft-trash-2",
+  "ft-trending-down","ft-trending-up","ft-triangle","ft-tv","ft-twitter","ft-type",
+  "ft-umbrella","ft-underline","ft-unlock","ft-upload","ft-upload-cloud","ft-user",
+  "ft-user-check","ft-user-minus","ft-user-plus","ft-users","ft-user-x","ft-video",
+  "ft-video-off","ft-voicemail","ft-volume","ft-volume-1","ft-volume-2","ft-volume-x",
+  "ft-watch","ft-wifi","ft-wifi-off","ft-wind","ft-x","ft-x-circle","ft-x-square",
+  "ft-zap","ft-zoom-in","ft-zoom-out"
+];
+
+// ─── SIMPLE LINE ICONS (icon-) ───────────────────────────────────────────────
+const sliIcons = [
+  "icon-action-redo","icon-action-undo","icon-anchor","icon-arrow-down","icon-arrow-left",
+  "icon-arrow-right","icon-arrow-up","icon-badge","icon-bag","icon-ban","icon-bar-chart",
+  "icon-basket","icon-basket-loaded","icon-bell","icon-book-open","icon-briefcase",
+  "icon-bubble","icon-bubbles","icon-bulb","icon-calculator","icon-calendar",
+  "icon-call-end","icon-call-in","icon-call-out","icon-camcorder","icon-camera",
+  "icon-check","icon-chemistry","icon-clock","icon-close","icon-cloud-download",
+  "icon-cloud-upload","icon-compass","icon-control-end","icon-control-forward",
+  "icon-control-pause","icon-control-play","icon-control-rewind","icon-control-start",
+  "icon-credit-card","icon-crop","icon-cup","icon-cursor","icon-cursor-move",
+  "icon-diamond","icon-direction","icon-directions","icon-disc","icon-dislike",
+  "icon-doc","icon-docs","icon-drawer","icon-drop","icon-earphones","icon-earphones-alt",
+  "icon-emoticon-smile","icon-energy","icon-envelope","icon-envelope-letter",
+  "icon-envelope-open","icon-equalizer","icon-eye","icon-eyeglasses","icon-feed",
+  "icon-film","icon-fire","icon-flag","icon-folder","icon-folder-alt","icon-frame",
+  "icon-game-controller","icon-ghost","icon-globe","icon-globe-alt","icon-graduation",
+  "icon-graph","icon-grid","icon-handbag","icon-heart","icon-home","icon-hourglass",
+  "icon-info","icon-key","icon-layers","icon-like","icon-link","icon-list","icon-lock",
+  "icon-lock-open","icon-login","icon-logout","icon-loop","icon-magic-wand","icon-magnet",
+  "icon-magnifier","icon-magnifier-add","icon-magnifier-remove","icon-map","icon-microphone",
+  "icon-mouse","icon-moustache","icon-music-tone","icon-music-tone-alt","icon-note",
+  "icon-notebook","icon-paper-clip","icon-paper-plane","icon-pencil","icon-picture",
+  "icon-pie-chart","icon-pin","icon-plane","icon-playlist","icon-plus","icon-pointer",
+  "icon-power","icon-present","icon-printer","icon-puzzle","icon-question","icon-refresh",
+  "icon-reload","icon-rocket","icon-screen-desktop","icon-screen-smartphone",
+  "icon-screen-tablet","icon-settings","icon-share","icon-share-alt","icon-shield",
+  "icon-shuffle","icon-size-actual","icon-size-fullscreen","icon-social-dribbble",
+  "icon-social-dropbox","icon-social-facebook","icon-social-tumblr","icon-social-twitter",
+  "icon-social-youtube","icon-speech","icon-speedometer","icon-star","icon-support",
+  "icon-symbol-female","icon-symbol-male","icon-tag","icon-target","icon-trash",
+  "icon-trophy","icon-umbrella","icon-user","icon-user-female","icon-user-follow",
+  "icon-user-following","icon-users","icon-user-unfollow","icon-vector","icon-volume-1",
+  "icon-volume-2","icon-volume-off","icon-wallet","icon-wrench"
+];
+
+// ─── FONT AWESOME 5.15 (fas / far / fab) ─────────────────────────────────────
+// Agrupado por estilo para filtro e label visual
+const faIcons = [
+  // ── solid (fas) ──
+  "fas fa-home","fas fa-user","fas fa-users","fas fa-user-shield","fas fa-user-cog",
+  "fas fa-user-check","fas fa-user-times","fas fa-user-plus","fas fa-user-minus",
+  "fas fa-cog","fas fa-cogs","fas fa-search","fas fa-bell","fas fa-bell-slash",
+  "fas fa-envelope","fas fa-envelope-open","fas fa-lock","fas fa-lock-open",
+  "fas fa-key","fas fa-shield-alt","fas fa-fingerprint","fas fa-id-badge","fas fa-id-card",
+  "fas fa-chart-bar","fas fa-chart-pie","fas fa-chart-line","fas fa-chart-area",
+  "fas fa-table","fas fa-list","fas fa-list-ul","fas fa-list-ol","fas fa-th","fas fa-th-list",
+  "fas fa-plus","fas fa-plus-circle","fas fa-minus","fas fa-minus-circle",
+  "fas fa-times","fas fa-times-circle","fas fa-check","fas fa-check-circle","fas fa-check-square",
+  "fas fa-edit","fas fa-pen","fas fa-pen-alt","fas fa-pencil-alt","fas fa-highlighter",
+  "fas fa-trash","fas fa-trash-alt","fas fa-save","fas fa-file","fas fa-file-alt",
+  "fas fa-file-pdf","fas fa-file-word","fas fa-file-excel","fas fa-file-image",
+  "fas fa-file-code","fas fa-file-csv","fas fa-folder","fas fa-folder-open",
+  "fas fa-download","fas fa-upload","fas fa-print","fas fa-copy","fas fa-cut","fas fa-paste",
+  "fas fa-camera","fas fa-image","fas fa-images","fas fa-video","fas fa-film","fas fa-music",
+  "fas fa-calendar","fas fa-calendar-alt","fas fa-calendar-check","fas fa-calendar-times",
+  "fas fa-clock","fas fa-hourglass","fas fa-hourglass-half","fas fa-stopwatch",
+  "fas fa-map-marker-alt","fas fa-map","fas fa-compass","fas fa-globe","fas fa-globe-americas",
+  "fas fa-wifi","fas fa-signal","fas fa-broadcast-tower",
+  "fas fa-database","fas fa-server","fas fa-hdd","fas fa-microchip",
+  "fas fa-cloud","fas fa-cloud-upload-alt","fas fa-cloud-download-alt","fas fa-cloud-sun",
+  "fas fa-sync","fas fa-sync-alt","fas fa-redo","fas fa-undo","fas fa-history",
+  "fas fa-arrow-up","fas fa-arrow-down","fas fa-arrow-left","fas fa-arrow-right",
+  "fas fa-arrows-alt","fas fa-expand","fas fa-compress","fas fa-external-link-alt",
+  "fas fa-chevron-up","fas fa-chevron-down","fas fa-chevron-left","fas fa-chevron-right",
+  "fas fa-angle-up","fas fa-angle-down","fas fa-angle-left","fas fa-angle-right",
+  "fas fa-sort","fas fa-sort-up","fas fa-sort-down","fas fa-filter","fas fa-funnel-dollar",
+  "fas fa-tag","fas fa-tags","fas fa-bookmark","fas fa-star","fas fa-heart",
+  "fas fa-thumbs-up","fas fa-thumbs-down","fas fa-comment","fas fa-comments","fas fa-reply",
+  "fas fa-share","fas fa-share-alt","fas fa-share-square","fas fa-link","fas fa-unlink",
+  "fas fa-eye","fas fa-eye-slash","fas fa-info","fas fa-info-circle",
+  "fas fa-question","fas fa-question-circle","fas fa-exclamation","fas fa-exclamation-circle",
+  "fas fa-exclamation-triangle","fas fa-ban","fas fa-minus-square","fas fa-plus-square",
+  "fas fa-spinner","fas fa-circle-notch","fas fa-power-off",
+  "fas fa-sign-in-alt","fas fa-sign-out-alt","fas fa-door-open","fas fa-door-closed",
+  "fas fa-mobile","fas fa-mobile-alt","fas fa-tablet","fas fa-tablet-alt",
+  "fas fa-laptop","fas fa-desktop","fas fa-tv","fas fa-headphones","fas fa-microphone",
+  "fas fa-phone","fas fa-phone-alt","fas fa-fax","fas fa-voicemail",
+  "fas fa-credit-card","fas fa-money-bill","fas fa-money-bill-wave","fas fa-wallet",
+  "fas fa-coins","fas fa-donate","fas fa-shopping-cart","fas fa-shopping-bag","fas fa-store",
+  "fas fa-box","fas fa-boxes","fas fa-warehouse","fas fa-truck","fas fa-shipping-fast",
+  "fas fa-plane","fas fa-train","fas fa-car","fas fa-bicycle","fas fa-walking",
+  "fas fa-running","fas fa-graduation-cap","fas fa-book","fas fa-book-open",
+  "fas fa-newspaper","fas fa-paint-brush","fas fa-palette","fas fa-drafting-compass",
+  "fas fa-tools","fas fa-wrench","fas fa-hammer","fas fa-screwdriver","fas fa-toolbox",
+  "fas fa-sitemap","fas fa-project-diagram","fas fa-network-wired","fas fa-plug",
+  "fas fa-battery-full","fas fa-battery-three-quarters","fas fa-battery-half",
+  "fas fa-battery-quarter","fas fa-battery-empty","fas fa-bolt","fas fa-fire",
+  "fas fa-snowflake","fas fa-sun","fas fa-moon","fas fa-cloud-rain","fas fa-wind",
+  "fas fa-thermometer-half","fas fa-tint","fas fa-layer-group","fas fa-object-group",
+  "fas fa-code","fas fa-code-branch","fas fa-terminal","fas fa-bug","fas fa-robot",
+  "fas fa-shield-virus","fas fa-virus","fas fa-first-aid","fas fa-heartbeat",
+  "fas fa-stethoscope","fas fa-pills","fas fa-syringe",
+  // ── regular (far) ──
+  "far fa-bell","far fa-bell-slash","far fa-bookmark","far fa-calendar","far fa-calendar-alt",
+  "far fa-calendar-check","far fa-chart-bar","far fa-check-circle","far fa-check-square",
+  "far fa-circle","far fa-clock","far fa-comment","far fa-comments","far fa-copy",
+  "far fa-edit","far fa-envelope","far fa-envelope-open","far fa-eye","far fa-eye-slash",
+  "far fa-file","far fa-file-alt","far fa-file-image","far fa-file-pdf",
+  "far fa-folder","far fa-folder-open","far fa-frown","far fa-heart","far fa-image",
+  "far fa-laugh","far fa-life-ring","far fa-list-alt","far fa-map","far fa-meh",
+  "far fa-minus-square","far fa-paper-plane","far fa-pause-circle","far fa-play-circle",
+  "far fa-plus-square","far fa-question-circle","far fa-save","far fa-smile",
+  "far fa-square","far fa-star","far fa-sticky-note","far fa-stop-circle","far fa-sun",
+  "far fa-thumbs-down","far fa-thumbs-up","far fa-times-circle","far fa-trash-alt",
+  "far fa-user","far fa-window-close","far fa-window-maximize",
+  "far fa-window-minimize","far fa-window-restore","far fa-id-badge","far fa-id-card",
+  // ── brands (fab) ──
+  "fab fa-github","fab fa-gitlab","fab fa-bitbucket","fab fa-docker","fab fa-linux",
+  "fab fa-windows","fab fa-apple","fab fa-android","fab fa-google","fab fa-facebook",
+  "fab fa-twitter","fab fa-instagram","fab fa-linkedin","fab fa-youtube","fab fa-slack",
+  "fab fa-trello","fab fa-jira","fab fa-confluence","fab fa-npm","fab fa-node",
+  "fab fa-node-js","fab fa-react","fab fa-angular","fab fa-vuejs","fab fa-js",
+  "fab fa-js-square","fab fa-html5","fab fa-css3","fab fa-css3-alt","fab fa-sass",
+  "fab fa-bootstrap","fab fa-python","fab fa-java","fab fa-php","fab fa-laravel",
+  "fab fa-wordpress","fab fa-aws","fab fa-microsoft","fab fa-stripe","fab fa-paypal",
+  "fab fa-cc-visa","fab fa-cc-mastercard","fab fa-whatsapp","fab fa-telegram",
+  "fab fa-discord","fab fa-figma","fab fa-git","fab fa-git-alt","fab fa-stack-overflow"
+];
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+let toastTimer;
+
+function renderGrid(containerId, icons) {
+  const grid = document.getElementById(containerId);
+  icons.forEach(cls => {
+    const card = document.createElement('div');
+    card.className = 'icon-card';
+    card.dataset.name = cls;
+
+    const icon = document.createElement('i');
+    icon.className = cls;
+    icon.setAttribute('aria-hidden', 'true');
+
+    const label = document.createElement('span');
+    label.className = 'icon-name';
+    label.textContent = cls;
+
+    card.appendChild(icon);
+    card.appendChild(label);
+    card.addEventListener('click', () => copyClass(cls));
+    grid.appendChild(card);
+  });
+}
+
+function updateCount(countId, visible, total) {
+  const el = document.getElementById(countId);
+  if (!el) return;
+  el.textContent = visible === total
+    ? `${total} ícones`
+    : `${visible} de ${total} ícones`;
+}
+
+renderGrid('grid-feather', featherIcons);
+renderGrid('grid-sli', sliIcons);
+renderGrid('grid-fa', faIcons);
+
+updateCount('count-feather', featherIcons.length, featherIcons.length);
+updateCount('count-sli', sliIcons.length, sliIcons.length);
+updateCount('count-fa', faIcons.length, faIcons.length);
+
+// ─── DETECT FEATHER FONT ─────────────────────────────────────────────────────
+// Se a font não carregou, mostra aviso
+window.addEventListener('load', () => {
+  const testEl = document.createElement('span');
+  testEl.className = 'ft-home';
+  testEl.style.cssText = 'position:absolute;visibility:hidden;font-size:24px';
+  document.body.appendChild(testEl);
+  const computed = window.getComputedStyle(testEl, '::before');
+  const content = computed.getPropertyValue('content');
+  document.body.removeChild(testEl);
+  if (!content || content === 'none' || content === '') {
+    document.getElementById('feather-warning').classList.add('show');
+  }
+});
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+const tabs = document.querySelectorAll('.tab');
+const sections = {
+  feather: document.getElementById('section-feather'),
+  sli:     document.getElementById('section-sli'),
+  fa:      document.getElementById('section-fa'),
+};
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const selected = tab.dataset.tab;
+
+    if (selected === 'all') {
+      Object.values(sections).forEach(s => s.classList.add('visible'));
+    } else {
+      Object.values(sections).forEach(s => s.classList.remove('visible'));
+      if (sections[selected]) sections[selected].classList.add('visible');
+    }
+
+    filterIcons(document.getElementById('search').value);
+  });
+});
+
+// ─── SEARCH ──────────────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', e => filterIcons(e.target.value));
+
+function filterIcons(query) {
+  const q = query.toLowerCase().trim();
+  const counts = {
+    feather: [0, featherIcons.length],
+    sli:     [0, sliIcons.length],
+    fa:      [0, faIcons.length],
+  };
+
+  let totalVisible = 0;
+
+  document.querySelectorAll('.icon-card').forEach(card => {
+    const name = card.dataset.name;
+    const match = !q || name.includes(q);
+
+    if (match) {
+      card.classList.remove('hidden');
+      totalVisible++;
+      if (name.startsWith('ft-'))      counts.feather[0]++;
+      else if (name.startsWith('icon-')) counts.sli[0]++;
+      else                               counts.fa[0]++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+
+  updateCount('count-feather', counts.feather[0], counts.feather[1]);
+  updateCount('count-sli', counts.sli[0], counts.sli[1]);
+  updateCount('count-fa', counts.fa[0], counts.fa[1]);
+
+  const noResults = document.getElementById('no-results');
+  if (q && totalVisible === 0) {
+    document.getElementById('no-results-query').textContent = q;
+    noResults.classList.remove('hidden');
+  } else {
+    noResults.classList.add('hidden');
+  }
+}
+
+// ─── COPY ────────────────────────────────────────────────────────────────────
+function copyClass(cls) {
+  navigator.clipboard.writeText(cls).then(() => showToast(cls)).catch(() => {
+    // fallback para browsers sem clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = cls;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(cls);
+  });
+}
+
+function showToast(cls) {
+  const toast = document.getElementById('toast');
+  toast.textContent = `Copiado: ${cls}`;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+// ─── KEYBOARD ────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const search = document.getElementById('search');
+  if (e.key === '/' && document.activeElement !== search) {
+    e.preventDefault();
+    search.focus();
+  }
+  if (e.key === 'Escape') search.blur();
+});
+</script>
+</body>
+</html>
