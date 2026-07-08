@@ -1,0 +1,85 @@
+@import "src/app/app.component.scss";
+
+.ocorrencia-card {
+  box-shadow: inset 3px 0 0 red; // Substituir depois
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $p-md;
+
+  border: 1px solid $portaria-color-border;
+  padding: $p-lg;
+  margin-bottom: $m-xs;
+  border-radius: $portaria-radius-xs;
+
+  .icon-area {
+    align-self: start;
+    padding: $p-sm;
+    background: $portaria-color-danger-bg;
+    border: 1px solid $portaria-color-danger-border;
+    border-radius: $portaria-radius-xs;
+
+    .icon {
+      font-size: 24px;
+      color: red; // Substituir depois
+    }
+  }
+
+  &--main {
+    flex: 1;
+
+    & .header {
+      display: flex;
+      justify-content: space-between;
+
+      & .date {
+        font-size: 14px;
+        color: $portaria-color-text-body;
+      }
+    }
+
+    & .title {
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 0;
+    }
+  }
+
+  & .ocorrencia {
+    color: $portaria-color-text-dark;
+  }
+
+  & .ocorrencia--estado {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    background: $portaria-color-bg-light;
+
+    border: 1px solid $portaria-color-danger-border;
+    color: $portaria-color-danger;
+    background: $portaria-color-danger-bg;
+
+    padding: 2px $p-sm;
+    border-radius: $portaria-radius-sm;
+  }
+
+  & .footer {
+    gap: $m-sm;
+    letter-spacing: 0.06em;
+    max-width: fit-content;
+    color: $portaria-color-text-body;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & .seguranca {
+      font-size: 14px;
+
+      i {
+        color: lighten($color: $portaria-color-text-muted, $amount: 10);
+        font-size: 12px;
+        margin-right: $m-xxs;
+      }
+    }
+  }
+}

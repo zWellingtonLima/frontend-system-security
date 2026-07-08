@@ -1,0 +1,59 @@
+<app-portaria-shell>
+  <div class="page-header-row">
+    <div>
+      <h1 class="portaria-section-title">Ocorrências</h1>
+      <p class="portaria-section-copy">
+        Registo e acompanhamento de ocorrências nos edifícios
+      </p>
+    </div>
+
+    <button class="portaria-btn portaria-btn--primary">
+      <span class="fas fa-plus"></span> Registar Ocorrência
+    </button>
+  </div>
+
+  <!-- CARDS RESUMO INFORMATIVO -->
+  <div class="cards-layout">
+    
+  </div>
+
+  <!-- OCORRENCIA CARD - provavelmente FAZER COMPONENT -->
+  <section
+    class="ocorrencia-card"
+    *ngFor="let ocorrencia of ocorrencias | async"
+  >
+    <div class="icon-area">
+      <i class="icon fas fa-shield-alt"></i>
+    </div>
+    <div class="ocorrencia-card--main">
+      <div class="header">
+        <p class="title">
+          {{ ocorrencia.tipoOcorrencia.label }}
+        </p>
+        <!-- Alterar Local para pt-PT -->
+        <span class="date">{{
+          ocorrencia.createDate | date: "MMM d, y, HH:mm:ss"
+        }}</span>
+      </div>
+
+      <p class="ocorrencia">{{ ocorrencia.ocorrencia }}</p>
+
+      <div class="footer">
+        <div class="ocorrencia--estado">
+          <i class="fas fa-clock"></i>
+          {{ ocorrencia.estado.label }}
+        </div>
+
+        <div class="seguranca">
+          <i class="fas fa-user-shield"></i>
+          <span>{{ ocorrencia.createUser }}</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="portaria-btn portaria-btn--ghost">
+      <i class="fas fa-edit"></i>
+      Alterar Estado
+    </button>
+  </section>
+</app-portaria-shell>
