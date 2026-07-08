@@ -1,6 +1,10 @@
-import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
-import { environment } from "src/environments/environment.dev";
+import { AuthService } from "src/app/core/services/auth.service";
+
+interface User {
+  userId: number;
+  userName: string;
+}
 
 @Component({
   selector: "app-topbar",
@@ -8,18 +12,18 @@ import { environment } from "src/environments/environment.dev";
   styleUrls: ["./topbar.component.scss"],
 })
 export class TopbarComponent implements OnInit {
-  constructor(private http: HttpClient) {}
+  constructor(private authService: AuthService) {}
 
-  ngOnInit() {}
+  user: User | null = null;
 
-  onSubmit(formData: any) {
-    console.log(formData);
-    
-    this.http
-      .post<any>(`${environment.loginApiUrl}`, {
-        email: formData.email,
-        password: formData.password,
-      })
-      .subscribe((res) => console.log(res));
+  ngOnInit() {
+    this.user = this.authService.getLoggedInUser();
+  }
+
+  getInitials(name: string): string {
+    if (!name) return "IT"
+    const names = name.split(" ");
+    const initials = names.map((n) => n.charAt(0).toUpperCase())
+    return initials.join("")
   }
 }

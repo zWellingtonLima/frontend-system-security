@@ -1,14 +1,12 @@
 <div class="topbar">
   <div class="logo">
-    <img class="logo-img" src="assets/img/inesctec.png" >
+    <img class="logo-img" src="assets/img/inesctec.png" />
     <div class="brand-sep"></div>
     <span>Chaves</span>
   </div>
 
   <div class="avatar">
-    <span class="avatar-badge">
-      WL
-    </span>
-    <span class="avatar-name">Wellington Lima</span>
+    <span class="avatar-badge"> {{ getInitials()}} </span>
+    <span class="avatar-name">{{ user?.userName || "Segurança" }}</span>
   </div>
 </div>

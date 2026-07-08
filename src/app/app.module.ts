@@ -4,8 +4,9 @@ import { RouterModule } from "@angular/router";
 
 import { AppComponent } from "./app.component";
 import { SharedModule } from "./shared/shared.module";
-import { AuthModule } from "./core/auth.module";
+// import { AuthModule } from "./core/auth.module";
 import { HttpClientModule } from "@angular/common/http";
+import { PortariaModule } from "./dashboard/portaria/portaria.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,7 +15,8 @@ import { HttpClientModule } from "@angular/common/http";
     RouterModule.forRoot([]),
     SharedModule,
     HttpClientModule,
-    AuthModule,
+    PortariaModule,
+    // AuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

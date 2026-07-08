@@ -1,0 +1,1499 @@
+@import "variables";
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: $sidebar-expanded;
+  flex: 1;
+  background-color: $body-bg-security;
+  transition: margin-left $transition;
+}
+
+.sidebar-collapsed {
+  margin-left: $sidebar-collapsed;
+}
+
+.outlet {
+  margin: 24px;
+}
+
+// ============================================================
+// VARIÁVEIS
+// ============================================================
+
+// Cores de marca
+$teletrabalho-color-accent: #22a7bd;
+$teletrabalho-color-accent-dark: #188ea1;
+$teletrabalho-color-text-dark: #243746;
+$teletrabalho-color-text-muted: #5f7382;
+$teletrabalho-color-text-muted-alt: #6b7a88;
+$teletrabalho-color-text-body: #4e5d6c;
+
+// Cores de superfície / borda
+$teletrabalho-color-bg-light: #d8e4ec;
+$teletrabalho-color-bg-soft: #f9fcfe;
+$teletrabalho-color-bg-hover: #eef8fb;
+$teletrabalho-color-border: #e2e8f0;
+$teletrabalho-color-border-soft: #e3edf5;
+$teletrabalho-color-border-faint: #edf3f7;
+
+// Cores de estado
+$teletrabalho-color-success: #1f7a49;
+$teletrabalho-color-success-bg: rgba(31, 122, 73, 0.08);
+$teletrabalho-color-success-border: rgba(31, 122, 73, 0.18);
+$teletrabalho-color-success-solid: #16a34a;
+$teletrabalho-color-success-solid-hover: #15803d;
+
+$teletrabalho-color-warning: #a66f00;
+$teletrabalho-color-warning-bg: rgba(214, 158, 46, 0.1);
+$teletrabalho-color-warning-border: rgba(214, 158, 46, 0.18);
+
+$teletrabalho-color-danger: #b83f3f;
+$teletrabalho-color-danger-bg: rgba(184, 63, 63, 0.08);
+$teletrabalho-color-danger-border: rgba(184, 63, 63, 0.18);
+$teletrabalho-color-danger-solid: #dc2626;
+$teletrabalho-color-danger-solid-hover: #b91c1c;
+
+// Geometria
+$teletrabalho-radius-sm: 12px;
+$teletrabalho-radius-md: 14px;
+$teletrabalho-radius-lg: 18px;
+$teletrabalho-radius-xl: 22px;
+$teletrabalho-radius-pill: 999px;
+
+// Sombra
+$teletrabalho-shadow-accent: 0 10px 24px rgba(34, 167, 189, 0.25);
+$teletrabalho-shadow-accent-hover: 0 14px 28px rgba(34, 167, 189, 0.32);
+
+// ============================================================
+// PAGE LAYOUT
+// ============================================================
+
+.teletrabalho-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+// ============================================================
+// DASHBOARD WRAPPER
+// ============================================================
+
+.dashboard-wrapper {
+  background: #ffffff;
+  border: 1px solid $teletrabalho-color-border-soft;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  width: 100%;
+
+  &__body {
+    padding: 0 24px 24px;
+  }
+}
+
+// ============================================================
+// CALENDAR TOOLBAR & TABS
+// ============================================================
+
+.calendar-toolbar {
+  align-items: flex-start;
+  background: #ffffff;
+  border-radius: $teletrabalho-radius-md $teletrabalho-radius-md 0 0;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin: 0 -24px 24px;
+  padding: 0 16px;
+  z-index: 10;
+}
+
+.calendar-tabs {
+  background: transparent;
+  display: flex;
+  flex: 1;
+  gap: 0;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+
+  &__tab {
+    background: #ffffff;
+    border: 0;
+    border-top: 4px solid transparent;
+    color: $teletrabalho-color-accent;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    min-height: 44px;
+    padding: 10px 14px 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      background: #f1f8fb;
+      color: $teletrabalho-color-accent-dark;
+    }
+
+    &--active {
+      border-top-color: $teletrabalho-color-accent;
+      font-weight: 600;
+    }
+  }
+}
+
+// ============================================================
+// OVERVIEW BLOCK
+// ============================================================
+
+.teletrabalho-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+
+  &__eyebrow {
+    color: $teletrabalho-color-accent;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    color: $teletrabalho-color-text-dark;
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: $teletrabalho-color-text-muted;
+    font-size: 13px;
+    line-height: 1.45;
+
+    strong {
+      color: $teletrabalho-color-text-dark;
+      font-weight: 700;
+    }
+  }
+}
+
+// ============================================================
+// LIST FRAME
+// ============================================================
+
+.teletrabalho-list-frame {
+  overflow: hidden;
+  border: 1px solid $teletrabalho-color-border-soft;
+  border-radius: $teletrabalho-radius-xl;
+  background: linear-gradient(180deg, #fbfdfe 0%, #ffffff 100%);
+
+  &__header {
+    padding: 24px 24px 18px;
+  }
+
+  &__body {
+    padding: 24px;
+    border-top: 1px solid $teletrabalho-color-border-faint;
+  }
+
+  // Variant: form
+  &--form .teletrabalho-form-frame__body {
+    padding-top: 24px;
+    border-top: 1px solid $teletrabalho-color-border-faint;
+  }
+
+  // Variant: approval
+  &--approval {
+    .teletrabalho-inline-actions--table {
+      margin-left: 0;
+    }
+
+    .teletrabalho-table-shell {
+      border: 1px solid $teletrabalho-color-border;
+      border-radius: $teletrabalho-radius-lg;
+    }
+
+    .teletrabalho-table-shell ::ng-deep th.ng2-smart-th.selecionado {
+      width: 64px;
+      min-width: 64px;
+      text-align: center;
+      padding: 0 !important;
+    }
+
+    .teletrabalho-table-shell
+      ::ng-deep
+      th.ng2-smart-th.selecionado
+      input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .teletrabalho-table-shell ::ng-deep tbody td:last-child {
+      width: 64px;
+      min-width: 64px;
+      text-align: center;
+    }
+  }
+
+  // Nested overrides
+  .teletrabalho-overview {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+
+    &__meta {
+      margin-top: 6px;
+    }
+  }
+
+  > .teletrabalho-feedback {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid $teletrabalho-color-border-faint;
+    border-radius: 0;
+  }
+
+  .teletrabalho-table-shell {
+    border: 0;
+    border-top: 1px solid $teletrabalho-color-border;
+    border-radius: 0;
+  }
+
+  .teletrabalho-table-toolbar {
+    margin: 18px 0 0;
+    padding-top: 18px;
+    border-top: 1px solid $teletrabalho-color-border-faint;
+  }
+}
+
+.teletrabalho-form-frame__body {
+  padding: 0 24px 24px;
+}
+
+.teletrabalho-list-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  &__action {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+  }
+}
+
+// ============================================================
+// SECTION HEADER
+// ============================================================
+
+.teletrabalho-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.teletrabalho-section-title {
+  color: #0b0b0b;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.teletrabalho-section-copy {
+  margin: 0;
+  color: $teletrabalho-color-text-muted;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+// ============================================================
+// FEEDBACK STATES
+// ============================================================
+
+.teletrabalho-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 20px;
+  border: 1px dashed #d7e4ec;
+  border-radius: $teletrabalho-radius-lg;
+  background: #f7fbfd;
+  color: #627587;
+  text-align: center;
+
+  &--success {
+    justify-content: flex-start;
+    min-height: 0;
+    margin-top: 16px;
+    border-style: solid;
+    border-color: $teletrabalho-color-success-border;
+    background: rgba(231, 246, 236, 0.9);
+    color: $teletrabalho-color-success;
+  }
+
+  &--error {
+    border-style: solid;
+    border-color: $teletrabalho-color-danger-border;
+    background: $teletrabalho-color-danger-bg;
+    color: $teletrabalho-color-danger;
+  }
+}
+
+// ============================================================
+// TABLE SHELL & TOOLBAR
+// ============================================================
+
+.teletrabalho-table-shell {
+  overflow-x: auto;
+  border: 1px solid $teletrabalho-color-border;
+  border-radius: $teletrabalho-radius-lg;
+  background: #ffffff;
+
+  ::ng-deep tr.teletrabalho-row--selected td {
+    background: #f1f8fb;
+  }
+}
+
+.teletrabalho-table-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  > .teletrabalho-field {
+    width: 100%;
+    max-width: 360px;
+    margin-left: auto;
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+      color: $teletrabalho-color-text-dark;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  &__eyebrow {
+    color: $teletrabalho-color-accent;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
+
+// ============================================================
+// TABLE STYLES (ng2-smart-table overrides)
+// ============================================================
+
+::ng-deep {
+  ng2-smart-table {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: $teletrabalho-radius-lg;
+    }
+
+    thead tr th {
+      background-color: $teletrabalho-color-accent;
+      color: #ffffff !important;
+      font-weight: 600;
+      padding: 14px !important;
+      border-bottom: 2px solid #ddd;
+      text-align: center;
+
+      a,
+      span {
+        color: #ffffff !important;
+      }
+    }
+
+    tbody tr td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    tbody tr:hover td {
+      background-color: #f0f7ff;
+      cursor: pointer;
+    }
+
+    ng2-smart-sort-link .sort {
+      color: #fff !important;
+    }
+
+    tbody tr.teletrabalho-row--selected td {
+      background-color: #d0e8ff;
+    }
+
+    ng2-smart-table-pager {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 0;
+
+      nav {
+        display: flex;
+        gap: 4px;
+      }
+
+      li a {
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #333;
+        text-decoration: none;
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+
+      li.active a {
+        background-color: #ffffff;
+        color: #fff;
+        border-color: #fefefe;
+      }
+    }
+  }
+}
+
+// ============================================================
+// TABLE COLUMN WIDTHS & CELL STYLES
+// ============================================================
+
+.teletrabalho-table {
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  &__date {
+    width: 128px;
+    min-width: 128px;
+    white-space: nowrap;
+  }
+
+  &__agreement {
+    width: 180px;
+    min-width: 180px;
+  }
+
+  &__status-col {
+    width: 150px;
+    min-width: 150px;
+  }
+
+  &__instruments-col {
+    width: 260px;
+    min-width: 260px;
+  }
+
+  &__view-col,
+  &__actions-col {
+    width: 140px;
+    min-width: 140px;
+  }
+
+  &__primary {
+    color: $teletrabalho-color-text-dark;
+    font-weight: 700;
+  }
+
+  &__muted {
+    color: $teletrabalho-color-text-muted-alt;
+    font-size: 13px;
+  }
+
+  &__notes {
+    display: block;
+    color: $teletrabalho-color-text-body;
+    line-height: 1.55;
+  }
+}
+
+// ============================================================
+// STATUS BADGES
+// ============================================================
+
+.teletrabalho-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid $teletrabalho-color-bg-light;
+  border-radius: $teletrabalho-radius-pill;
+  background: #f8fafc;
+  color: #5f7485;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+
+  &--pendente {
+    border-color: $teletrabalho-color-warning-border;
+    background: $teletrabalho-color-warning-bg;
+    color: $teletrabalho-color-warning;
+  }
+
+  &--aprovado,
+  &--ativo {
+    border-color: $teletrabalho-color-success-border;
+    background: $teletrabalho-color-success-bg;
+    color: $teletrabalho-color-success;
+  }
+
+  &--rejeitado,
+  &--cancelado {
+    border-color: $teletrabalho-color-danger-border;
+    background: $teletrabalho-color-danger-bg;
+    color: $teletrabalho-color-danger;
+  }
+}
+
+// ============================================================
+// INSTRUMENTOS DROPDOWN (inline table cell)
+// ============================================================
+
+.teletrabalho-instrumentos-dropdown {
+  width: 100%;
+
+  &__summary {
+    align-items: center;
+    cursor: pointer;
+    display: inline-flex;
+    gap: 10px;
+    list-style: none;
+    color: $teletrabalho-color-accent-dark;
+    font-size: 13px;
+    font-weight: 700;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &__icon {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+  }
+
+  &[open] .teletrabalho-instrumentos-dropdown__icon {
+    transform: rotate(180deg);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+
+  &__item {
+    border-left: 2px solid #d7ecf1;
+    padding-left: 12px;
+
+    strong,
+    span {
+      display: block;
+    }
+
+    strong {
+      color: $teletrabalho-color-text-dark;
+      font-size: 13px;
+    }
+
+    span {
+      color: $teletrabalho-color-text-muted-alt;
+      font-size: 12px;
+    }
+  }
+}
+
+// ============================================================
+// INSTRUMENTOS PANEL (standalone block)
+// ============================================================
+
+.teletrabalho-instrumentos {
+  overflow: hidden;
+  border: 1px solid $teletrabalho-color-border-soft;
+  border-radius: $teletrabalho-radius-lg;
+  background: #ffffff;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid $teletrabalho-color-border-faint;
+    background: $teletrabalho-color-bg-soft;
+
+    p,
+    span {
+      margin: 0;
+      color: $teletrabalho-color-text-body;
+      font-size: 13px;
+      font-weight: 700;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 18px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid #e9f0f5;
+    border-radius: $teletrabalho-radius-md;
+    background: #ffffff;
+
+    strong {
+      color: $teletrabalho-color-text-dark;
+      font-size: 14px;
+    }
+
+    span {
+      color: $teletrabalho-color-text-muted-alt;
+      font-size: 13px;
+    }
+  }
+}
+
+// ============================================================
+// DOCUMENTOS (zona de download / anexo de PDF)
+// ============================================================
+
+.teletrabalho-documentos {
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background-color: #fff;
+    border: 1px solid $teletrabalho-color-bg-light;
+    border-radius: $teletrabalho-radius-sm;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: $teletrabalho-color-accent;
+      box-shadow: 0 2px 8px rgba(34, 167, 189, 0.12);
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: $teletrabalho-radius-sm;
+    background-color: rgba(34, 167, 189, 0.12);
+    color: $teletrabalho-color-accent;
+    font-size: 20px;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      color: $teletrabalho-color-text-dark;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    span {
+      color: $teletrabalho-color-text-muted;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+  }
+
+  &__actions {
+    flex-shrink: 0;
+  }
+}
+
+.teletrabalho-doc-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fas.fa-file-pdf {
+  color: #e74c3c !important;
+  font-size: 25px;
+}
+
+.teletrabalho-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(34, 167, 189, 0.28);
+  border-radius: $teletrabalho-radius-pill;
+  background: rgba(34, 167, 189, 0.08);
+  color: $teletrabalho-color-accent-dark;
+  font-size: 16px;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(34, 167, 189, 0.16);
+    border-color: $teletrabalho-color-accent;
+  }
+}
+
+// ============================================================
+// FILTER FRAME
+// ============================================================
+
+.teletrabalho-filter-frame {
+  overflow-x: auto;
+
+  margin-top: 20px;
+  margin-bottom: 10px;
+
+  h4 {
+    margin: 0 0 14px;
+    color: $teletrabalho-color-text-dark;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  // Barra principal: esquerda + direita
+  &__toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  // Lado esquerdo: campos + botões filtrar/limpar
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Lado direito: aprovar/rejeitar
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  // Linha de campos
+  &-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 0.15fr 1fr;
+    gap: 12px;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+
+    .teletrabalho-input {
+      width: 100%;
+    }
+
+    .teletrabalho-filter-frame__caption {
+      text-align: center;
+      white-space: nowrap;
+    }
+  }
+
+  // Botões filtrar/limpar
+  &__actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  // "até" entre datas
+  &__caption {
+    color: $teletrabalho-color-text-muted-alt;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================
+// APPROVAL TOOLBAR
+// ============================================================
+
+.teletrabalho-approval-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+
+  &__actions {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 16px;
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  &__search {
+    width: 100%;
+    max-width: 360px;
+    min-width: 240px;
+  }
+}
+
+// ============================================================
+// FORM
+// ============================================================
+
+.teletrabalho-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.teletrabalho-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+
+  &__help {
+    color: $teletrabalho-color-text-muted-alt;
+    font-size: 12px;
+  }
+}
+
+.teletrabalho-label {
+  margin: 0;
+  color: $teletrabalho-color-text-body;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.teletrabalho-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid $teletrabalho-color-bg-light;
+  border-radius: $teletrabalho-radius-sm;
+  background: #ffffff;
+  color: $teletrabalho-color-text-dark;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: $teletrabalho-color-accent;
+    box-shadow: 0 0 0 4px rgba(34, 167, 189, 0.12);
+  }
+
+  &--textarea {
+    min-height: 124px;
+    padding: 12px 14px;
+    resize: vertical;
+  }
+}
+
+.teletrabalho-fieldset {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid $teletrabalho-color-border-soft;
+  border-radius: $teletrabalho-radius-lg;
+  background: $teletrabalho-color-bg-soft;
+
+  legend {
+    width: auto;
+    margin: 0;
+    padding: 0 8px;
+    color: $teletrabalho-color-accent-dark;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+// ============================================================
+// INLINE ACTIONS
+// ============================================================
+
+.teletrabalho-inline-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 16px;
+
+  &--table {
+    margin-top: 0;
+    margin-left: auto;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  &--submit {
+    margin-top: 0;
+    padding-top: 4px;
+    justify-content: flex-end;
+  }
+}
+
+// ============================================================
+// BUTTONS
+// ============================================================
+
+.teletrabalho-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: $teletrabalho-radius-md;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+
+  &--primary {
+    background: linear-gradient(
+      135deg,
+      $teletrabalho-color-accent 0%,
+      $teletrabalho-color-accent-dark 100%
+    );
+    box-shadow: $teletrabalho-shadow-accent;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      box-shadow: $teletrabalho-shadow-accent-hover;
+      filter: saturate(1.05);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--secondary {
+    background: rgba(34, 167, 189, 0.08);
+    border-color: #d7ecf1;
+    color: $teletrabalho-color-accent-dark;
+
+    &:hover:not(:disabled) {
+      border-color: $teletrabalho-color-accent;
+      background: $teletrabalho-color-bg-hover;
+    }
+  }
+
+  &--ghost {
+    background: #ffffff;
+    border-color: $teletrabalho-color-bg-light;
+    color: $teletrabalho-color-accent-dark;
+
+    &:hover:not(:disabled) {
+      border-color: $teletrabalho-color-accent;
+      background: $teletrabalho-color-bg-hover;
+    }
+  }
+
+  &--danger {
+    background: #fff1f2;
+    border-color: #fda4af;
+    color: #be123c;
+
+    &:hover:not(:disabled) {
+      background: #ffe4e6;
+      border-color: #fb7185;
+    }
+  }
+
+  &--success {
+    background-color: $teletrabalho-color-success-solid;
+    border-color: $teletrabalho-color-success-solid;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: $teletrabalho-color-success-solid-hover;
+      border-color: $teletrabalho-color-success-solid-hover;
+    }
+  }
+
+  &--danger-solid {
+    background-color: $teletrabalho-color-danger-solid;
+    border-color: $teletrabalho-color-danger-solid;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: $teletrabalho-color-danger-solid-hover;
+      border-color: $teletrabalho-color-danger-solid-hover;
+    }
+  }
+
+  &--small {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: $teletrabalho-radius-sm;
+    font-size: 13px;
+  }
+
+  &:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+  }
+}
+
+// ============================================================
+// ADD BUTTON
+// ============================================================
+
+.teletrabalho-add-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: $teletrabalho-radius-sm;
+  background: linear-gradient(
+    135deg,
+    $teletrabalho-color-accent 0%,
+    $teletrabalho-color-accent-dark 100%
+  );
+  box-shadow: $teletrabalho-shadow-accent;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+
+  &:hover {
+    box-shadow: $teletrabalho-shadow-accent-hover;
+    filter: saturate(1.05);
+    transform: translateY(-2px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow:
+      $teletrabalho-shadow-accent-hover,
+      0 0 0 4px rgba(34, 167, 189, 0.18);
+  }
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+
+.teletrabalho-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  margin-top: -60px;
+  background: rgba(1, 1, 1, 0.52);
+  backdrop-filter: blur(6px);
+}
+
+.teletrabalho-modal {
+  width: 100%;
+  max-width: 960px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #dfe9f0;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 28px 64px rgba(18, 32, 44, 0.22);
+
+  &__header,
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 32px;
+    flex-shrink: 0;
+  }
+
+  &__header {
+    border-bottom: 1px solid $teletrabalho-color-border-faint;
+  }
+
+  &__footer {
+    border-top: 1px solid $teletrabalho-color-border-faint;
+    background: $teletrabalho-color-bg-soft;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__title {
+    margin: 0;
+    color: $teletrabalho-color-text-dark;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    margin-top: 8px;
+    color: $teletrabalho-color-text-muted;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: 1px solid $teletrabalho-color-bg-light;
+    border-radius: $teletrabalho-radius-md;
+    background: #ffffff;
+    color: $teletrabalho-color-text-muted;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      border-color: $teletrabalho-color-accent;
+      background: $teletrabalho-color-bg-hover;
+      color: $teletrabalho-color-accent-dark;
+      transform: translateY(-1px);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(34, 167, 189, 0.14);
+    }
+  }
+
+  &__grid {
+    display: grid;
+    gap: 20px;
+  }
+
+  &__textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  &__upload {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 18px;
+    border: 1px solid $teletrabalho-color-border-soft;
+    border-radius: $teletrabalho-radius-lg;
+    background: $teletrabalho-color-bg-soft;
+  }
+
+  &__upload-copy {
+    flex: 1;
+    min-width: 240px;
+
+    strong,
+    span {
+      display: block;
+    }
+
+    strong {
+      margin-bottom: 4px;
+      color: $teletrabalho-color-text-dark;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    span {
+      color: $teletrabalho-color-text-muted-alt;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  &__feedback {
+    margin: 0;
+  }
+
+  &__empty {
+    padding: 18px;
+    color: $teletrabalho-color-text-muted-alt;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  // Bloco de decisão (ex.: confirmação após aprovação)
+  &__decisao {
+    display: flex;
+    align-items: right;
+    justify-content: right;
+    gap: 1rem;
+    margin: 10px 0;
+
+    &-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      strong {
+        font-size: 0.9rem;
+        color: #065f46;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
+    }
+
+    &-acoes {
+      display: flex;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.teletrabalho-historico {
+  border: 1px solid #e5edf3;
+  border-radius: 12px;
+  overflow: hidden;
+
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 18px;
+    background: #f4f8fb;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #3d5166;
+    text-align: left;
+
+    &:hover {
+      background: #eaf2f8;
+    }
+  }
+
+  &__chevron {
+    font-size: 20px;
+    line-height: 1;
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+
+    &--aberto {
+      transform: rotate(270deg);
+    }
+  }
+
+  &__painel {
+    padding: 4px 0 8px;
+  }
+
+  &__loading,
+  &__vazio {
+    padding: 12px 18px;
+    font-size: 13px;
+    color: #7a90a0;
+  }
+
+  &__lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 18px;
+    border-bottom: 1px solid #f0f4f7;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__linha {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &__acao {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #1e2d3a;
+    white-space: nowrap;
+  }
+
+  &__sep {
+    color: #c8d6e0;
+    font-weight: 300;
+    flex-shrink: 0;
+  }
+
+  &__meta {
+    font-size: 12.5px;
+    color: #8a9db0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    strong {
+      color: #4b6172;
+      font-weight: 600;
+    }
+  }
+
+  &__estado {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 11px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+
+    &--pendente {
+      background: #fff7e6;
+      color: #b45309;
+    }
+    &--aprovado {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    &--rejeitado {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    &--confirmado {
+      background: #eff6ff;
+      color: #1e40af;
+    }
+    &--fechado {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+  }
+}

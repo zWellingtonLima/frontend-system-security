@@ -2,7 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
-import { LoginResponse, TokenResponse } from "src/app/models/api";
+import { LoginResponse, TokenResponse } from "src/app/dashboard/portaria/models/api";
+import { UserInfo } from "src/app/shared/models/api";
 import { environment } from "src/environments/environment.dev";
 
 const TOKEN_KEY = "accessToken";
@@ -52,5 +53,11 @@ export class AuthService {
     return this.http.get<TokenResponse>(`${environment.refreshApiUrl}`, {
       withCredentials: true,
     });
+  }
+
+  getLoggedInUser(): UserInfo | null {
+    const user = localStorage.getItem(USER_KEY);
+
+    return user ? JSON.parse(user) : null;
   }
 }
