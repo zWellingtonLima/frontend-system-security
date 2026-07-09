@@ -3,6 +3,7 @@ import { Routes, RouterModule } from "@angular/router";
 import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { ChavesComponent } from "./components/chaves/chaves.component";
 
 const routes: Routes = [
   {
@@ -18,6 +19,10 @@ const routes: Routes = [
     component: OcorrenciasComponent,
   },
   {
+    path: "chaves",
+    component: ChavesComponent,
+  },
+  {
     path: "",
     redirectTo: "/dashboard",
     pathMatch: "full",
@@ -26,6 +31,11 @@ const routes: Routes = [
     path: "**",
     redirectTo: "ocorrencias",
   },
+  {
+    path: "chaves",
+    redirectTo: "/chaves",
+    pathMatch: "full",
+  }
 ];
 
 @NgModule({
