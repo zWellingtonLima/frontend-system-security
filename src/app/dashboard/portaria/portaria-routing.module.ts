@@ -5,6 +5,10 @@ import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.compo
 
 const routes: Routes = [
   {
+    path: "dashboard",
+    component: DashboardComponent,
+  },
+  {
     path: "consumos",
     component: ConsumosComponent,
   },
@@ -14,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: "/ocorrencias",
+    redirectTo: "/dashboard",
     pathMatch: "full",
   },
   {

@@ -6,4 +6,7 @@ export const environment = {
   refreshApiUrl: "http://localhost:8080/api/auth/refresh",
   // OCORRENCIAS
   ocorrenciaApiUrl: "http://localhost:8080/api/ocorrencias",
+  ocorrenciasHojeApiUrl: "http://localhost:8080/api/ocorrencias/hoje",
+  // CHAVES
+  chavesEmprestadasApiURL: "http://localhost:8080/api/chaves/emprestadas",
 };
