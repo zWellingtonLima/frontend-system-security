@@ -57,7 +57,7 @@ export interface OcorrenciasResponseDTO {
   ocorrencia: string;
   estado: {
     id: number;
-    tipoOcorrencia: EstadoOcorrenciaEnumType;
+    estadoOcorrencia: EstadoOcorrenciaEnumType;
     label: string;
   };
   horaOcorrencia: ISOTimestamp;
