@@ -94,6 +94,23 @@ $m-lg: 18px;
 $m-xl: 22px;
 
 // ============================================================
+// UTILIDADES
+// ============================================================
+.flex {
+  display: flex;
+}
+
+.content-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.content-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+// ============================================================
 // PAGE LAYOUT
 // ============================================================
 
@@ -1053,6 +1070,7 @@ $m-xl: 22px;
   align-items: center;
   justify-content: center;
   min-height: 44px;
+  gap: $p-xs;
   padding: 0 18px;
   border: 1px solid transparent;
   border-radius: $portaria-radius-xs;
