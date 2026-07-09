@@ -19,7 +19,7 @@ import {
 export class OcorrenciasService {
   private ocorrencias$ = new BehaviorSubject<OcorrenciasResponseDTO[]>([]);
   private filtros$ = new BehaviorSubject<OcorrenciasFiltros>({
-    estado: "TODAS", // ver se altero para EstadoOcorrenciaEnum.PENDENTE
+    estado: "TODAS",
     tipo: "",
     search: "",
   });
@@ -28,22 +28,27 @@ export class OcorrenciasService {
     this.ocorrencias$,
     this.filtros$,
   ).pipe(
-    map(([ocorrencias, filtros]) =>
-      ocorrencias
+    map(([ocorrencias, filtros]) => {
+      const resultado = ocorrencias
         // 1º filtro para o estado 2º para o tipo de ocorrencia 3º para busca em texto
         .filter(
           (o) =>
-            filtros.estado === "TODAS" || o.estado.label === filtros.estado,
+            !filtros.estado ||
+            filtros.estado === "TODAS" ||
+            o.estado.estadoOcorrencia === filtros.estado,
         )
         .filter(
-          (o) => !filtros.estado || o.tipoOcorrencia.label === filtros.tipo,
+          (o) =>
+            !filtros.tipo || o.tipoOcorrencia.tipoOcorrencia === filtros.tipo,
         )
         .filter(
           (o) =>
             !filtros.search ||
             o.ocorrencia.toLowerCase().includes(filtros.search.toLowerCase()),
-        ),
-    ),
+        );
+
+      return resultado;
+    }),
   );
 
   contagens$: Observable<OcorrenciasContagem> = this.ocorrencias$.pipe(
@@ -66,19 +71,6 @@ export class OcorrenciasService {
 
   constructor(private http: HttpClient) {}
 
-  carregar(): Observable<OcorrenciasResponseDTO[]> {
-    return this.http
-      .get<OcorrenciasResponseDTO[]>(environment.ocorrenciaApiUrl)
-      .pipe(
-        catchError((error) => {
-          console.error(
-            `OCO-SER: Falha ao "CarregarTodasOcorrencias": ${error}`,
-          );
-          return of([]);
-        }),
-      );
-  }
-
   carregarTodasOcorrencias(): void {
     this.http
       .get<OcorrenciasResponseDTO[]>(environment.ocorrenciaApiUrl)
@@ -98,6 +90,6 @@ export class OcorrenciasService {
   }
 
   setTab(estado: EstadoOcorrenciaEnumType | "TODAS"): void {
-    this.filtros$.next({ ...this.filtros$.value, estado: estado as any }); // depois remover o any e ver como tipar melhor
+    this.filtros$.next({ ...this.filtros$.value, estado: estado });
   }
 }

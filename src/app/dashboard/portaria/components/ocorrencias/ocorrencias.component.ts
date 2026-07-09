@@ -8,6 +8,7 @@ import {
   EstadoOcorrenciaLabel,
   TipoOcorrenciaEnum,
   TipoOcorrenciaEnumType,
+  TipoOcorrenciaLabel,
 } from "../../models/enums";
 
 @Component({
@@ -18,7 +19,6 @@ import {
 export class OcorrenciasComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  ocorrencias!: Observable<OcorrenciasResponseDTO[]>;
   ocorrenciasFiltradas$ = this.ocorrenciasService.ocorrenciasFiltradas$;
   contagens$ = this.ocorrenciasService.contagens$;
 
@@ -27,13 +27,12 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
   EstadoEnum = EstadoOcorrenciaEnum;
   EstadoLabel = EstadoOcorrenciaLabel;
   TipoEnum = TipoOcorrenciaEnum;
+  TipoLabel = TipoOcorrenciaLabel;
 
   constructor(private ocorrenciasService: OcorrenciasService) {}
 
   ngOnInit() {
     this.ocorrenciasService.carregarTodasOcorrencias();
-
-    this.ocorrencias = this.ocorrenciasService.carregar(); // remover
   }
 
   onTabChange(tab: EstadoOcorrenciaEnumType | "TODAS") {

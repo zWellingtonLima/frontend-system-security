@@ -8,7 +8,8 @@
     </div>
 
     <button class="portaria-btn portaria-btn--primary">
-      <span class="fas fa-plus"></span> Registar Ocorrência
+      <i class="fas fa-plus"></i>
+      <span>Registar Ocorrência</span>
     </button>
   </div>
 
@@ -31,8 +32,8 @@
       </div>
       <div
         class="tab"
-        [class.active]="tabAtiva === EstadoLabel.EM_ANALISE"
-        (click)="onTabChange(EstadoLabel.EM_ANALISE)"
+        [class.active]="tabAtiva === EstadoEnum.EM_ANALISE"
+        (click)="onTabChange(EstadoEnum.EM_ANALISE)"
       >
         Em análise <span class="count">{{ c.emAnalise }}</span>
       </div>
@@ -53,40 +54,82 @@
     </div>
   </ng-container>
 
-  <!-- OCORRENCIA CARD - provavelmente FAZER COMPONENT -->
-  <div class="ocorrencia-card" *ngFor="let ocorrencia of ocorrencias | async">
-    <div class="icon-area">
-      <i class="icon fas fa-shield-alt"></i>
+  <div class="filter-container flex">
+    <div class="search-wrap flex content-center">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Pesquisar por descrição da ocorrência..."
+        (input)="onSearchChange($event.target.value)"
+      />
     </div>
-    <div class="ocorrencia-card--main">
-      <div class="header">
-        <p class="title">
-          {{ ocorrencia.tipoOcorrencia.label }}
-        </p>
-        <!-- Alterar Local para pt-PT -->
-        <span class="date">{{
-          ocorrencia.createDate | date: "MMM d, y, HH:mm:ss"
-        }}</span>
-      </div>
-
-      <p class="ocorrencia">{{ ocorrencia.ocorrencia }}</p>
-
-      <div class="footer">
-        <div class="ocorrencia--estado">
-          <i class="fas fa-clock"></i>
-          {{ ocorrencia.estado.label }}
-        </div>
-
-        <div class="seguranca">
-          <i class="fas fa-user-shield"></i>
-          <span>{{ ocorrencia.createUser }}</span>
-        </div>
-      </div>
-    </div>
-
-    <button class="portaria-btn portaria-btn--ghost">
-      <i class="fas fa-edit"></i>
-      Alterar Estado
-    </button>
+    <select class="filter-select" (change)="onTipoChange($event.target.value)">
+      <option value="">Todos os tipos</option>
+      <option [value]="TipoEnum.ACESSO_NAO_AUTORIZADO">
+        Acesso não autorizado
+      </option>
+      <option [value]="TipoEnum.AVARIA_EQUIPAMENTO">
+        Avaria de equipamento
+      </option>
+      <option [value]="TipoEnum.OBJETO_PERDIDO_ENCONTRADO">
+        Objeto perdido/encontrado
+      </option>
+      <option [value]="TipoEnum.INCIDENTE_COM_VISITANTE">
+        Incidente com visitante
+      </option>
+      <option [value]="TipoEnum.ALARME_DISPARADO">Alarme disparado</option>
+      <option [value]="TipoEnum.OUTROS">Outros</option>
+    </select>
   </div>
+
+  <ng-container *ngIf="ocorrenciasFiltradas$ | async as ocorrencias">
+    <div
+      class="ocorrencia-lista"
+      *ngIf="ocorrencias.length > 0; else EstadoVazio"
+    >
+      <div class="ocorrencia-card" *ngFor="let ocor of ocorrencias">
+        <div class="icon-area">
+          <i class="icon fas fa-shield-alt"></i>
+        </div>
+        <div class="ocorrencia-card--main">
+          <div class="header">
+            <p class="title">
+              {{ ocor.tipoOcorrencia.label }}
+            </p>
+            <!-- Alterar Local para pt-PT -->
+            <span class="date">{{
+              ocor.createDate | date: "MMM d, y, HH:mm:ss"
+            }}</span>
+          </div>
+
+          <p class="ocorrencia">{{ ocor.ocorrencia }}</p>
+
+          <div class="footer">
+            <div class="ocorrencia--estado">
+              <i class="fas fa-clock"></i>
+              {{ ocor.estado.label }}
+            </div>
+
+            <div class="seguranca">
+              <i class="fas fa-user-shield"></i>
+              <span>{{ ocor.createUser }}</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="portaria-btn portaria-btn--ghost">
+          <i class="fas fa-edit"></i>
+          Alterar Estado
+        </button>
+      </div>
+    </div>
+
+    <ng-template #EstadoVazio>
+      <div class="empty-state">
+        <i class="ti ti-clipboard-x"></i>
+        <p>Nenhuma ocorrência encontrada.</p>
+      </div>
+    </ng-template>
+  </ng-container>
 </app-portaria-shell>

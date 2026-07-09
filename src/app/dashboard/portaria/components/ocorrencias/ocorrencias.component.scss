@@ -29,6 +29,37 @@
   }
 }
 
+.filter-container {
+  margin-block: $m-lg;
+  gap: $m-xs;
+
+  & .search-wrap {
+    position: relative;
+    flex: 1;
+
+    & i {
+      position: absolute;
+      left: 12px;
+      color: $portaria-color-text-muted-alt;
+    }
+
+    & .search-input {
+      width: 100%;
+      padding: 8px 2.2rem;
+      border-radius: $portaria-radius-xs;
+      border: 1px solid $portaria-color-border;
+    }
+  }
+
+  & .filter-select {
+    border-radius: $portaria-radius-xs;
+    border: 1px solid $portaria-color-border;
+    background: transparent;
+    padding: $p-xs $p-md;
+    color: $portaria-color-text-body;
+  }
+}
+
 .ocorrencia-card {
   box-shadow: inset 3px 0 0 red; // Substituir depois
   display: flex;
