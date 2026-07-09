@@ -1,6 +1,6 @@
 import { tap } from 'rxjs/operators';
 import { ChaveEmprestadas, Ocorrencias } from '../../models/api';
-import { DashboardService } from './../../services/dashboard-service';
+import { DashboardService } from './../../services/api/dashboard-service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   chavesEmAtraso = 1;
   statusLabel = "Atrasada";
   ocorrenciasAbertas = 1;
+  visitasRegistadas = 1;
   visitasHoje = 8;
   ocorrenciasPendentes = 0;
 

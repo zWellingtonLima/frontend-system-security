@@ -50,10 +50,10 @@
       </div>
 
       <div class="linha-lista" *ngFor="let item of ocorrencias">
-        <span class="coluna-principal">{{ item.descricao }}</span>
-        <span class="coluna-secundaria">{{ item.dataHora }}</span>
-        <span class="badge" [ngClass]="'badge-' + item.status">
-          {{ item.statusLabel }}
+        <span class="coluna-principal">{{ item.ocorrencia }}</span>
+        <span class="coluna-secundaria">{{ item.horaOcorrencia }}</span>
+        <span class="badge" [ngClass]="'badge-' + item.estado">
+          {{ item.estado }}
         </span>
       </div>
     </div>
