@@ -1,3 +1,100 @@
-<p>
-  chaves works!
-</p>
+<app-portaria-shell>
+  <div class="titulo-dashboard-buttons">
+    <div class="titulo-dashboard">
+      <h5>SEGURANÇA · VISÃO GERAL</h5>
+      <h3>Chaves</h3>
+      <p>Resumo do turno em curso</p>
+    </div>
+
+    <div class="">
+      <button class="portaria-btn portaria-btn--secondary">
+        <i class="icon-logout"></i>
+        Registar devolução
+      </button>
+      <button class="portaria-btn portaria-btn--primary">
+        <i class="ft-plus"></i>
+        Registar chave
+      </button>
+    </div>
+  </div>
+
+  <div class="titulo-dashboard-buttons">
+    <div class="barra-pesquisa">
+      <i class="ft-search"></i>
+      <input
+        type="text"
+        placeholder="Pesquisar por código, pasta ou responsável..."
+      />
+    </div>
+    <select name="" id="">
+      <option value="">Todos os pisos</option>
+      <option value="">Piso 1</option>
+      <option value="">Piso 2</option>
+      <option value="">Piso 3</option>
+    </select>
+    <div></div>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Chave / Código</th>
+          <th>Tipo</th>
+          <th>Sala / Piso</th>
+          <th>Estado</th>
+          <th>Com Quem</th>
+          <th>Desde</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Linha 1: Disponível -->
+        <tr>
+          <td>
+            <span class="bold-text">MOLHO-A1</span>
+            <span class="sub-text">Molho de chaves</span>
+          </td>
+          <td><span class="badge badge-tipo">◊ Molho</span></td>
+          <td class="empty-dash">—</td>
+          <td><span class="badge badge-disponivel">⊙ Disponível</span></td>
+          <td class="empty-dash">—</td>
+          <td class="empty-dash">—</td>
+          <td><button class="btn-action">••• Detalhes</button></td>
+        </tr>
+
+        <!-- Linha 2: Atrasada -->
+        <tr>
+          <td>
+            <span class="bold-text">MOLHO-A3</span>
+            <span class="sub-text">Molho de chaves</span>
+          </td>
+          <td><span class="badge badge-tipo">◊ Molho</span></td>
+          <td class="empty-dash">—</td>
+          <td><span class="badge badge-atrasada">⚠️ Atrasada</span></td>
+          <td><span class="bold-text">Tiago Alves</span></td>
+          <td><span class="time-highlight">07:50</span></td>
+          <td><button class="btn-action btn-return">⌲ Devolver</button></td>
+        </tr>
+
+        <!-- Linha 3: Disponível -->
+        <tr>
+          <td>
+            <span class="bold-text">MOLHO-B1</span>
+            <span class="sub-text">Molho de chaves</span>
+          </td>
+          <td><span class="badge badge-tipo">◊ Molho</span></td>
+          <td class="empty-dash">—</td>
+          <td><span class="badge badge-disponivel">⊙ Disponível</span></td>
+          <td class="empty-dash">—</td>
+          <td class="empty-dash">—</td>
+          <td><button class="btn-action">••• Detalhes</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <span>1–4 de 4 chaves</span>
+  </div>
+</app-portaria-shell>

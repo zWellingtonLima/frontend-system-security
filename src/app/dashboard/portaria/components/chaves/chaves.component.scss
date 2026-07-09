@@ -1,0 +1,151 @@
+@import "src/app/dashboard/portaria/components/dashboard/dashboard.component.scss";
+@import "src/app/dashboard/portaria/portaria.component.scss";
+
+.titulo-dashboard-buttons {
+  display: flex;
+  justify-content: space-between;
+
+  select {
+    max-width: 20%;
+    flex: 1;
+  }
+}
+
+i,
+button {
+  margin-right: 5px;
+}
+.barra-pesquisa {
+  border: 1px solid $cor-borda;
+  border-radius: 6px;
+  max-width: 80%;
+  input {
+    text-decoration: none;
+    border: none;
+    width: 500px;
+  }
+  i {
+    margin-left: 10px;
+  }
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+/* Cabeçalho */
+th {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #8c8c8c;
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 2px solid #f0f0f0;
+  letter-spacing: 0.5px;
+}
+
+/* Linhas e Células */
+td {
+  padding: 5px;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+tr:hover td {
+  background-color: #fdfdfd;
+}
+
+/* Subtextos (ex: "Molho de chaves") */
+.sub-text {
+  display: block;
+  font-size: 12px;
+  color: #a0a0a0;
+  margin-top: 4px;
+}
+
+.bold-text {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Alinhamento de traços vazios (-) */
+.empty-dash {
+  color: #d0d0d0;
+}
+
+/* Badges / Etiquetas de Estado */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Estilo Tipo: Molho */
+.badge-tipo {
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #e0e7ff;
+}
+
+/* Estilo Estado: Disponível */
+.badge-disponivel {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Estilo Estado: Atrasada */
+.badge-atrasada {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Destaque de Tempo Atrasado */
+.time-highlight {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Botões de Ação */
+.btn-action {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-action:hover {
+  background-color: #f0f0f0;
+}
+
+.btn-return {
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  background-color: #f0fdf4;
+}
+
+.btn-return:hover {
+  background-color: #dcfce7;
+}
