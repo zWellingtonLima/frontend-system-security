@@ -14,8 +14,8 @@ export class DashboardService {
     return this.httpClient.get<ChaveEmprestadas[]>("http://localhost:8080/api/chaves/emprestadas");
   }
 
-  getOcorrenciasRecentes(): Observable<Ocorrencias>{
-    return this.httpClient.get<Ocorrencias>("http://localhost:8080/api/ocorrencias/hoje");
+  getOcorrenciasRecentes(): Observable<Ocorrencias[]>{
+    return this.httpClient.get<Ocorrencias[]>("http://localhost:8080/api/ocorrencias/hoje");
   }
 
 }

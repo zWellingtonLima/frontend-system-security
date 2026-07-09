@@ -1,7 +1,7 @@
 <div class="dashboard-wrapper">
 
   <div class="titulo-dashboard">
-    <h5>SEGURANÇA . VISÃO GERAL</h5>
+    <h5>SEGURANÇA · VISÃO GERAL</h5>
     <h3>Dashboard</h3>
     <p>Resumo do turno em curso</p>
   </div>
@@ -9,52 +9,53 @@
   <div class="dashboard-blocks-container">
     <div class="dashboard-blocks">
       <h5>OCORRÊNCIAS ABERTAS</h5>
-      <h3>2</h3>
-      <p>1 pendente</p>
+      <h3>{{ ocorrenciasAbertas }}</h3>
+      <p class="texto-alerta">{{ ocorrenciasPendentes }} pendente</p>
     </div>
 
     <div class="dashboard-blocks">
       <h5>CHAVES FORA</h5>
-      <h3>2</h3>
-      <p>1 em atraso</p>
+      <h3>{{ chavesFora }}</h3>
+      <p class="texto-atraso">{{ chavesEmAtraso }} em atraso</p>
     </div>
 
     <div class="dashboard-blocks">
       <h5>VISITAS HOJE</h5>
-      <h3>2</h3>
-      <p>1 registadas</p>
+      <h3>{{ visitasHoje }}</h3>
+      <p class="texto-neutro">{{ visitasRegistadas }} registadas</p>
     </div>
-
   </div>
 
   <div class="dashboard-blocks-container">
+
     <div class="dashboard-blocks">
       <div class="titulos-lista-chaves">
-        <span>Chaves em uso</span>
-        <span><a href="">Ver todas →</a></span>
+        <span class="titulo-lista">Chaves em uso</span>
+        <a href="" class="link-ver-todas">Ver todas →</a>
       </div>
 
-      <div class="teste" *ngFor="let item of chaves">
-        <span class="margin">{{ item.descricao }}</span>
-        <span class="margin">{{ item.nomePessoa }}</span>
-        <span></span>
+      <div class="linha-lista" *ngFor="let item of chaves">
+        <span class="coluna-principal">{{ item.descricao }}</span>
+        <span class="coluna-secundaria">{{ item.nomePessoa }}</span>
+        <span class="badge" [ngClass]="'badge-' + statusLabel">
+          {{ statusLabel  }}
+        </span>
+      </div>
+    </div>
+
+    <div class="dashboard-blocks">
+      <div class="titulos-lista-chaves">
+        <span class="titulo-lista">Ocorrências recentes</span>
+        <a href="" class="link-ver-todas">Ver todas →</a>
       </div>
 
-    </div>
-
-  <div class="dashboard-blocks">
-    <div class="titulos-lista-chaves ">
-      <span>Ocorrências recentes</span>
-      <span><a href="">Ver todas →</a></span>
-    </div>
-
-    <div *ngFor="let item of chaves">
-      <span class="margin">{{ item.descricao }}</span>
-      <span class="margin">{{ item.nomePessoa }}</span>
-      <span>em uso</span>
+      <div class="linha-lista" *ngFor="let item of ocorrencias">
+        <span class="coluna-principal">{{ item.descricao }}</span>
+        <span class="coluna-secundaria">{{ item.dataHora }}</span>
+        <span class="badge" [ngClass]="'badge-' + item.status">
+          {{ item.statusLabel }}
+        </span>
+      </div>
     </div>
   </div>
-
-  </div>
-
 </div>

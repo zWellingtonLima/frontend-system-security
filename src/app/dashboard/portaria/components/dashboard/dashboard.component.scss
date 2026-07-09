@@ -1,68 +1,199 @@
-@import "src/app/dashboard/portaria/portaria.component.scss";
+
+$cor-azul: #2f6feb;
+$cor-texto-titulo: #1a1a1a;
+$cor-texto-cinza: #8a8f98;
+$cor-borda: #e5e7eb;
+$cor-fundo-card: #ffffff;
+
+$cor-vermelho-bg: #fdeaea;
+$cor-vermelho-texto: #d64545;
+
+$cor-amarelo-bg: #fdf3d8;
+$cor-amarelo-texto: #b58a1a;
+
+$cor-laranja-bg: #fdead9;
+$cor-laranja-texto: #c46a1f;
+
+$cor-verde-bg: #e3f7e9;
+$cor-verde-texto: #2e9e4f;
 
 
-.titulo-dashboard{
-  padding: 24px 20px 10px;
+.dashboard-wrapper {
+  background: $cor-fundo-card;
+  border: 1px solid $cor-borda;
+  border-radius: 12px;
+  padding: 24px;
+
+  box-shadow: inset 0 3px 0 0 $cor-azul;
 }
 
-.titulo-dashboard p, h3, h5{
-  margin: 5px;
-  font-size: medium;
-}
+// Cabeçalho
 
-.titulo-dashboard p{
-  color: $teletrabalho-color-text-muted;
-}
-.titulo-dashboard h3{
-  font-weight: bold;
-  color: $teletrabalho-color-text-muted;
-}
+.titulo-dashboard {
+  margin-bottom: 20px;
 
-.titulo-dashboard h5{
-  font-weight: bold;
-  font-size: small;
-  color: $teletrabalho-color-accent;
-}
+  h5 {
+    color: $cor-azul;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
 
-.dashboard-blocks-container{
+  h3 {
+    color: $cor-texto-titulo;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  p {
+    color: $cor-texto-cinza;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+// cards
+.dashboard-blocks-container {
   display: flex;
-  padding: 0 24px 24px;
-  width: 100%;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .dashboard-blocks {
+    flex: 1;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-blocks-container{
+    flex-direction: column;
+  }
 }
 
-/*       */
-.dashboard-blocks{
-  position: relative;
-  background: #ffffff;
+// Card individual (tanto estatística como lista usam esta base)
+
+.dashboard-blocks {
+  background: $cor-fundo-card;
+  border: 1px solid $cor-borda;
   border-radius: 10px;
-  padding: 10px 10px 10px;
-  margin-right: 12px;
-  width: 35%;
-  border: 1px solid $teletrabalho-color-border-soft;
+  padding: 18px 20px;
+
+  h5 {
+    color: $cor-texto-cinza;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+
+  h3 {
+    color: $cor-texto-titulo;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    line-height: 1;
+  }
+
+  p {
+    font-size: 13px;
+    margin: 0;
+    color: $cor-texto-cinza;
+  }
 }
 
-.dashboard-blocks h3{
-  font-weight: bold;
-}
+.texto-alerta   { color: $cor-vermelho-texto; }
+.texto-atraso   { color: #c98a1a; }
+.texto-neutro   { color: $cor-texto-cinza; }
 
-.dashboard-blocks h5{
-  font-weight: bold;
-  color: $teletrabalho-color-text-muted;
-  font-size: small;
-}
+// Cabeçalho de cada lista ("Chaves em uso" / "Ocorrências recentes")
 
-.dashboard-blocks p{
-  font-size: small;
-}
-
-
-
-
-.teste-container {
+.titulos-lista-chaves {
   display: flex;
-  width: 100vw;  /* 100% da largura da tela */
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+
+  .titulo-lista {
+    font-size: 15px;
+    font-weight: 700;
+    color: $cor-texto-titulo;
+  }
+
+  .link-ver-todas {
+    font-size: 13px;
+    color: $cor-azul;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
-/*       */
 
+// Cada linha das listas (repetida pelo *ngFor)
 
+.linha-lista {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid $cor-borda;
 
+  padding: 7px 20px;
+  margin-left: -20px;
+  margin-right: -20px;
+
+  // A primeira linha não precisa de separador em cima
+  &:first-of-type {
+    border-top: none;
+  }
+  &:hover{
+    background-color: #1a1a1a;
+  }
+
+  .coluna-principal {
+    font-size: 14px;
+    color: $cor-texto-titulo;
+    flex: 1;
+  }
+
+  .coluna-secundaria {
+    font-size: 13px;
+    color: $cor-texto-cinza;
+    flex: 2;
+    text-align: left;
+  }
+}
+
+// Badge (etiqueta colorida de status)
+// Usamos [ngClass]="'badge-' + item.status" no HTML, por isso cada
+// status vem do backend como uma "chave" simples (em-uso, pendente, etc).
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.badge-em-uso {
+  background: $cor-amarelo-bg;
+  color: $cor-amarelo-texto;
+}
+
+.badge-Atrasada,
+.badge-Pendente {
+  background: $cor-vermelho-bg;
+  color: $cor-vermelho-texto;
+}
+
+.badge-em-analise {
+  background: $cor-laranja-bg;
+  color: $cor-laranja-texto;
+}
+
+.badge-resolvida {
+  background: $cor-verde-bg;
+  color: $cor-verde-texto;
+}
