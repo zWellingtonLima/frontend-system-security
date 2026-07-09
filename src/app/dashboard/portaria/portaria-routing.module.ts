@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
 
 const routes: Routes = [
   {

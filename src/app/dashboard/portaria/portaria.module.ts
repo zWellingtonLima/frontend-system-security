@@ -7,6 +7,7 @@ import { SharedModule } from "src/app/shared/shared.module";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
+import { ChavesComponent } from './components/chaves/chaves.component';
 
 @NgModule({
   imports: [CommonModule, PortariaRoutingModule, SharedModule],
@@ -15,6 +16,7 @@ import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.compo
     DashboardComponent,
     ConsumosComponent,
     OcorrenciasComponent,
+    ChavesComponent,
   ],
   exports: [PortariaComponent],
 })
