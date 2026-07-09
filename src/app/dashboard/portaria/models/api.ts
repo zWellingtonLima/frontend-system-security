@@ -38,3 +38,17 @@ export interface OcorrenciasResponseDTO {
   };
   horaOcorrencia: ISOTimestamp;
 }
+
+export interface OcorrenciasFiltros {
+  estado: EstadoOcorrenciaEnumType | "TODAS";
+  tipo: TipoOcorrenciaEnumType | "";
+  search: string;
+}
+
+export interface OcorrenciasContagem {
+  total: number;
+  pendentes: number;
+  emAnalise: number;
+  resolvidas: number;
+  canceladas: number;
+}
