@@ -1,5 +1,34 @@
 @import "src/app/app.component.scss";
 
+.tabs {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  border-bottom: 1px solid $portaria-color-border;
+  margin-block: $m-lg;
+
+  & .tab {
+    cursor: pointer;
+    padding: $p-xs $p-md;
+    font-weight: 500;
+    color: $portaria-color-text-muted;
+
+    & .count {
+      font-size: 14px;
+      padding: 4px $p-sm;
+      border-radius: $portaria-radius-pill;
+      font-weight: bold;
+      background: $portaria-color-accent-pale;
+    }
+
+    &.active {
+      color: $portaria-color-accent-dark;
+      box-shadow: 0 3px $portaria-color-accent;
+    }
+  }
+}
+
 .ocorrencia-card {
   box-shadow: inset 3px 0 0 red; // Substituir depois
   display: flex;

@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnInit } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import {
   OcorrenciasContagem,
@@ -9,9 +9,8 @@ import {
 import { environment } from "src/environments/environment.dev";
 import { catchError, map } from "rxjs/operators";
 import {
-  EstadoOcorrenciaEnum,
   EstadoOcorrenciaEnumType,
-  TipoOcorrenciaEnum,
+  EstadoOcorrenciaLabel,
 } from "../../models/enums";
 
 @Injectable({
@@ -51,16 +50,16 @@ export class OcorrenciasService {
     map((lista) => ({
       total: lista.length,
       pendentes: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaEnum.PENDENTE,
+        (o) => o.estado.label === EstadoOcorrenciaLabel.PENDENTE,
       ).length,
       emAnalise: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaEnum.EM_ANALISE,
+        (o) => o.estado.label === EstadoOcorrenciaLabel.EM_ANALISE,
       ).length,
       resolvidas: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaEnum.RESOLVIDA,
+        (o) => o.estado.label === EstadoOcorrenciaLabel.RESOLVIDA,
       ).length,
       canceladas: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaEnum.CANCELADA,
+        (o) => o.estado.label === EstadoOcorrenciaLabel.CANCELADA,
       ).length,
     })),
   );
@@ -68,12 +67,16 @@ export class OcorrenciasService {
   constructor(private http: HttpClient) {}
 
   carregar(): Observable<OcorrenciasResponseDTO[]> {
-    return this.http.get<OcorrenciasResponseDTO[]>(environment.ocorrenciaApiUrl).pipe(
-      catchError((error) => {
-        console.error(`OCO-SER: Falha ao "CarregarTodasOcorrencias": ${error}`);
-        return of([]);
-      }),
-    );
+    return this.http
+      .get<OcorrenciasResponseDTO[]>(environment.ocorrenciaApiUrl)
+      .pipe(
+        catchError((error) => {
+          console.error(
+            `OCO-SER: Falha ao "CarregarTodasOcorrencias": ${error}`,
+          );
+          return of([]);
+        }),
+      );
   }
 
   carregarTodasOcorrencias(): void {

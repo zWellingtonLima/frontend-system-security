@@ -12,43 +12,81 @@
     </button>
   </div>
 
+  <!-- FILTRAGEM POR TABS -->
+  <ng-container *ngIf="contagens$ | async as c">
+    <div class="tabs">
+      <div
+        class="tab"
+        [class.active]="tabAtiva === 'TODAS'"
+        (click)="onTabChange('TODAS')"
+      >
+        Todas <span class="count"> {{ c.total }} </span>
+      </div>
+      <div
+        class="tab"
+        [class.active]="tabAtiva === EstadoEnum.PENDENTE"
+        (click)="onTabChange(EstadoEnum.PENDENTE)"
+      >
+        Pendentes <span class="count">{{ c.pendentes }}</span>
+      </div>
+      <div
+        class="tab"
+        [class.active]="tabAtiva === EstadoLabel.EM_ANALISE"
+        (click)="onTabChange(EstadoLabel.EM_ANALISE)"
+      >
+        Em análise <span class="count">{{ c.emAnalise }}</span>
+      </div>
+      <div
+        class="tab"
+        [class.active]="tabAtiva === EstadoEnum.RESOLVIDA"
+        (click)="onTabChange(EstadoEnum.RESOLVIDA)"
+      >
+        Resolvidas <span class="count">{{ c.resolvidas }}</span>
+      </div>
+      <div
+        class="tab"
+        [class.active]="tabAtiva === EstadoEnum.CANCELADA"
+        (click)="onTabChange(EstadoEnum.CANCELADA)"
+      >
+        Canceladas <span class="count">{{ c.canceladas }}</span>
+      </div>
+    </div>
+  </ng-container>
+
   <!-- OCORRENCIA CARD - provavelmente FAZER COMPONENT -->
-    <section
-      class="ocorrencia-card"
-      *ngFor="let ocorrencia of ocorrencias | async"
-    >
-      <div class="icon-area">
-        <i class="icon fas fa-shield-alt"></i>
-      </div>
-      <div class="ocorrencia-card--main">
-        <div class="header">
-          <p class="title">
-            {{ ocorrencia.tipoOcorrencia.label }}
-          </p>
-          <!-- Alterar Local para pt-PT -->
-          <span class="date">{{
-            ocorrencia.createDate | date: "MMM d, y, HH:mm:ss"
-          }}</span>
-        </div>
-
-        <p class="ocorrencia">{{ ocorrencia.ocorrencia }}</p>
-
-        <div class="footer">
-          <div class="ocorrencia--estado">
-            <i class="fas fa-clock"></i>
-            {{ ocorrencia.estado.label }}
-          </div>
-
-          <div class="seguranca">
-            <i class="fas fa-user-shield"></i>
-            <span>{{ ocorrencia.createUser }}</span>
-          </div>
-        </div>
+  <div class="ocorrencia-card" *ngFor="let ocorrencia of ocorrencias | async">
+    <div class="icon-area">
+      <i class="icon fas fa-shield-alt"></i>
+    </div>
+    <div class="ocorrencia-card--main">
+      <div class="header">
+        <p class="title">
+          {{ ocorrencia.tipoOcorrencia.label }}
+        </p>
+        <!-- Alterar Local para pt-PT -->
+        <span class="date">{{
+          ocorrencia.createDate | date: "MMM d, y, HH:mm:ss"
+        }}</span>
       </div>
 
-      <button class="portaria-btn portaria-btn--ghost">
-        <i class="fas fa-edit"></i>
-        Alterar Estado
-      </button>
-    </section>
+      <p class="ocorrencia">{{ ocorrencia.ocorrencia }}</p>
+
+      <div class="footer">
+        <div class="ocorrencia--estado">
+          <i class="fas fa-clock"></i>
+          {{ ocorrencia.estado.label }}
+        </div>
+
+        <div class="seguranca">
+          <i class="fas fa-user-shield"></i>
+          <span>{{ ocorrencia.createUser }}</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="portaria-btn portaria-btn--ghost">
+      <i class="fas fa-edit"></i>
+      Alterar Estado
+    </button>
+  </div>
 </app-portaria-shell>
