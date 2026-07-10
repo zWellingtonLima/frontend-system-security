@@ -38,3 +38,19 @@ export const EstadoOcorrenciaLabel: Record<EstadoOcorrenciaEnumType, string> = {
   RESOLVIDA: "Resolvida",
   CANCELADA: "Cancelada",
 };
+
+// ============================================================
+// CHAVES
+// ============================================================
+
+export enum TipoChaveEnum {
+  CHAVE = "CHAVE",
+  MOLHO = "MOLHO",
+};
+
+export type TipoChaveEnumType = keyof typeof TipoChaveEnum;
+
+export const TipoChaveLabel = {
+  [TipoChaveEnum.CHAVE]: "Chave",
+  [TipoChaveEnum.MOLHO]: "Molho",
+};

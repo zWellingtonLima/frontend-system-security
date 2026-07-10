@@ -1,4 +1,8 @@
-import { EstadoOcorrenciaEnumType, TipoOcorrenciaEnumType } from "./enums";
+import {
+  EstadoOcorrenciaEnumType,
+  TipoChaveEnumType,
+  TipoOcorrenciaEnumType,
+} from "./enums";
 
 type ISOTimestamp = string;
 
@@ -19,10 +23,21 @@ export interface ChaveEmprestadas {
   idEntrega: number;
   idChave: number;
   descricao: string; // CHV-101 ou "Molho TI"
-  tipo: string;
+  tipo: TipoChaveEnumType;
   sala: number; // número da sala ou null se molho
   nomePessoa: string; // quem tem a chave
   horaEntrega: Date;
+  observacoes: string;
+}
+
+export interface ChavesHistorico {
+  descricao: string;
+  tipo: TipoChaveEnumType;
+  sala: string;
+  nomePessoa: string;
+  horaEntrega: Date;
+  horaDevolucao: Date;
+  devolvidaPor: string;
   observacoes: string;
 }
 
@@ -32,7 +47,7 @@ export interface Ocorrencias {
   createUser: string;
   tipoOcorrencia: string;
   ocorrencia: string;
-  estado: string;
+  estado: EstadoOcorrenciaEnumType;
   horaOcorrencia: Date;
 }
 

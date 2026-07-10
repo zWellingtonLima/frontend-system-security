@@ -18,25 +18,45 @@
     </div>
   </div>
 
-  <div class="titulo-dashboard-buttons">
+  <div class="filtros-pesquisa">
+    <div class="tab active" id="tabTodas" onclick="setTab('todas')">
+      Todas <span class="tab-count" id="cntTodas">26</span>
+    </div>
+    <div class="tab" id="tabDisp" onclick="setTab('disp')">
+      Disponíveis <span class="tab-count" id="cntDisp">21</span>
+    </div>
+    <div class="tab" id="tabEmp" onclick="setTab('emp')">
+      Emprestadas <span class="tab-count" id="cntEmp">3</span>
+    </div>
+    <div class="tab" id="tabMolho" onclick="setTab('molho')">
+      Molhos <span class="tab-count" id="cntMolho">6</span>
+    </div>
+  </div>
+
+  <div class="barra-pesquisa-container">
     <div class="barra-pesquisa">
       <i class="ft-search"></i>
       <input
+        class="search-input"
+        id="searchInput"
         type="text"
-        placeholder="Pesquisar por código, pasta ou responsável..."
+        placeholder="Pesquisar por código, sala ou responsável..."
       />
     </div>
-    <select name="" id="">
+    <select
+      class="barra-pesquisa-select"
+      id="filterPiso"
+      onchange="applyFilters()"
+    >
       <option value="">Todos os pisos</option>
-      <option value="">Piso 1</option>
-      <option value="">Piso 2</option>
-      <option value="">Piso 3</option>
+      <option value="PRIMEIRO">Piso 1</option>
+      <option value="SEGUNDO">Piso 2</option>
+      <option value="TERCEIRO">Piso 3</option>
     </select>
-    <div></div>
   </div>
 
-  <div class="table-container">
-    <table>
+  <div class="">
+    <table class="tbl">
       <thead>
         <tr>
           <th>Chave / Código</th>
@@ -48,53 +68,45 @@
           <th>Ações</th>
         </tr>
       </thead>
+
       <tbody>
-        <!-- Linha 1: Disponível -->
-        <tr>
+        <tr *ngFor="let item of historicoChaves">
           <td>
-            <span class="bold-text">MOLHO-A1</span>
-            <span class="sub-text">Molho de chaves</span>
+            <span class="bold-text">{{ item.descricao }}</span>
+            <span class="sub-text">molho especo</span>
           </td>
-          <td><span class="badge badge-tipo">◊ Molho</span></td>
-          <td class="empty-dash">—</td>
+          <td>
+            <span class="badge badge-tipo">◊ {{ item.tipo }}</span>
+          </td>
+          <td>{{ item.sala }}</td>
           <td><span class="badge badge-disponivel">⊙ Disponível</span></td>
-          <td class="empty-dash">—</td>
-          <td class="empty-dash">—</td>
-          <td><button class="btn-action">••• Detalhes</button></td>
-        </tr>
-
-        <!-- Linha 2: Atrasada -->
-        <tr>
-          <td>
-            <span class="bold-text">MOLHO-A3</span>
-            <span class="sub-text">Molho de chaves</span>
-          </td>
-          <td><span class="badge badge-tipo">◊ Molho</span></td>
-          <td class="empty-dash">—</td>
-          <td><span class="badge badge-atrasada">⚠️ Atrasada</span></td>
-          <td><span class="bold-text">Tiago Alves</span></td>
-          <td><span class="time-highlight">07:50</span></td>
-          <td><button class="btn-action btn-return">⌲ Devolver</button></td>
-        </tr>
-
-        <!-- Linha 3: Disponível -->
-        <tr>
-          <td>
-            <span class="bold-text">MOLHO-B1</span>
-            <span class="sub-text">Molho de chaves</span>
-          </td>
-          <td><span class="badge badge-tipo">◊ Molho</span></td>
-          <td class="empty-dash">—</td>
-          <td><span class="badge badge-disponivel">⊙ Disponível</span></td>
-          <td class="empty-dash">—</td>
-          <td class="empty-dash">—</td>
+          <td>{{ item.nomePessoa }}</td>
+          <td>{{ item.horaEntrega | date: "HH:mm" }}</td>
           <td><button class="btn-action">••• Detalhes</button></td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div>
-    <span>1–4 de 4 chaves</span>
+  <div class="pagination-container">
+    <button
+      (click)="voltarPagina()"
+      [disabled]="paginaAtual === 1"
+      class="btn-page"
+    >
+      <i class="ft-chevron-left"></i>
+    </button>
+
+    <span class="page-info">
+      Página <strong>{{ paginaAtual }}</strong> de {{ totalPaginas }}
+    </span>
+
+    <button
+      (click)="avancarPagina()"
+      [disabled]="paginaAtual === totalPaginas"
+      class="btn-page"
+    >
+      <i class="ft-chevron-right"></i>
+    </button>
   </div>
 </app-portaria-shell>
