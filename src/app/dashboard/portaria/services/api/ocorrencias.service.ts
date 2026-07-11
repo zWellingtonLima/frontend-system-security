@@ -35,12 +35,9 @@ export class OcorrenciasService {
           (o) =>
             !filtros.estado ||
             filtros.estado === "TODAS" ||
-            o.estado.estadoOcorrencia === filtros.estado,
+            o.estado === filtros.estado,
         )
-        .filter(
-          (o) =>
-            !filtros.tipo || o.tipoOcorrencia.tipoOcorrencia === filtros.tipo,
-        )
+        .filter((o) => !filtros.tipo || o.tipoOcorrencia === filtros.tipo)
         .filter(
           (o) =>
             !filtros.search ||
@@ -55,16 +52,16 @@ export class OcorrenciasService {
     map((lista) => ({
       total: lista.length,
       pendentes: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaLabel.PENDENTE,
+        (o) => o.estado === EstadoOcorrenciaLabel.PENDENTE,
       ).length,
       emAnalise: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaLabel.EM_ANALISE,
+        (o) => o.estado === EstadoOcorrenciaLabel.EM_ANALISE,
       ).length,
       resolvidas: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaLabel.RESOLVIDA,
+        (o) => o.estado === EstadoOcorrenciaLabel.RESOLVIDA,
       ).length,
       canceladas: lista.filter(
-        (o) => o.estado.label === EstadoOcorrenciaLabel.CANCELADA,
+        (o) => o.estado === EstadoOcorrenciaLabel.CANCELADA,
       ).length,
     })),
   );

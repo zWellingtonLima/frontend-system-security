@@ -49,17 +49,9 @@ export interface OcorrenciasResponseDTO {
   id: number;
   createDate: ISOTimestamp;
   createUser: string;
-  tipoOcorrencia: {
-    id: number;
-    tipoOcorrencia: TipoOcorrenciaEnumType;
-    label: string;
-  };
+  tipoOcorrencia: TipoOcorrenciaEnumType;
   ocorrencia: string;
-  estado: {
-    id: number;
-    estadoOcorrencia: EstadoOcorrenciaEnumType;
-    label: string;
-  };
+  estado: EstadoOcorrenciaEnumType;
   horaOcorrencia: ISOTimestamp;
 }
 
