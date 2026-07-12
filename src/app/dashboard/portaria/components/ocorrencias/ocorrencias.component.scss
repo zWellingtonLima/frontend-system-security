@@ -1,5 +1,38 @@
 @import "src/app/app.component.scss";
 
+$tipos: (
+  acesso: #ef4444,
+  avaria: #f59e0b,
+  objeto: #8b5cf6,
+  visitante: #f97316,
+  alarme: #ec4899,
+  outros: #6b7280,
+);
+@each $nome, $cor in $tipos {
+  .icon-area.tipo--#{$nome} {
+    background: rgba($color: $cor, $alpha: 0.12);
+    border: 1px solid rgba($cor, 0.2);
+    color: $cor;
+  }
+
+  .ocorrencia-card.tipo--#{$nome} {
+    box-shadow: inset 3px 0 0 $cor;
+  }
+}
+$estados: (
+  pendente: #f59e0b,
+  resolvida: #10b981,
+  cancelada: #6b7280,
+);
+
+@each $nome, $cor in $estados {
+  .estado-badge.estado--#{$nome} {
+    color: darken($cor, 15);
+    background: rgba($cor, 0.12);
+    border: 1px solid rgba($cor, 0.25);
+  }
+}
+
 .tabs {
   display: flex;
   justify-content: start;
@@ -13,14 +46,6 @@
     padding: $p-xs $p-md;
     font-weight: 500;
     color: $portaria-color-text-muted;
-
-    & .count {
-      font-size: 14px;
-      padding: 4px $p-sm;
-      border-radius: $portaria-radius-pill;
-      font-weight: bold;
-      background: $portaria-color-accent-pale;
-    }
 
     &.active {
       color: $portaria-color-accent-dark;
@@ -48,6 +73,7 @@
       padding: 8px 2.2rem;
       border-radius: $portaria-radius-xs;
       border: 1px solid $portaria-color-border;
+      background: $portaria-color-bg-soft;
     }
   }
 
@@ -60,8 +86,8 @@
   }
 }
 
+// ========= CARD ==========
 .ocorrencia-card {
-  box-shadow: inset 3px 0 0 red; // Substituir depois
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -75,71 +101,109 @@
   .icon-area {
     align-self: start;
     padding: $p-sm;
-    background: $portaria-color-danger-bg;
-    border: 1px solid $portaria-color-danger-border;
     border-radius: $portaria-radius-xs;
 
     .icon {
       font-size: 24px;
-      color: red; // Substituir depois
     }
   }
 
   &--main {
     flex: 1;
 
-    & .header {
-      display: flex;
-      justify-content: space-between;
-
-      & .date {
-        font-size: 14px;
-        color: $portaria-color-text-body;
-      }
-    }
-
     & .title {
       font-weight: 500;
-      font-size: 14px;
-      margin-bottom: 0;
     }
+
+    & .footer {
+      margin-top: $m-sm;
+      display: flex;
+      align-items: center;
+      gap: $m-sm;
+    }
+  }
+
+  & .date {
+    font-size: 14px;
+    font-weight: 400;
+    color: $portaria-color-text-muted-alt;
   }
 
   & .ocorrencia {
     color: $portaria-color-text-dark;
+    margin: 0;
   }
 
-  & .ocorrencia--estado {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    background: $portaria-color-bg-light;
-
-    border: 1px solid $portaria-color-danger-border;
-    color: $portaria-color-danger;
-    background: $portaria-color-danger-bg;
-
-    padding: 2px $p-sm;
-    border-radius: $portaria-radius-sm;
-  }
-
-  & .footer {
-    gap: $m-sm;
-    letter-spacing: 0.06em;
-    max-width: fit-content;
-    color: $portaria-color-text-body;
+  & .acoes {
+    font-size: 14px;
+    gap: $m-xs;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+  }
+}
+
+.empty-state {
+  display: flex;
+  font-weight: 500;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: $portaria-color-text-muted;
+  gap: 0.5rem;
+
+  i {
+    font-size: 2rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    border: 1px solid $portaria-color-border;
 
-    & .seguranca {
-      font-size: 14px;
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
-      i {
-        color: lighten($color: $portaria-color-text-muted, $amount: 10);
-        font-size: 12px;
-        margin-right: $m-xxs;
-      }
+    &:not(:disabled):hover {
+      background: $portaria-color-bg-hover;
     }
   }
+
+  span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+}
+
+.estado-badge {
+  padding-inline: $p-xs;
+  border-radius: $portaria-radius-sm;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }

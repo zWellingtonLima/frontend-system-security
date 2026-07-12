@@ -1,14 +1,9 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
-import { OcorrenciasResponseDTO } from "../../models/api";
-import { Observable, Subject } from "rxjs";
 import {
-  EstadoOcorrenciaEnum,
-  EstadoOcorrenciaEnumType,
-  EstadoOcorrenciaLabel,
-  TipoOcorrenciaEnum,
+  TabConfig,
   TipoOcorrenciaEnumType,
-  TipoOcorrenciaLabel,
+  TIPOS_OCORRENCIA,
 } from "../../models/enums";
 
 @Component({
@@ -16,40 +11,42 @@ import {
   templateUrl: "./ocorrencias.component.html",
   styleUrls: ["./ocorrencias.component.scss"],
 })
-export class OcorrenciasComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class OcorrenciasComponent implements OnInit {
+  tabs = this.ocorrenciasService.tabs;
+  tipos = TIPOS_OCORRENCIA;
 
   ocorrenciasFiltradas$ = this.ocorrenciasService.ocorrenciasFiltradas$;
-  contagens$ = this.ocorrenciasService.contagens$;
+  totalPaginas$ = this.ocorrenciasService.totalPaginas$;
+  tabAtiva$ = this.ocorrenciasService.tabAtiva$;
+  carregando$ = this.ocorrenciasService.carregandoDados$;
 
-  tabAtiva: EstadoOcorrenciaEnumType | "TODAS" = "TODAS";
-
-  EstadoEnum = EstadoOcorrenciaEnum;
-  EstadoLabel = EstadoOcorrenciaLabel;
-  TipoEnum = TipoOcorrenciaEnum;
-  TipoLabel = TipoOcorrenciaLabel;
+  paginaAtual = 0;
 
   constructor(private ocorrenciasService: OcorrenciasService) {}
 
   ngOnInit() {
-    this.ocorrenciasService.carregarTodasOcorrencias();
+    this.ocorrenciasService.inicializar();
   }
 
-  onTabChange(tab: EstadoOcorrenciaEnumType | "TODAS") {
-    this.tabAtiva = tab;
+  onTabChange(tab: TabConfig) {
+    this.paginaAtual = 0;
     this.ocorrenciasService.setTab(tab);
   }
 
   onSearchChange(search: string) {
-    this.ocorrenciasService.setFiltro({ search });
+    this.ocorrenciasService.setFiltroLocal({ search });
+  }
+
+  onPageChange(page: number) {
+    this.paginaAtual = page;
+    this.ocorrenciasService.setPagina(page);
   }
 
   onTipoChange(tipo: TipoOcorrenciaEnumType | "") {
-    this.ocorrenciasService.setFiltro({ tipo });
+    this.ocorrenciasService.setFiltroLocal({ tipo });
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  trackById(_i: number, o: { id: number }) {
+    return o.id;
   }
 }

@@ -14,46 +14,20 @@
   </div>
 
   <!-- FILTRAGEM POR TABS -->
-  <ng-container *ngIf="contagens$ | async as c">
+  <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
     <div class="tabs">
       <div
         class="tab"
-        [class.active]="tabAtiva === 'TODAS'"
-        (click)="onTabChange('TODAS')"
+        *ngFor="let tab of tabs"
+        [class.active]="tabAtiva.value === tab.value"
+        (click)="onTabChange(tab)"
       >
-        Todas <span class="count"> {{ c.total }} </span>
-      </div>
-      <div
-        class="tab"
-        [class.active]="tabAtiva === EstadoEnum.PENDENTE"
-        (click)="onTabChange(EstadoEnum.PENDENTE)"
-      >
-        Pendentes <span class="count">{{ c.pendentes }}</span>
-      </div>
-      <div
-        class="tab"
-        [class.active]="tabAtiva === EstadoEnum.EM_ANALISE"
-        (click)="onTabChange(EstadoEnum.EM_ANALISE)"
-      >
-        Em análise <span class="count">{{ c.emAnalise }}</span>
-      </div>
-      <div
-        class="tab"
-        [class.active]="tabAtiva === EstadoEnum.RESOLVIDA"
-        (click)="onTabChange(EstadoEnum.RESOLVIDA)"
-      >
-        Resolvidas <span class="count">{{ c.resolvidas }}</span>
-      </div>
-      <div
-        class="tab"
-        [class.active]="tabAtiva === EstadoEnum.CANCELADA"
-        (click)="onTabChange(EstadoEnum.CANCELADA)"
-      >
-        Canceladas <span class="count">{{ c.canceladas }}</span>
+        {{ tab.label }}
       </div>
     </div>
   </ng-container>
 
+  <!-- FILTROS -->
   <div class="filter-container flex">
     <div class="search-wrap flex content-center">
       <i class="fas fa-search"></i>
@@ -66,20 +40,7 @@
     </div>
     <select class="filter-select" (change)="onTipoChange($event.target.value)">
       <option value="">Todos os tipos</option>
-      <option [value]="TipoEnum.ACESSO_NAO_AUTORIZADO">
-        Acesso não autorizado
-      </option>
-      <option [value]="TipoEnum.AVARIA_EQUIPAMENTO">
-        Avaria de equipamento
-      </option>
-      <option [value]="TipoEnum.OBJETO_PERDIDO_ENCONTRADO">
-        Objeto perdido/encontrado
-      </option>
-      <option [value]="TipoEnum.INCIDENTE_COM_VISITANTE">
-        Incidente com visitante
-      </option>
-      <option [value]="TipoEnum.ALARME_DISPARADO">Alarme disparado</option>
-      <option [value]="TipoEnum.OUTROS">Outros</option>
+      <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
     </select>
   </div>
 
@@ -88,48 +49,81 @@
       class="ocorrencia-lista"
       *ngIf="ocorrencias.length > 0; else EstadoVazio"
     >
-      <div class="ocorrencia-card" *ngFor="let ocor of ocorrencias">
-        <div class="icon-area">
-          <i class="icon fas fa-shield-alt"></i>
+      <div
+        class="ocorrencia-card"
+        [ngClass]="ocor.tipoConfig.classe"
+        *ngFor="let ocor of ocorrencias; trackBy: trackById"
+      >
+        <div class="icon-area" [ngClass]="ocor.tipoConfig.classe">
+          <i [ngClass]="ocor.tipoConfig.icone"></i>
         </div>
-        <div class="ocorrencia-card--main">
-          <div class="header">
-            <p class="title">
-              {{ ocor.tipoOcorrencia }}
-            </p>
-            <!-- Alterar Local para pt-PT -->
-            <span class="date">{{
-              ocor.createDate | date: "MMM d, y, HH:mm:ss"
-            }}</span>
-          </div>
 
-          <p class="ocorrencia">{{ ocor.ocorrencia }}</p>
+        <div class="ocorrencia-card--main">
+          <p class="title">{{ ocor.tipoConfig.label }}</p>
+          <p class="ocorrencia">
+            {{ ocor.ocorrencia }}
+          </p>
 
           <div class="footer">
-            <div class="ocorrencia--estado">
-              <i class="fas fa-clock"></i>
-              {{ ocor.estado }}
-            </div>
-
-            <div class="seguranca">
-              <i class="fas fa-user-shield"></i>
-              <span>{{ ocor.createUser }}</span>
-            </div>
+            <span class="estado-badge" [ngClass]="ocor.estadoConfig.classe">
+              <i [ngClass]="ocor.estadoConfig.icone"></i>
+              {{ ocor.estadoConfig.label }}
+            </span>
+            <span class="date">
+              Criada em:
+              {{
+                ocor.createDate
+                  | date: "d 'de' MMMM 'de' y 'às' HH:mm" : "Europe/Lisbon"
+              }}
+            </span>
           </div>
         </div>
 
-        <button class="portaria-btn portaria-btn--ghost">
-          <i class="fas fa-edit"></i>
-          Alterar Estado
-        </button>
+        <div class="acoes">
+          <button
+            class="portaria-btn portaria-btn--secondary"
+            title="Marcar ocorrência como concluída"
+          >
+            <i class="ft-check-circle"></i>
+          </button>
+          <button
+            class="portaria-btn portaria-btn--danger"
+            title="Cancelar ocorrência"
+          >
+            <i class="ft-x-circle"></i>
+          </button>
+        </div>
       </div>
     </div>
 
     <ng-template #EstadoVazio>
       <div class="empty-state">
-        <i class="ti ti-clipboard-x"></i>
+        <i class="ft-x-circle"></i>
         <p>Nenhuma ocorrência encontrada.</p>
       </div>
     </ng-template>
+
+    <!-- PAGINACAÇÃO -->
+    <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
+      <ng-container *ngIf="tabAtiva.paginada">
+        <ng-container *ngIf="totalPaginas$ | async as totalPaginas">
+          <div class="paginacao" *ngIf="totalPaginas > 1">
+            <button
+              [disabled]="paginaAtual === 0"
+              (click)="onPageChange(paginaAtual - 1)"
+            >
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span> {{ paginaAtual + 1 }} / {{ totalPaginas }} </span>
+            <button
+              [disabled]="paginaAtual === totalPaginas - 1"
+              (click)="onPageChange(paginaAtual + 1)"
+            >
+              <i class="ft-arrow-right"></i>
+            </button>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
   </ng-container>
 </app-portaria-shell>

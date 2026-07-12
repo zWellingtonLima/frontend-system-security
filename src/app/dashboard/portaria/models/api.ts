@@ -1,4 +1,8 @@
-import { EstadoOcorrenciaEnumType, TipoOcorrenciaEnumType } from "./enums";
+import {
+  EstadoOcorrenciaEnumType,
+  OcorrenciaConfigBase,
+  TipoOcorrenciaEnumType,
+} from "./enums";
 
 type ISOTimestamp = string;
 
@@ -26,19 +30,10 @@ export interface ChaveEmprestadas {
   observacoes: string;
 }
 
-export interface Ocorrencias {
-  id: number;
-  createDate: Date;
-  createUser: string;
-  tipoOcorrencia: string;
-  ocorrencia: string;
-  estado: string;
-  horaOcorrencia: Date;
-}
-
 // ============================================================
 // OCORRÊNCIAS
 // ============================================================
+
 export interface OcorrenciasRequestDTO {
   tipoOcorrencia: TipoOcorrenciaEnumType;
   ocorrencia: string;
@@ -48,23 +43,29 @@ export interface OcorrenciasRequestDTO {
 export interface OcorrenciasResponseDTO {
   id: number;
   createDate: ISOTimestamp;
-  createUser: string;
-  tipoOcorrencia: TipoOcorrenciaEnumType;
+  tipo: TipoOcorrenciaEnumType;
   ocorrencia: string;
   estado: EstadoOcorrenciaEnumType;
   horaOcorrencia: ISOTimestamp;
 }
 
-export interface OcorrenciasFiltros {
-  estado: EstadoOcorrenciaEnumType | "TODAS";
+// Verificar se o formato definitivo sera esse
+export interface OcorrenciasPage {
+  content: OcorrenciasResponseDTO[];
+  page: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
+}
+
+export interface FiltrosLocais {
   tipo: TipoOcorrenciaEnumType | "";
   search: string;
 }
 
-export interface OcorrenciasContagem {
-  total: number;
-  pendentes: number;
-  emAnalise: number;
-  resolvidas: number;
-  canceladas: number;
+export interface OcorrenciaViewModel extends OcorrenciasResponseDTO {
+  tipoConfig: OcorrenciaConfigBase;
+  estadoConfig: OcorrenciaConfigBase;
 }

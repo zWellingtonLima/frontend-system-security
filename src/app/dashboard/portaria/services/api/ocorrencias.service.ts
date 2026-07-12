@@ -1,92 +1,134 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import {
-  OcorrenciasContagem,
-  OcorrenciasFiltros,
-  OcorrenciasResponseDTO,
-} from "../../models/api";
-import { environment } from "src/environments/environment.dev";
-import { catchError, map } from "rxjs/operators";
-import {
+  ESTADO_OCORRENCIA_CONFIG,
   EstadoOcorrenciaEnumType,
-  EstadoOcorrenciaLabel,
+  TabConfig,
+  TIPO_OCORRENCIA_CONFIG,
+  TipoOcorrenciaEnumType,
 } from "../../models/enums";
+import {
+  FiltrosLocais,
+  OcorrenciasPage,
+  OcorrenciasResponseDTO,
+  OcorrenciaViewModel,
+} from "../../models/api";
+import { catchError, map } from "rxjs/operators";
+import { environment } from "src/environments/environment.dev";
+
+// A ordem aqui define a ordem que aparece na tela
+const TABS: TabConfig[] = [
+  {
+    value: "PENDENTE",
+    label: "Pendentes",
+    paginada: true,
+    estadoParam: "PENDENTE",
+  },
+  {
+    value: "RESOLVIDA",
+    label: "Resolvidas",
+    paginada: true,
+    estadoParam: "RESOLVIDA",
+  },
+  {
+    value: "CANCELADA",
+    label: "Canceladas",
+    paginada: true,
+    estadoParam: "CANCELADA",
+  },
+  { value: "TODAS", label: "Todas", paginada: true, estadoParam: null },
+];
 
 @Injectable({
   providedIn: "root",
 })
 export class OcorrenciasService {
-  private ocorrencias$ = new BehaviorSubject<OcorrenciasResponseDTO[]>([]);
-  private filtros$ = new BehaviorSubject<OcorrenciasFiltros>({
-    estado: "TODAS",
+  private ocorrencias$ = new BehaviorSubject<OcorrenciaViewModel[]>([]);
+  private filtrosLocais$ = new BehaviorSubject<FiltrosLocais>({
     tipo: "",
     search: "",
   });
 
-  ocorrenciasFiltradas$: Observable<OcorrenciasResponseDTO[]> = combineLatest(
+  tabs = TABS;
+  // É sempre iniciada com [0] porque o primeiro elemento lá no TABS é o PENDENTE
+  tabAtiva$ = new BehaviorSubject<TabConfig>(TABS[0]);
+  carregandoDados$ = new BehaviorSubject<boolean>(false);
+  totalPaginas$ = new BehaviorSubject<number>(0);
+
+  ocorrenciasFiltradas$: Observable<OcorrenciaViewModel[]> = combineLatest(
     this.ocorrencias$,
-    this.filtros$,
+    this.filtrosLocais$,
   ).pipe(
-    map(([ocorrencias, filtros]) => {
-      const resultado = ocorrencias
-        // 1º filtro para o estado 2º para o tipo de ocorrencia 3º para busca em texto
-        .filter(
-          (o) =>
-            !filtros.estado ||
-            filtros.estado === "TODAS" ||
-            o.estado === filtros.estado,
-        )
-        .filter((o) => !filtros.tipo || o.tipoOcorrencia === filtros.tipo)
+    map(([listaOcorrencias, filtros]) =>
+      listaOcorrencias
+        .filter((o) => !filtros.tipo || o.tipo === filtros.tipo)
         .filter(
           (o) =>
             !filtros.search ||
             o.ocorrencia.toLowerCase().includes(filtros.search.toLowerCase()),
-        );
-
-      return resultado;
-    }),
-  );
-
-  contagens$: Observable<OcorrenciasContagem> = this.ocorrencias$.pipe(
-    map((lista) => ({
-      total: lista.length,
-      pendentes: lista.filter(
-        (o) => o.estado === EstadoOcorrenciaLabel.PENDENTE,
-      ).length,
-      emAnalise: lista.filter(
-        (o) => o.estado === EstadoOcorrenciaLabel.EM_ANALISE,
-      ).length,
-      resolvidas: lista.filter(
-        (o) => o.estado === EstadoOcorrenciaLabel.RESOLVIDA,
-      ).length,
-      canceladas: lista.filter(
-        (o) => o.estado === EstadoOcorrenciaLabel.CANCELADA,
-      ).length,
-    })),
+        ),
+    ),
   );
 
   constructor(private http: HttpClient) {}
 
-  carregarTodasOcorrencias(): void {
+  inicializar(): void {
+    this.carregarOcorrencias(TABS[0], 0);
+  }
+
+  setTab(tab: TabConfig): void {
+    this.tabAtiva$.next(tab);
+    this.filtrosLocais$.next({ tipo: "", search: "" });
+    this.carregarOcorrencias(tab, 0);
+  }
+
+  setFiltroLocal(parcial: Partial<FiltrosLocais>): void {
+    this.filtrosLocais$.next({ ...this.filtrosLocais$.value, ...parcial });
+  }
+
+  setPagina(page: number): void {
+    this.filtrosLocais$.next({ tipo: "", search: "" });
+    this.carregarOcorrencias(this.tabAtiva$.value, page);
+  }
+
+  carregarOcorrencias(tab: TabConfig, page: number): void {
+    this.carregandoDados$.next(true);
+
+    // Seta os par"ametros caso existam
+    let parametros = new HttpParams();
+    if (tab.estadoParam) parametros = parametros.set("estado", tab.estadoParam);
+    if (tab.paginada)
+      parametros = parametros.set("page", String(page)).set("size", "20");
+
     this.http
-      .get<OcorrenciasResponseDTO[]>(environment.ocorrenciaApiUrl)
+      .get<OcorrenciasPage>(environment.ocorrenciaApiUrl, {
+        params: parametros,
+      })
       .pipe(
-        catchError((error) => {
-          console.error(
-            `OCO-SER: Falha ao "CarregarTodasOcorrencias": ${error}`,
-          );
-          return of([]);
+        catchError((err) => {
+          console.error("OCO-SERV", err);
+          this.carregandoDados$.next(false);
+          return of(null);
         }),
       )
-      .subscribe((resultado) => this.ocorrencias$.next(resultado));
+      .subscribe((resultado) => {
+        if (resultado === null) return;
+
+        this.ocorrencias$.next(
+          resultado.content.map((o) => this.toViewModel(o)),
+        );
+        this.carregandoDados$.next(false);
+        this.totalPaginas$.next(resultado.page.totalPages);
+      });
   }
 
-  setFiltro(parcial: Partial<OcorrenciasFiltros>): void {
-    this.filtros$.next({ ...this.filtros$.value, ...parcial });
-  }
-
-  setTab(estado: EstadoOcorrenciaEnumType | "TODAS"): void {
-    this.filtros$.next({ ...this.filtros$.value, estado: estado });
+  private toViewModel(o: OcorrenciasResponseDTO): OcorrenciaViewModel {
+    return {
+      ...o,
+      tipoConfig: TIPO_OCORRENCIA_CONFIG[o.tipo as TipoOcorrenciaEnumType],
+      estadoConfig:
+        ESTADO_OCORRENCIA_CONFIG[o.estado as EstadoOcorrenciaEnumType],
+    };
   }
 }
