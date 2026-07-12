@@ -1,0 +1,62 @@
+@import "./scss/consumos-header";
+@import "./scss/consumos-cards";
+@import "./scss/consumos-tabs";
+@import "./scss/consumos-filters";
+@import "./scss/consumos-table";
+@import "./scss/consumos-pagination";
+@import "./scss/consumos-modal";
+@import "./scss/consumos-toast";
+@import "src/app/dashboard/portaria/portaria.component.scss";
+
+$cor-azul: #2f6feb;
+$cor-texto-titulo: #1a1a1a;
+$cor-texto-cinza: #8a8f98;
+
+.titulo-dashboard {
+  margin-bottom: 20px;
+
+  h5 {
+    color: $cor-azul;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+
+  h3 {
+    color: $cor-texto-titulo;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  p {
+    color: $cor-texto-cinza;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+.titulo-dashboard-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+.barra-pesquisa-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.barra-pesquisa-select {
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  cursor: pointer;
+}
+
+

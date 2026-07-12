@@ -1,0 +1,152 @@
+// ── TABELA DE LEITURAS ───────────────────────────────────────────────
+
+.tbl-wrap {
+  overflow-x: auto;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 640px;
+
+  thead {
+    background: #f8fafc;
+  }
+
+  th {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #edf0f4;
+    border-top: 1px solid #edf0f4;
+  }
+
+  td {
+    font-size: 12px;
+    color: #374151;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f3f5f7;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: #f8fafc;
+  }
+}
+
+// célula "Tipo"
+.tipo-cell {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.tipo-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+
+  &.td-agua { background: #dbeafe; color: #1e40af; }
+  &.td-elet { background: #fef9c3; color: #713f12; }
+  &.td-gas  { background: #ffe4e6; color: #9f1239; }
+}
+
+.tipo-lbl {
+  font-size: 12px;
+  font-weight: 500;
+  color: #111;
+}
+
+// célula "Leitura actual"
+.valor-leitura {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  font-variant-numeric: tabular-nums;
+}
+
+.valor-unidade {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+// célula "Consumo"
+.delta-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+
+  i { font-size: 13px; }
+}
+
+.delta-pos { color: #166534; }
+.delta-null { color: #9ca3af; font-weight: 400; }
+
+// célula "Observação"
+.obs-cell {
+  font-size: 11px;
+  color: #6b7280;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// célula "Ações"
+.actions-cell {
+  display: flex;
+  gap: 5px;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background .13s, border-color .13s;
+  color: #374151;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #b0bec9;
+  }
+
+  &.edit {
+    color: var(--accent);
+    border-color: #c7deff;
+    background: #f0f6ff;
+
+    &:hover { background: #dbeafe; }
+  }
+
+  &.del {
+    color: #991b1b;
+    border-color: #fecaca;
+    background: #fff5f5;
+
+    &:hover { background: #fee2e2; }
+  }
+
+  i { font-size: 13px; }
+}

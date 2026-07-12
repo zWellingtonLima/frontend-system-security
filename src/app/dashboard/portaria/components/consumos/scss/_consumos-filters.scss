@@ -1,0 +1,55 @@
+// ── FILTROS: PESQUISA + PERÍODO ──────────────────────────────────────
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.search-wrap {
+  flex: 1;
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: #9ca3af;
+    pointer-events: none;
+  }
+}
+
+.search-input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px 0 32px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  transition: border-color .13s;
+  font-family: inherit;
+
+  &:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+}
+
+.filter-select {
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}

@@ -1,3 +1,286 @@
-<p>
-  consumos Funcionaaaaa!
-</p>
+<app-portaria-shell>
+  <div class="titulo-dashboard-buttons">
+    <div class="titulo-dashboard">
+      <h3>Consumos</h3>
+      <p>Registo de leituras de água, eletricidade e gás</p>
+    </div>
+
+    <div>
+      <button
+        class="portaria-btn portaria-btn--primary"
+        (click)="abrirModalNovo()"
+      >
+        <i class="ft-plus"></i>
+        Registar Leitura
+      </button>
+    </div>
+  </div>
+
+  <div class="leituras-grid">
+    <div class="leitura-card lc-agua">
+      <div class="lc-header">
+        <div class="ft-droplet lc-icon li-agua">
+          <i class="ti ti-droplet"></i>
+        </div>
+        <div>
+          <div class="lc-tipo agua">Água</div>
+          <div class="lc-unidade agua">m³ — contador</div>
+        </div>
+      </div>
+      <ng-container *ngIf="ultimaAgua; else semAgua">
+        <div class="lc-valor agua">
+          {{ formatarValor(ultimaAgua.valor) }} m³
+        </div>
+        <div class="lc-delta agua">
+          <ng-container *ngIf="ultimaAgua.consumo !== null; else primeiraAgua">
+            <i
+              class="ti"
+              [ngClass]="
+                ultimaAgua.consumo >= 0 ? 'ti-arrow-up' : 'ti-arrow-down'
+              "
+            ></i>
+            {{ ultimaAgua.consumo >= 0 ? "+" : ""
+            }}{{ formatarValor(ultimaAgua.consumo) }} m³ desde anterior
+          </ng-container>
+          <ng-template #primeiraAgua
+            ><i class="ti ti-minus"></i> primeira leitura</ng-template
+          >
+        </div>
+        <div class="lc-date">
+          Última: {{ formatarData(ultimaAgua.dataHora) }}
+        </div>
+      </ng-container>
+      <ng-template #semAgua>
+        <div class="lc-valor agua">—</div>
+        <div class="lc-delta agua">
+          <i class="ti ti-minus"></i> sem dados anteriores
+        </div>
+        <div class="lc-date">—</div>
+      </ng-template>
+    </div>
+
+    <div class="leitura-card lc-eletricidade">
+      <div class="lc-header">
+        <div class="icon-energy lc-icon li-elet">
+          <i class="ti ti-bolt"></i>
+        </div>
+        <div>
+          <div class="lc-tipo elet">Eletricidade</div>
+          <div class="lc-unidade elet">kWh — contador</div>
+        </div>
+      </div>
+      <ng-container *ngIf="ultimaEletricidade; else semElet">
+        <div class="lc-valor elet">
+          {{ formatarValor(ultimaEletricidade.valor) }} kWh
+        </div>
+        <div class="lc-delta elet">
+          <ng-container
+            *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
+          >
+            <i
+              class="ti"
+              [ngClass]="
+                ultimaEletricidade.consumo >= 0
+                  ? 'ti-arrow-up'
+                  : 'ti-arrow-down'
+              "
+            ></i>
+            {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
+            }}{{ formatarValor(ultimaEletricidade.consumo) }} kWh desde anterior
+          </ng-container>
+          <ng-template #primeiraElet
+            ><i class="ti ti-minus"></i> primeira leitura</ng-template
+          >
+        </div>
+        <div class="lc-date">
+          Última: {{ formatarData(ultimaEletricidade.dataHora) }}
+        </div>
+      </ng-container>
+      <ng-template #semElet>
+        <div class="lc-valor elet">—</div>
+        <div class="lc-delta elet">
+          <i class="ti ti-minus"></i> sem dados anteriores
+        </div>
+        <div class="lc-date">—</div>
+      </ng-template>
+    </div>
+
+    <div class="leitura-card lc-gas">
+      <div class="lc-header">
+        <div class="icon-fire lc-icon li-gas"><i class="ti ti-flame"></i></div>
+        <div>
+          <div class="lc-tipo gas">Gás</div>
+          <div class="lc-unidade gas">m³ — contador</div>
+        </div>
+      </div>
+      <ng-container *ngIf="ultimaGas; else semGas">
+        <div class="lc-valor gas">{{ formatarValor(ultimaGas.valor) }} m³</div>
+        <div class="lc-delta gas">
+          <ng-container *ngIf="ultimaGas.consumo !== null; else primeiraGas">
+            <i
+              class="ti"
+              [ngClass]="
+                ultimaGas.consumo >= 0 ? 'ti-arrow-up' : 'ti-arrow-down'
+              "
+            ></i>
+            {{ ultimaGas.consumo >= 0 ? "+" : "-"
+            }}{{ formatarValor(ultimaGas.consumo) }} m³ desde anterior
+          </ng-container>
+          <ng-template #primeiraGas
+            ><i class="ti ti-minus"></i> primeira leitura</ng-template
+          >
+        </div>
+        <div class="lc-date">
+          Última: {{ formatarData(ultimaGas.dataHora) }}
+        </div>
+      </ng-container>
+      <ng-template #semGas>
+        <div class="lc-valor gas">—</div>
+        <div class="lc-delta gas">
+          <i class="ti ti-minus"></i> sem dados anteriores
+        </div>
+        <div class="lc-date">—</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div
+    class="modal-overlay"
+    [class.open]="modalNovoAberto"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal" *ngIf="modalNovoAberto">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Registar leitura</div>
+          <div class="modal-sub">Insira o valor actual do contador</div>
+        </div>
+        <button class="modal-close" aria-label="Fechar">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="section-label">Tipo de consumo</div>
+        <div class="tipo-selector">
+          <div class="tipo-opt">
+            <i class="ti"></i>
+            <div class="tipo-opt-lbl"></div>
+          </div>
+        </div>
+
+        <!-- Preview leitura anterior -->
+        <div class="prev-box">
+          <div>
+            <div class="prev-lbl">Leitura anterior</div>
+            <div class="prev-val"></div>
+          </div>
+          <div class="prev-sep"></div>
+          <div>
+            <div class="prev-delta-lbl">Consumo calculado</div>
+            <div class="prev-delta-val"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom: 0">
+            <label class="form-label" for="nValor"
+              >Valor da leitura <span>*</span></label
+            >
+            <input
+              class="form-input"
+              id="nValor"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex: 1250.50"
+              [(ngModel)]="novoValor"
+            />
+          </div>
+          <div class="form-group" style="margin-bottom: 0">
+            <label class="form-label">Unidade</label>
+            <input
+              class="form-input"
+              type="text"
+              readonly
+              style="color: #9ca3af; cursor: default"
+            />
+          </div>
+        </div>
+        <div style="margin-top: 14px" class="form-group">
+          <label class="form-label" for="nObs">Observação</label>
+          <textarea
+            class="form-textarea"
+            id="nObs"
+            placeholder="Notas sobre esta leitura (opcional)..."
+            [(ngModel)]="novaObs"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel">Cancelar</button>
+        <button class="btn-submit" [disabled]="salvandoNovo">
+          <i class="ti ti-plus"></i>
+          {{ salvandoNovo ? "A registar..." : "Registar" }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filtros-pesquisa">
+    <div class="tab active">Água <span class="tab-count">26</span></div>
+    <div class="tab">Eletricidade <span class="tab-count">3</span></div>
+    <div class="tab">Gás<span class="tab-count">6</span></div>
+  </div>
+
+  <div class="barra-pesquisa-container">
+    <div class="barra-pesquisa">
+      <i class="ft-search"></i>
+      <input
+        class="search-input"
+        id="searchInput"
+        type="text"
+        placeholder="Pesquisar por código, sala ou responsável..."
+      />
+    </div>
+    <select class="barra-pesquisa-select">
+      <option value="">Todos o período</option>
+      <option value="PRIMEIRO">Hoje</option>
+      <option value="SEGUNDO">Esta semana</option>
+      <option value="TERCEIRO">Este mês</option>
+    </select>
+  </div>
+
+  <div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Leitura actual</th>
+          <th>Consumo</th>
+          <th>Data / hora</th>
+          <th>Observação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>
+            <span class="bold-text">asdasdasd</span>
+          </td>
+          <td>
+            <span class="bold-text"> 145,00 m³</span>
+          </td>
+          <td>sadsad</td>
+          <td>sdasda</td>
+          <td>asdasd</td>
+          <td>
+            <button class="action-btn edit"><i class="icon-pencil"></i></button>
+            <button class="action-btn del"><i class="ft-trash-2"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</app-portaria-shell>

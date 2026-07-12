@@ -1,5 +1,4 @@
 <div class="dashboard-wrapper">
-
   <div class="titulo-dashboard">
     <h5>SEGURANÇA · VISÃO GERAL</h5>
     <h3>Dashboard</h3>
@@ -27,7 +26,6 @@
   </div>
 
   <div class="dashboard-blocks-container">
-
     <div class="dashboard-blocks">
       <div class="titulos-lista-chaves">
         <span class="titulo-lista">Chaves em uso</span>
@@ -38,7 +36,7 @@
         <span class="coluna-principal">{{ item.descricao }}</span>
         <span class="coluna-secundaria">{{ item.nomePessoa }}</span>
         <span class="badge" [ngClass]="'badge-' + statusLabel">
-          {{ statusLabel  }}
+          {{ statusLabel }}
         </span>
       </div>
     </div>
