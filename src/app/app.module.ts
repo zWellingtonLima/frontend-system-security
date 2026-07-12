@@ -8,6 +8,12 @@ import { SharedModule } from "./shared/shared.module";
 import { HttpClientModule } from "@angular/common/http";
 import { PortariaModule } from "./dashboard/portaria/portaria.module";
 
+import { LOCALE_ID } from "@angular/core";
+import { registerLocaleData } from "@angular/common";
+import localePt from "@angular/common/locales/pt-PT";
+
+registerLocaleData(localePt);
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -18,7 +24,7 @@ import { PortariaModule } from "./dashboard/portaria/portaria.module";
     PortariaModule,
     // AuthModule,
   ],
-  providers: [],
+  providers: [{ provide: LOCALE_ID, useValue: "pt-PT" }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
