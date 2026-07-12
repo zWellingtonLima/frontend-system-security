@@ -228,9 +228,15 @@
   </div>
 
   <div class="filtros-pesquisa">
-    <div class="tab active">Água <span class="tab-count">26</span></div>
-    <div class="tab">Eletricidade <span class="tab-count">3</span></div>
-    <div class="tab">Gás<span class="tab-count">6</span></div>
+    <div class="tab active" onclick="setTab('todas')">
+      Água <span class="tab-count">26</span>
+    </div>
+    <div class="tab" onclick="setTab('disp')">
+      Eletricidade <span class="tab-count">21</span>
+    </div>
+    <div class="tab" onclick="setTab('emp')">
+      Gás <span class="tab-count">3</span>
+    </div>
   </div>
 
   <div class="barra-pesquisa-container">
@@ -238,16 +244,19 @@
       <i class="ft-search"></i>
       <input
         class="search-input"
-        id="searchInput"
         type="text"
         placeholder="Pesquisar por código, sala ou responsável..."
       />
     </div>
-    <select class="barra-pesquisa-select">
-      <option value="">Todos o período</option>
-      <option value="PRIMEIRO">Hoje</option>
-      <option value="SEGUNDO">Esta semana</option>
-      <option value="TERCEIRO">Este mês</option>
+    <select
+      class="barra-pesquisa-select"
+      id="filterPiso"
+      onchange="applyFilters()"
+    >
+      <option value="">Todos os pisos</option>
+      <option value="PRIMEIRO">Piso 1</option>
+      <option value="SEGUNDO">Piso 2</option>
+      <option value="TERCEIRO">Piso 3</option>
     </select>
   </div>
 

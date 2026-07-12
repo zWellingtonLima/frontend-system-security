@@ -58,9 +58,18 @@
   font-size: 15px;
   flex-shrink: 0;
 
-  &.td-agua { background: #dbeafe; color: #1e40af; }
-  &.td-elet { background: #fef9c3; color: #713f12; }
-  &.td-gas  { background: #ffe4e6; color: #9f1239; }
+  &.td-agua {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  &.td-elet {
+    background: #fef9c3;
+    color: #713f12;
+  }
+  &.td-gas {
+    background: #ffe4e6;
+    color: #9f1239;
+  }
 }
 
 .tipo-lbl {
@@ -90,11 +99,18 @@
   font-size: 12px;
   font-weight: 500;
 
-  i { font-size: 13px; }
+  i {
+    font-size: 13px;
+  }
 }
 
-.delta-pos { color: #166534; }
-.delta-null { color: #9ca3af; font-weight: 400; }
+.delta-pos {
+  color: #166534;
+}
+.delta-null {
+  color: #9ca3af;
+  font-weight: 400;
+}
 
 // célula "Observação"
 .obs-cell {
@@ -119,12 +135,15 @@
   padding: 4px 10px;
   font-size: 11px;
   font-weight: 500;
+  margin-right: 2px;
   cursor: pointer;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: background .13s, border-color .13s;
+  transition:
+    background 0.13s,
+    border-color 0.13s;
   color: #374151;
 
   &:hover {
@@ -137,7 +156,9 @@
     border-color: #c7deff;
     background: #f0f6ff;
 
-    &:hover { background: #dbeafe; }
+    &:hover {
+      background: #dbeafe;
+    }
   }
 
   &.del {
@@ -145,8 +166,12 @@
     border-color: #fecaca;
     background: #fff5f5;
 
-    &:hover { background: #fee2e2; }
+    &:hover {
+      background: #fee2e2;
+    }
   }
 
-  i { font-size: 13px; }
+  i {
+    font-size: 13px;
+  }
 }
