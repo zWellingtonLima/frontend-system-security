@@ -48,8 +48,9 @@ $portaria-color-success-border: rgba(31, 122, 73, 0.18);
 $portaria-color-success-solid: #16a34a;
 $portaria-color-success-solid-hover: #15803d;
 
-$portaria-color-warning: #a66f00;
-$portaria-color-warning-bg: rgba(214, 158, 46, 0.1);
+$portaria-color-warning: #92400e;
+$portaria-color-warning-bg: #a66f00;
+// $portaria-color-warning-bg: rgba(214, 158, 46, 0.1);
 $portaria-color-warning-border: rgba(214, 158, 46, 0.18);
 
 $portaria-color-danger: #b83f3f;
@@ -1125,7 +1126,7 @@ $m-xl: 22px;
 
   &--danger {
     background: #fff1f2;
-    border-color: #fda4af;
+    border-color: #fda4ae66;
     color: #be123c;
 
     &:hover:not(:disabled) {
