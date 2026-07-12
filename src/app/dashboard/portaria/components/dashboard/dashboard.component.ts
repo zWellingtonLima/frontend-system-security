@@ -1,5 +1,4 @@
-import { tap } from "rxjs/operators";
-import { ChaveEmprestadas, Ocorrencias } from "../../models/api";
+import { ChaveEmprestadas, OcorrenciasResponseDTO } from "../../models/api";
 import { Component, OnInit } from "@angular/core";
 import { DashboardService } from "../../services/api/dashboard-service";
 
@@ -18,7 +17,7 @@ export class DashboardComponent implements OnInit {
   ocorrenciasPendentes = 0;
 
   chaves: ChaveEmprestadas[] = [];
-  ocorrencias: Ocorrencias[] = [];
+  ocorrencias: OcorrenciasResponseDTO[] = [];
 
   carregarChaves() {
     this.service.getChavesEmprestadas().subscribe(
