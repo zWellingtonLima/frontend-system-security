@@ -48,7 +48,7 @@ export const TIPO_OCORRENCIA_CONFIG: Record<
     label: "Alarme Disparado",
   },
   AVARIA_EQUIPAMENTO: {
-    icone: "fas fa-tools",
+    icone: "ft-x-square",
     classe: "tipo--avaria",
     label: "Avaria de Equipamento",
   },
@@ -78,15 +78,15 @@ export const ESTADO_OCORRENCIA_CONFIG: Record<
     icone: "fas fa-clock",
     label: "Pendente",
   },
+  RESOLVIDA: {
+    classe: "estado--resolvida",
+    icone: "far fa-check-circle",
+    label: "Resolvida",
+  },
   CANCELADA: {
     classe: "estado--cancelada",
-    icone: "far fa-stop-circle",
-    label: "Pendente",
-  },
-  RESOLVIDA: {
-    classe: "estado--concluida",
-    icone: "fas fa-check-circle",
-    label: "Pendente",
+    icone: "fas fa-stop-circle",
+    label: "Cancelada",
   },
 };
 

@@ -75,6 +75,7 @@ export class OcorrenciasService {
 
   inicializar(): void {
     this.carregarOcorrencias(TABS[0], 0);
+    this.tabAtiva$.next(TABS[0]);
   }
 
   setTab(tab: TabConfig): void {
@@ -91,6 +92,9 @@ export class OcorrenciasService {
     this.filtrosLocais$.next({ tipo: "", search: "" });
     this.carregarOcorrencias(this.tabAtiva$.value, page);
   }
+
+  // =============================================
+  // ================= GET ====================
 
   carregarOcorrencias(tab: TabConfig, page: number): void {
     this.carregandoDados$.next(true);
@@ -123,6 +127,40 @@ export class OcorrenciasService {
       });
   }
 
+  // =============================================
+  // ================= UPDATE ====================
+
+  // /api/ocorrencias/{id}
+  // TODO: Talvez alterar tipo de retorno
+  alterarEstado(estado: EstadoOcorrenciaEnumType, idOcorrencia: number): void {
+    this.carregandoDados$.next(true);
+
+    this.http
+      .patch<OcorrenciasResponseDTO>(
+        `${environment.ocorrenciaApiUrl}/${idOcorrencia}`,
+        {
+          estado,
+        },
+      )
+      .pipe(
+        catchError((err) => {
+          console.error("OCO-SERV-UPD: " + err);
+          this.carregandoDados$.next(false);
+          return of(null);
+        }),
+      )
+      .subscribe((resultado) => {
+        if (resultado === null) return;
+
+        // Adicionar mensagem de sucesso ou erro para o utilizador
+        this.carregandoDados$.next(false);
+        this.inicializar();
+      });
+  }
+
+  // ================================
+  // ========== UTILITARIOS =========
+  // Método usado para inserir as propriedades tipoConfig e estadoConfig aos dados retornados pelo backend
   private toViewModel(o: OcorrenciasResponseDTO): OcorrenciaViewModel {
     return {
       ...o,

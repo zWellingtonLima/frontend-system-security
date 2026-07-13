@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
+  EstadoOcorrenciaEnumType,
   TabConfig,
   TipoOcorrenciaEnumType,
   TIPOS_OCORRENCIA,
@@ -46,7 +47,12 @@ export class OcorrenciasComponent implements OnInit {
     this.ocorrenciasService.setFiltroLocal({ tipo });
   }
 
-  trackById(_i: number, o: { id: number }) {
+  // UPDATE
+  alterarEstado(estado: EstadoOcorrenciaEnumType, idOcorrencia: number) {
+    this.ocorrenciasService.alterarEstado(estado, idOcorrencia);
+  }
+
+  trackById(_: number, o: { id: number }) {
     return o.id;
   }
 }

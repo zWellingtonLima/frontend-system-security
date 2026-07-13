@@ -33,17 +33,23 @@
       <i class="fas fa-search"></i>
       <input
         type="text"
+        name="search-input"
         class="search-input"
         placeholder="Pesquisar por descrição da ocorrência..."
         (input)="onSearchChange($event.target.value)"
       />
     </div>
-    <select class="filter-select" (change)="onTipoChange($event.target.value)">
+    <select
+      class="filter-select"
+      name="filter-select"
+      (change)="onTipoChange($event.target.value)"
+    >
       <option value="">Todos os tipos</option>
       <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
     </select>
   </div>
 
+  <!-- LISTAGEM DE OCORRÊNCIAS -->
   <ng-container *ngIf="ocorrenciasFiltradas$ | async as ocorrencias">
     <div
       class="ocorrencia-lista"
@@ -54,6 +60,7 @@
         [ngClass]="ocor.tipoConfig.classe"
         *ngFor="let ocor of ocorrencias; trackBy: trackById"
       >
+        <!-- <input type="hidden" name="id_ocorrencia" [value]="ocor.id" /> -->
         <div class="icon-area" [ngClass]="ocor.tipoConfig.classe">
           <i [ngClass]="ocor.tipoConfig.icone"></i>
         </div>
@@ -79,18 +86,35 @@
           </div>
         </div>
 
-        <div class="acoes">
+        <!-- ADICIONAR ACOES PARA EDICAO -->
+        <div class="acoes" *ngIf="ocor.estado === 'PENDENTE'">
           <button
             class="portaria-btn portaria-btn--secondary"
             title="Marcar ocorrência como concluída"
+            (click)="alterarEstado('RESOLVIDA', ocor.id)"
           >
             <i class="ft-check-circle"></i>
+            Concluir
           </button>
           <button
             class="portaria-btn portaria-btn--danger"
             title="Cancelar ocorrência"
+            (click)="alterarEstado('CANCELADA', ocor.id)"
           >
             <i class="ft-x-circle"></i>
+            Cancelar
+          </button>
+        </div>
+
+        <!-- VOLTAR AO ESTADO PENDENTE -->
+        <div class="acoes" *ngIf="ocor.estado !== 'PENDENTE'">
+          <button
+            class="portaria-btn portaria-btn--ghost"
+            title="Marcar ocorrência como pendente"
+            (click)="alterarEstado('PENDENTE', ocor.id)"
+          >
+            <i class="ft-alert-circle"></i>
+            Pendente
           </button>
         </div>
       </div>
