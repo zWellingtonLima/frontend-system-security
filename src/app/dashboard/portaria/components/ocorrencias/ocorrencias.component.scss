@@ -74,6 +74,10 @@ $estados: (
       border-radius: $portaria-radius-xs;
       border: 1px solid $portaria-color-border;
       background: $portaria-color-bg-soft;
+
+      &:focus {
+        outline: 1px solid $portaria-color-accent;
+      }
     }
   }
 
@@ -83,6 +87,11 @@ $estados: (
     background: transparent;
     padding: $p-xs $p-md;
     color: $portaria-color-text-body;
+
+    &:focus {
+      outline: 1px solid $portaria-color-accent-dark;
+      outline-offset: 4px;
+    }
   }
 }
 
