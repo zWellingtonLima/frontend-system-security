@@ -8,10 +8,16 @@ import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
 import { ChavesComponent } from "./components/chaves/chaves.component";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
-  imports: [CommonModule, PortariaRoutingModule, SharedModule, FormsModule],
+  imports: [
+    CommonModule,
+    PortariaRoutingModule,
+    SharedModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   declarations: [
     PortariaComponent,
     DashboardComponent,

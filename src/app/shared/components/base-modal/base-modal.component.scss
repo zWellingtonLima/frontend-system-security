@@ -1,1 +1,8 @@
 @import "src/app/app.component.scss";
+
+@media (max-width: 1600px) {
+  .portaria-modal {
+    width: 60%;
+    max-width: 500px;
+  }
+}

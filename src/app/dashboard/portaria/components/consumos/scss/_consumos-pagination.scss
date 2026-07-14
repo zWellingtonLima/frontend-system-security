@@ -32,7 +32,10 @@
   justify-content: center;
   font-size: 12px;
   color: #374151;
-  transition: background .13s, border-color .13s, color .13s;
+  transition:
+    background 0.13s,
+    border-color 0.13s,
+    color 0.13s;
   font-family: inherit;
 
   &:hover:not(:disabled) {
@@ -48,9 +51,11 @@
   }
 
   &:disabled {
-    opacity: .35;
+    opacity: 0.35;
     cursor: not-allowed;
   }
 
-  i { font-size: 14px; }
+  i {
+    font-size: 14px;
+  }
 }

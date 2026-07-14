@@ -2,14 +2,13 @@ import { Component, OnInit } from "@angular/core";
 import {
   ConsumoLeitura,
   PeriodoFiltro,
-  TipoConsumoEnum,
   TipoConsumoType,
   UltimaLeitura,
 } from "../../models/consumo.model";
-import { TIPO_META, TipoConsumoMeta } from "./utils";
 import { ConsumosService } from "../../services/api/consumos.service";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-consumos",
@@ -17,9 +16,19 @@ import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
   styleUrls: ["./consumos.component.scss"],
 })
 export class ConsumosComponent implements OnInit {
-  constructor(private consumoService: ConsumosService) {}
+  constructor(
+    private consumoService: ConsumosService,
+    private fb: FormBuilder,
+  ) {}
 
   ngOnInit() {
+    this.registarLeituraForm = this.fb.group({
+      tipoConsumo: ["", Validators.required],
+      edificioId: ["", Validators.required],
+      leituraAtual: [null, [Validators.required, Validators.min(0)]],
+      observacao: [""],
+    });
+
     this.carregarConsumos();
     this.carregarUltimas();
     this.preencherCount();
@@ -37,18 +46,6 @@ export class ConsumosComponent implements OnInit {
     this.destroy$.complete();
     clearTimeout(this.toastTimeout);
   }
-
-  readonly tipoMeta: { [key in TipoConsumoType]: TipoConsumoMeta } = TIPO_META;
-  readonly tiposDisponiveis: TipoConsumoType[] = [
-    "AGUA",
-    "ELETRICIDADE",
-    "GAS",
-  ];
-
-  private pesquisa$ = new Subject<string>();
-  private destroy$ = new Subject<void>();
-  pesquisa = "";
-  readonly pageSize = 10;
 
   // ── Cards "leituras actuais" ──
   ultimaAgua: UltimaLeitura | null = null;
@@ -96,7 +93,9 @@ export class ConsumosComponent implements OnInit {
   toastMensagem = "";
   private toastTimeout: any;
 
-  //FUNÇÃO PARA CARREGAR OS CONSUMOS
+  // ─────────────────────────────────────────────
+  // CARREGA OS DADOS PARA A TABELAS
+  // ─────────────────────────────────────────────
   carregarConsumos(): void {
     this.carregando = true;
 
@@ -122,6 +121,9 @@ export class ConsumosComponent implements OnInit {
         },
       );
   }
+  // ─────────────────────────────────────────────
+  // CARREGA AS ULTIMAS LEITURAS PARA POR NOS CARDS
+  // ─────────────────────────────────────────────
   carregarUltimas(): void {
     this.consumoService.ultimas().subscribe(
       (res) => {
@@ -144,6 +146,10 @@ export class ConsumosComponent implements OnInit {
       },
     );
   }
+
+  // ─────────────────────────────────────────────
+  // PREENCHE O COUNT | AGUA - ELETRICIDADE - GAS
+  // ─────────────────────────────────────────────
 
   preencherCount() {
     this.consumoService.countTabelas().subscribe(
@@ -168,13 +174,21 @@ export class ConsumosComponent implements OnInit {
     );
   }
 
+  // ─────────────────────────────────────────────
+  // LÓGICA DOS FILTROS DE PESQUISA
+  // ─────────────────────────────────────────────
+
+  private pesquisa$ = new Subject<string>();
+  private destroy$ = new Subject<void>();
+  pesquisa = "";
+  readonly pageSize = 10;
+
   onFiltroChange(periodo: PeriodoFiltro) {
     this.periodo = periodo;
     this.carregarConsumos();
   }
 
   onPesquisaChange(valor: string): void {
-    console.log(valor + "----digitado-------------");
     this.pesquisa = valor;
     this.pesquisa$.next(valor);
   }
@@ -182,7 +196,10 @@ export class ConsumosComponent implements OnInit {
   filtroPesquisa() {}
   abrirExcluir() {}
 
-  //Mudar o style da aba selecionada e chamar os dados
+  // ─────────────────────────────────────────────
+  // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
+  // ─────────────────────────────────────────────
+
   selecionarAba(aba: string, abaStyle: TipoConsumoType): void {
     if (this.abaAtiva === abaStyle) {
       return;
@@ -193,77 +210,13 @@ export class ConsumosComponent implements OnInit {
     this.carregarConsumos();
   }
 
-  // ─────────────────────────────────────────────
-  // MODAL: NOVA LEITURA
-  // ─────────────────────────────────────────────
-
-  abrirModalNovo(): void {
-    this.novoTipo = "AGUA";
-    this.novoValor = null;
-    this.novaObs = "";
-    this.modalNovoAberto = true;
-  }
-
   selecionarNovoTipo(tipo: TipoConsumoType): void {
     this.novoTipo = tipo;
   }
 
-  get leituraAnteriorNovo(): UltimaLeitura | null {
-    if (this.novoTipo === "AGUA") {
-      return this.ultimaAgua;
-    }
-    if (this.novoTipo === "ELETRICIDADE") {
-      return this.ultimaEletricidade;
-    }
-    return this.ultimaGas;
-  }
-
-  get consumoCalculadoTexto(): string {
-    const anterior = this.leituraAnteriorNovo;
-    const valor = this.novoValor;
-    if (!anterior || valor === null || valor === undefined || isNaN(valor)) {
-      return "introduza um valor";
-    }
-    const delta = +(valor - anterior.leituraAnterior).toFixed(2);
-    const sinal = delta >= 0 ? "+" : "";
-    return `${sinal}${this.formatarValor(delta)} ${this.tipoMeta[this.novoTipo].unidade}`;
-  }
-
-  get consumoCalculadoNegativo(): boolean {
-    const anterior = this.leituraAnteriorNovo;
-    const valor = this.novoValor;
-    if (!anterior || valor === null || valor === undefined || isNaN(valor)) {
-      return false;
-    }
-    return valor - anterior.leituraAnterior < 0;
-  }
-
-  submeterNovo(): void {
-    const valor = this.novoValor;
-    if (valor === null || valor === undefined || isNaN(valor) || valor < 0) {
-      return;
-    }
-    this.salvandoNovo = true;
-  }
-
   // ─────────────────────────────────────────────
-  // MODAIS: GENÉRICO / TOAST
+  // TOAST - PEQUENO MODAL PARA MOSTRAR RESULTADOS(OPCIONAL)
   // ─────────────────────────────────────────────
-
-  fecharModal(modal: "novo" | "editar" | "eliminar"): void {
-    if (modal === "novo") {
-      this.modalNovoAberto = false;
-    }
-    if (modal === "editar") {
-      this.modalEditarAberto = false;
-    }
-    if (modal === "eliminar") {
-      this.modalEliminarAberto = false;
-      this.leituraParaEliminar = null;
-    }
-  }
-
-  //POP
   private mostrarToast(mensagem: string): void {
     this.toastMensagem = mensagem;
     this.toastVisivel = true;
@@ -271,11 +224,11 @@ export class ConsumosComponent implements OnInit {
     this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
   }
 
-  trackByLeitura(index: number, item: ConsumoLeitura): number {
-    return item.id;
-  }
-
+  // ─────────────────────────────────────────────
+  // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
+  // ─────────────────────────────────────────────
   submeterEliminar() {}
+
   abrirEditar(leitura: ConsumoLeitura): void {
     this.modalEditarAberto = true;
   }
@@ -318,6 +271,17 @@ export class ConsumosComponent implements OnInit {
     return typeof p === "number" && p === this.currentPage;
   }
 
+  // ─────────────────────────────────────────────
+  // VERIFICAR SE HÁ DADOS PAGINAÇÃO FOOTER
+  // ─────────────────────────────────────────────
+
+  get textoPaginacao(): string {
+    if (this.totalElements === 0) {
+      return "0 registos";
+    }
+    return `${this.inicioIntervalo} - ${this.fimIntervalo} de ${this.totalElements}`;
+  }
+
   get inicioIntervalo(): number {
     return this.totalElements === 0
       ? 0
@@ -326,14 +290,6 @@ export class ConsumosComponent implements OnInit {
 
   get fimIntervalo(): number {
     return Math.min(this.currentPage * this.pageSize, this.totalElements);
-  }
-
-  //Verifica se há registos para a paginação
-  get textoPaginacao(): string {
-    if (this.totalElements === 0) {
-      return "0 registos";
-    }
-    return `${this.inicioIntervalo} - ${this.fimIntervalo} de ${this.totalElements}`;
   }
 
   formatarValor(valor: number): string {
@@ -346,9 +302,35 @@ export class ConsumosComponent implements OnInit {
     });
   }
 
-  mostrarObercacao(text: string){
-    
+  // ─────────────────────────────────────────────
+  // FORMULARIO DE REGISTAR LEITURA MODAL
+  // ─────────────────────────────────────────────
+
+  selecionarTipoConsumo(tipo: string): void {
+    this.registarLeituraForm?.patchValue({ tipoConsumo: tipo });
   }
+
+  edificios = [
+    {
+      id: 1,
+      nome: "Edificio A",
+    },
+    {
+      id: 2,
+      nome: "Edificio B",
+    },
+  ];
+  unidadeAtual = null;
+
+  onLeituraAtualChange() {}
+
+  registarLeituraForm?: FormGroup;
+  modalIsOpen: boolean = false;
+
+  alternarVisibilidadeModal() {
+    this.modalIsOpen = !this.modalIsOpen;
+  }
+  registarLeitura() {}
 
   Unidades = {
     ELETRICIDADE: "kWh",
