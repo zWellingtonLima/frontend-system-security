@@ -1,27 +1,32 @@
 // ── CABEÇALHO DA PÁGINA ──────────────────────────────────────────────
 // .page-header, .page-title e .page-subtitle já vêm dos estilos globais
 // partilhados por todas as páginas do sistema (styles.scss).
+$cor-azul: #2f6feb;
+$cor-texto-titulo: #1a1a1a;
+$cor-texto-cinza: #8a8f98;
 
-.reg-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  background: var(--accent);
-  border: none;
-  border-radius: 7px;
-  padding: 7px 14px;
-  cursor: pointer;
-  transition: background .13s;
-  font-family: inherit;
+.titulo-dashboard {
+  margin-bottom: 20px;
 
-  &:hover {
-    background: var(--accent-hover);
+  h5 {
+    color: $cor-azul;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 4px;
   }
 
-  i {
-    font-size: 15px;
+  h3 {
+    color: $cor-texto-titulo;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  p {
+    color: $cor-texto-cinza;
+    font-size: 14px;
+    margin: 0;
   }
 }

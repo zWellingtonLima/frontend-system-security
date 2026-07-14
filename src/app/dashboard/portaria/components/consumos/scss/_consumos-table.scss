@@ -1,4 +1,6 @@
 // ── TABELA DE LEITURAS ───────────────────────────────────────────────
+$green-color: rgb(1, 98, 1);
+$danger-color: rgb(163, 0, 0);
 
 .tbl-wrap {
   overflow-x: auto;
@@ -174,4 +176,16 @@
   i {
     font-size: 13px;
   }
+}
+.bold-text {
+  font-weight: bold;
+  &.green-value {
+    color: $green-color;
+  }
+  &.danger-value {
+    color: $danger-color;
+  }
+}
+.data {
+  color: black;
 }
