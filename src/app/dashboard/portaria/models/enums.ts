@@ -38,13 +38,13 @@ export const TIPO_OCORRENCIA_CONFIG: Record<
   OcorrenciaConfigBase
 > = {
   ACESSO_NAO_AUTORIZADO: {
-    icone: "fas fa-door-closed",
+    icone: "ft-shield",
     label: "Acesso Não Autorizado",
     classe: "tipo--acesso",
   },
   ALARME_DISPARADO: {
     classe: "tipo--alarme",
-    icone: "fas fa-bell",
+    icone: "far fa-bell",
     label: "Alarme Disparado",
   },
   AVARIA_EQUIPAMENTO: {
@@ -53,7 +53,7 @@ export const TIPO_OCORRENCIA_CONFIG: Record<
     label: "Avaria de Equipamento",
   },
   OBJETO_PERDIDO_ENCONTRADO: {
-    icone: "fas fa-box",
+    icone: "ft-box",
     label: "Objeto Perdido/Encontrado",
     classe: "tipo--objeto",
   },
