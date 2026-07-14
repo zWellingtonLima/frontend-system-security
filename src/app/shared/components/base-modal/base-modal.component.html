@@ -1,0 +1,28 @@
+<div
+  class="portaria-modal-overlay"
+  *ngIf="modalEstaAberto"
+  @modal
+  (click)="onOverlayClick()"
+>
+  <div class="portaria-modal" (click)="$event.stopPropagation()">
+    <header class="portaria-modal__header">
+      <div>
+        <h3 class="portaria-modal__title">{{ titulo }}</h3>
+        <p *ngIf="subtitulo" class="portaria-modal__subtitle">
+          {{ subtitulo }}
+        </p>
+      </div>
+      <button class="portaria-modal__close" (click)="fechar.emit()">
+        <i class="ft-x"></i>
+      </button>
+    </header>
+
+    <div class="portaria-modal__content" #contentRef>
+      <ng-content></ng-content>
+    </div>
+
+    <footer class="portaria-modal__footer">
+      <ng-content select="[slot=footer]"></ng-content>
+    </footer>
+  </div>
+</div>
