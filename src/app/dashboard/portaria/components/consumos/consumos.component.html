@@ -29,7 +29,7 @@
       </div>
       <ng-container *ngIf="ultimaAgua; else semAgua">
         <div class="lc-valor agua">
-          {{ formatarValor(ultimaAgua.valor) }} m³
+          {{ formatarValor(ultimaAgua.leituraAtual) }} m³
         </div>
         <div class="lc-delta agua">
           <ng-container *ngIf="ultimaAgua.consumo !== null; else primeiraAgua">
@@ -47,7 +47,7 @@
           >
         </div>
         <div class="lc-date">
-          Última: {{ formatarData(ultimaAgua.dataHora) }}
+          Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
         </div>
       </ng-container>
       <ng-template #semAgua>
@@ -71,7 +71,7 @@
       </div>
       <ng-container *ngIf="ultimaEletricidade; else semElet">
         <div class="lc-valor elet">
-          {{ formatarValor(ultimaEletricidade.valor) }} kWh
+          {{ formatarValor(ultimaEletricidade.leituraAtual) }} kWh
         </div>
         <div class="lc-delta elet">
           <ng-container
@@ -93,7 +93,8 @@
           >
         </div>
         <div class="lc-date">
-          Última: {{ formatarData(ultimaEletricidade.dataHora) }}
+          Última:
+          {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
         </div>
       </ng-container>
       <ng-template #semElet>
@@ -114,7 +115,9 @@
         </div>
       </div>
       <ng-container *ngIf="ultimaGas; else semGas">
-        <div class="lc-valor gas">{{ formatarValor(ultimaGas.valor) }} m³</div>
+        <div class="lc-valor gas">
+          {{ formatarValor(ultimaGas.leituraAtual) }} m³
+        </div>
         <div class="lc-delta gas">
           <ng-container *ngIf="ultimaGas.consumo !== null; else primeiraGas">
             <i
@@ -131,7 +134,8 @@
           >
         </div>
         <div class="lc-date">
-          Última: {{ formatarData(ultimaGas.dataHora) }}
+          Última: {{ ultimaGas.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+          {{ ultimaGas.nomeEdificio }}
         </div>
       </ng-container>
       <ng-template #semGas>
@@ -144,98 +148,27 @@
     </div>
   </div>
 
-  <div
-    class="modal-overlay"
-    [class.open]="modalNovoAberto"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div class="modal" *ngIf="modalNovoAberto">
-      <div class="modal-header">
-        <div>
-          <div class="modal-title">Registar leitura</div>
-          <div class="modal-sub">Insira o valor actual do contador</div>
-        </div>
-        <button class="modal-close" aria-label="Fechar">
-          <i class="ti ti-x"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="section-label">Tipo de consumo</div>
-        <div class="tipo-selector">
-          <div class="tipo-opt">
-            <i class="ti"></i>
-            <div class="tipo-opt-lbl"></div>
-          </div>
-        </div>
-
-        <!-- Preview leitura anterior -->
-        <div class="prev-box">
-          <div>
-            <div class="prev-lbl">Leitura anterior</div>
-            <div class="prev-val"></div>
-          </div>
-          <div class="prev-sep"></div>
-          <div>
-            <div class="prev-delta-lbl">Consumo calculado</div>
-            <div class="prev-delta-val"></div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group" style="margin-bottom: 0">
-            <label class="form-label" for="nValor"
-              >Valor da leitura <span>*</span></label
-            >
-            <input
-              class="form-input"
-              id="nValor"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Ex: 1250.50"
-              [(ngModel)]="novoValor"
-            />
-          </div>
-          <div class="form-group" style="margin-bottom: 0">
-            <label class="form-label">Unidade</label>
-            <input
-              class="form-input"
-              type="text"
-              readonly
-              style="color: #9ca3af; cursor: default"
-            />
-          </div>
-        </div>
-        <div style="margin-top: 14px" class="form-group">
-          <label class="form-label" for="nObs">Observação</label>
-          <textarea
-            class="form-textarea"
-            id="nObs"
-            placeholder="Notas sobre esta leitura (opcional)..."
-            [(ngModel)]="novaObs"
-          ></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-cancel">Cancelar</button>
-        <button class="btn-submit" [disabled]="salvandoNovo">
-          <i class="ti ti-plus"></i>
-          {{ salvandoNovo ? "A registar..." : "Registar" }}
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div class="filtros-pesquisa">
-    <div class="tab active" onclick="setTab('todas')">
-      Água <span class="tab-count">26</span>
+    <div
+      class="tab"
+      [class.active]="abaAtiva === 'AGUA'"
+      (click)="selecionarAba(1, 'AGUA')"
+    >
+      Água <span class="tab-cnt">{{ totalAgua }}</span>
     </div>
-    <div class="tab" onclick="setTab('disp')">
-      Eletricidade <span class="tab-count">21</span>
+    <div
+      class="tab"
+      [class.active]="abaAtiva === 'ELETRICIDADE'"
+      (click)="selecionarAba(2, 'ELETRICIDADE')"
+    >
+      Eletricidade <span class="tab-cnt">{{ totalEletricidade }}</span>
     </div>
-    <div class="tab" onclick="setTab('emp')">
-      Gás <span class="tab-count">3</span>
+    <div
+      class="tab"
+      [class.active]="abaAtiva === 'GAS'"
+      (click)="selecionarAba(3, 'GAS')"
+    >
+      Gás <span class="tab-cnt">{{ totalGas }}</span>
     </div>
   </div>
 
@@ -243,20 +176,22 @@
     <div class="barra-pesquisa">
       <i class="ft-search"></i>
       <input
+        #barraPesquisa
         class="search-input"
         type="text"
-        placeholder="Pesquisar por código, sala ou responsável..."
+        (input)="onPesquisaChange(barraPesquisa.value)"
+        placeholder="Pesquisar por edifício ou observação..."
       />
     </div>
     <select
+      #barraSelect
       class="barra-pesquisa-select"
-      id="filterPiso"
-      onchange="applyFilters()"
+      (change)="onFiltroChange(barraSelect.value)"
     >
-      <option value="">Todos os pisos</option>
-      <option value="PRIMEIRO">Piso 1</option>
-      <option value="SEGUNDO">Piso 2</option>
-      <option value="TERCEIRO">Piso 3</option>
+      <option value="">Todos os períodos</option>
+      <option value="HOJE">Hoje</option>
+      <option value="SEMANA">Esta semana</option>
+      <option value="MES">Este mês</option>
     </select>
   </div>
 
@@ -264,32 +199,116 @@
     <table class="tbl">
       <thead>
         <tr>
-          <th>Tipo</th>
           <th>Leitura actual</th>
           <th>Consumo</th>
           <th>Data / hora</th>
           <th>Observação</th>
+          <th>Edifício</th>
           <th>Ações</th>
         </tr>
       </thead>
 
-      <tbody>
-        <tr>
+      <tbody *ngIf="leituras.length !== 0">
+        <tr *ngFor="let item of leituras">
           <td>
-            <span class="bold-text">asdasdasd</span>
+            <span class="bold-text">{{ item.leituraAtual }},00</span>
+            {{ Unidades[item.tipoConsumo] }}
           </td>
           <td>
-            <span class="bold-text"> 145,00 m³</span>
+            <span
+              class="bold-text"
+              [ngClass]="
+                item.consumoCalculado > 100 ? 'danger-value' : 'green-value'
+              "
+            >
+              {{ item.consumoCalculado > 0 ? "+" : "" }}
+
+              {{ item.consumoCalculado }}
+            </span>
+            {{ item.consumoCalculado > 0 ? Unidades[item.tipoConsumo] : "_" }}
           </td>
-          <td>sadsad</td>
-          <td>sdasda</td>
-          <td>asdasd</td>
+
           <td>
-            <button class="action-btn edit"><i class="icon-pencil"></i></button>
-            <button class="action-btn del"><i class="ft-trash-2"></i></button>
+            <span class="data">{{
+              item.dataRegisto | date: "dd/MM/yyyy HH:mm"
+            }}</span>
+          </td>
+          <td [title]="item.observacao">
+            {{ item.observacao | slice: 0 : 20 }}
+            {{ item.observacao?.length > 20 ? "..." : "" }}
+          </td>
+          <td>
+            {{ item.edificioName }}
+          </td>
+          <td>
+            <button class="action-btn edit" (click)="abrirEditar(item)">
+              <i class="icon-pencil"></i>
+            </button>
+            <button class="action-btn del" (click)="abrirExcluir(item)">
+              <i class="ft-trash-2"></i>
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <ng-template #carregando>
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+    </ng-template>
+
+    <!-- Paginação -->
+    <div class="pag-row">
+      <span class="pag-info">
+        {{ textoPaginacao }}
+      </span>
+      <div class="pag-controls">
+        <button
+          class="pag-btn"
+          [disabled]="currentPage === 1"
+          (click)="irParaPagina(currentPage - 1)"
+          aria-label="Anterior"
+        >
+          <i class="ft-chevron-left"></i>
+        </button>
+        <ng-container *ngFor="let p of paginasVisiveis">
+          <button
+            *ngIf="!ehReticencia(p)"
+            class="pag-btn"
+            [class.active]="isPaginaAtual(p)"
+            (click)="irParaPagina(p)"
+          >
+            {{ p }}
+          </button>
+          <button
+            *ngIf="ehReticencia(p)"
+            class="pag-btn"
+            disabled
+            style="
+              border: none;
+              background: none;
+              cursor: default;
+              color: #9ca3af;
+            "
+          >
+            …
+          </button>
+        </ng-container>
+        <button
+          class="pag-btn"
+          [disabled]="currentPage === totalPages || totalPages === 0"
+          (click)="irParaPagina(currentPage + 1)"
+          aria-label="Seguinte"
+        >
+          <i class="ft-chevron-right"></i>
+        </button>
+      </div>
+    </div>
   </div>
 </app-portaria-shell>
+
+<div class="toast" [class.show]="toastVisivel">
+  <i class="ti ti-circle-check"></i>
+  <span>{{ toastMensagem }}</span>
+</div>
