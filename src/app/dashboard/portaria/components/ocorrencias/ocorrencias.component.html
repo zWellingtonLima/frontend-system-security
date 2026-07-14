@@ -97,7 +97,6 @@
             (click)="alterarEstado('RESOLVIDA', ocor.id)"
           >
             <i class="ft-check-circle"></i>
-            Concluir
           </button>
           <button
             class="portaria-btn portaria-btn--danger"
@@ -105,7 +104,6 @@
             (click)="alterarEstado('CANCELADA', ocor.id)"
           >
             <i class="ft-x-circle"></i>
-            Cancelar
           </button>
         </div>
 
@@ -153,20 +151,29 @@
       </ng-container>
     </ng-container>
 
-    <ng-container *ngIf="modalIsOpen">
-      <div class="portaria-modal-overlay">
-        <form class="portaria-modal" [formGroup]="criarOcorrenciaForm">
-          <header class="portaria-modal__header">
-            <h3 class="portaria-modal__title">Registar ocorrência</h3>
-          </header>
-          <footer class="portaria-modal__footer">
-            <button class="portaria-btn portaria-btn--ghost">Cancelar</button>
-            <button class="portaria-btn portaria-btn--primary">
-              <i class="ft-file-plus"></i> Registar
-            </button>
-          </footer>
-        </form>
-      </div>
-    </ng-container>
+    <!-- MODAL CRIAR OCORRENCIA -->
+    <app-base-modal
+      [modalEstaAberto]="modalIsOpen"
+      titulo="Registar ocorrência"
+      subtitulo="Preencha os dados da ocorrência"
+      (fechar)="alternarVisibilidadeModal()"
+    >
+      <form [formGroup]="criarOcorrenciaForm">
+        <input type="text" placeholder="teste" />
+      </form>
+
+      <ng-container slot="footer">
+        <button
+          class="portaria-btn portaria-btn--ghost"
+          (click)="alternarVisibilidadeModal()"
+        >
+          Cancelar
+        </button>
+        <button class="portaria-btn portaria-btn--primary">
+          <i class="ft-file-plus"></i>
+          Registar
+        </button>
+      </ng-container>
+    </app-base-modal>
   </ng-container>
 </app-portaria-shell>

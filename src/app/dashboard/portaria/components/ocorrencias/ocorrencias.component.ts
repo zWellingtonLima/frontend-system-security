@@ -1,12 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
-  ESTADO_OCORRENCIA_CONFIG,
   EstadoOcorrenciaEnumType,
   TabConfig,
   TIPO_OCORRENCIA_CONFIG,
   TipoOcorrenciaEnumType,
-  TIPOS_OCORRENCIA,
+  TIPOS_OCORRENCIA
 } from "../../models/enums";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
@@ -16,9 +15,11 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   styleUrls: ["./ocorrencias.component.scss"],
 })
 export class OcorrenciasComponent implements OnInit {
+  // FORM
   criarOcorrenciaForm!: FormGroup;
-  modalIsOpen: boolean = true;
+  modalIsOpen: boolean = false;
 
+  // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
   tipos = TIPOS_OCORRENCIA;
 
@@ -38,6 +39,7 @@ export class OcorrenciasComponent implements OnInit {
     // Carrega Ocorrências
     this.ocorrenciasService.inicializar();
 
+    // Verificar se existe necessidade de realocar logica dos forms para outro componente
     this.criarOcorrenciaForm = this.fb.group({
       tipoOcorrencia: [
         TIPO_OCORRENCIA_CONFIG.ACESSO_NAO_AUTORIZADO.label,
@@ -65,14 +67,14 @@ export class OcorrenciasComponent implements OnInit {
     this.ocorrenciasService.setFiltroLocal({ tipo });
   }
 
-  // Modal
-  alternarVisibilidadeModal(): void {
-    this.modalIsOpen = !this.modalIsOpen;
-  }
-
   // UPDATE
   alterarEstado(estado: EstadoOcorrenciaEnumType, idOcorrencia: number) {
     this.ocorrenciasService.alterarEstado(estado, idOcorrencia);
+  }
+
+  // Modal
+  alternarVisibilidadeModal(): void {
+    this.modalIsOpen = !this.modalIsOpen;
   }
 
   trackById(_: number, o: { id: number }) {
