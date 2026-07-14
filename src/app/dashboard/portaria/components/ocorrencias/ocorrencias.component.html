@@ -159,8 +159,34 @@
       subtitulo="Preencha os dados da ocorrência"
       (fechar)="alternarVisibilidadeModal()"
     >
-      <form [formGroup]="criarOcorrenciaForm">
-        <input type="text" placeholder="teste" />
+      <form [formGroup]="criarOcorrenciaForm" class="portaria-modal__body">
+        <p class="form-tipo-title">TIPO DE OCORRÊNCIA</p>
+        <div class="form-tipo-ocor-grid">
+          <div
+            class="tipo-ocorrencia"
+            *ngFor="let t of tipos"
+            [class.selected]="
+              criarOcorrenciaForm.get('tipoOcorrencia').value === t.value
+            "
+            (click)="selecionarTipo(t.value)"
+          >
+            <i [class]="t.icone"></i>
+            <span class="tipo-ocorrencia-label">
+              {{ t.label }}
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="descricao"
+            >Descrição da ocorrência
+            <span class="field-required">*</span></label
+          >
+          <textarea
+            name="descricao"
+            placeholder="Descreva a ocorrência..."
+            formControlName="ocorrencia"
+          ></textarea>
+        </div>
       </form>
 
       <ng-container slot="footer">
@@ -170,7 +196,11 @@
         >
           Cancelar
         </button>
-        <button class="portaria-btn portaria-btn--primary">
+        <button
+          [disabled]="criarOcorrenciaForm.invalid"
+          (click)="onSubmit()"
+          class="portaria-btn portaria-btn--primary"
+        >
           <i class="ft-file-plus"></i>
           Registar
         </button>

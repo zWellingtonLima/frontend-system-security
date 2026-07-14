@@ -216,3 +216,91 @@ $estados: (
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
+// ===============================
+// FORMULARIO
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+
+  .form-label {
+    color: $portaria-color-text-dark;
+  }
+
+  & textarea {
+    border: 1px solid $portaria-color-border;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #111;
+    background: $portaria-color-bg-soft;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 120px;
+    max-height: 200px;
+
+    &:focus-within {
+      border: 1px solid lighten($color: $portaria-color-text-dark, $amount: 50);
+    }
+  }
+}
+
+.field-required {
+  color: rgb(194, 0, 0);
+}
+
+.form-tipo-title {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: $portaria-color-text-muted-alt;
+  margin-bottom: 4px;
+}
+
+.form-tipo-ocor-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, 1fr);
+
+  & .tipo-ocorrencia {
+    border: 1px solid $portaria-color-border;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 12px;
+    border-radius: $portaria-radius-xs;
+    background: $portaria-color-bg-soft;
+    cursor: pointer;
+    transition: border 0.2s ease;
+
+    .tipo-ocorrencia-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: $portaria-color-text-dark;
+    }
+
+    &.selected {
+      border-color: $portaria-color-accent;
+      background: rgba($portaria-color-accent, 0.05);
+
+      .tipo-ocorrencia-label {
+        color: $portaria-color-accent-dark;
+      }
+
+      i {
+        color: $portaria-color-accent;
+      }
+    }
+
+    & i {
+      color: $portaria-color-text-muted;
+    }
+
+    &:hover {
+      border: 1px solid lighten($color: $portaria-color-text-dark, $amount: 50);
+    }
+  }
+}
