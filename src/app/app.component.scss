@@ -1088,6 +1088,10 @@ $m-xl: 22px;
     border-color 0.25s ease,
     color 0.25s ease;
 
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   &--primary {
     background: linear-gradient(
       135deg,
@@ -1103,7 +1107,7 @@ $m-xl: 22px;
       transform: translateY(-2px);
     }
 
-    &:focus {
+    &:focus-within {
       outline: 2px solid $portaria-color-accent;
       outline-offset: 4px;
     }
@@ -1119,7 +1123,7 @@ $m-xl: 22px;
       background: $portaria-color-bg-hover;
     }
 
-    &:focus {
+    &:focus-within {
       outline: 1px solid $portaria-color-accent-dark;
       outline-offset: 4px;
     }
@@ -1135,7 +1139,7 @@ $m-xl: 22px;
       background: $portaria-color-bg-soft;
     }
 
-    &:focus {
+    &:focus-within {
       outline: 1px solid $portaria-color-accent-dark;
       outline-offset: 4px;
     }
@@ -1151,7 +1155,7 @@ $m-xl: 22px;
       border-color: #fb7185;
     }
 
-    &:focus {
+    &:focus-within {
       outline: 1px solid $portaria-color-danger;
       outline-offset: 4px;
     }
@@ -1250,10 +1254,8 @@ $m-xl: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  // padding: 24px;
   margin-top: -60px;
   background: rgba(1, 1, 1, 0.2);
-  // backdrop-filter: blur(2px);
 }
 
 .portaria-modal {
@@ -1267,7 +1269,6 @@ $m-xl: 22px;
   border-radius: 28px;
   background: #ffffff;
   box-shadow: 0 28px 64px rgba(18, 32, 44, 0.22);
-  animation: aparecer 0.3s ease forwards;
 
   &__header,
   &__footer {
@@ -1564,18 +1565,5 @@ $m-xl: 22px;
       background: #f3f4f6;
       color: #4b5563;
     }
-  }
-}
-
-// ANIMAÇÕES
-@keyframes aparecer {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
