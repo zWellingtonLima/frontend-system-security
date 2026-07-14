@@ -1,38 +1,44 @@
-export type TipoConsumo = "AGUA" | "ELETRICIDADE" | "GAS";
+export const TipoConsumoEnum = {
+  ELETRICIDADE: "ELETRICIDADE",
+  AGUA: "AGUA",
+  GAS: "GAS",
+};
 
+export type TipoConsumoType = keyof typeof TipoConsumoEnum;
 /** Registo de uma leitura de consumo, tal como devolvido pelo backend */
 export interface ConsumoLeitura {
   id: number;
-  tipo: TipoConsumo;
-  valor: number;
-  /** Consumo calculado face à leitura anterior do mesmo tipo. null quando é a primeira leitura */
-  consumo: number | null;
+  leituraAtual: number;
+  leituraAnterior: number;
+  dataRegisto: string;
   observacao: string;
-  seguranca: string;
-  /** ISO string, ex: 2026-04-17T15:26:00 */
-  dataHora: string;
+  tipoConsumo: TipoConsumoType;
+  idTipoConsumo: number;
+  consumoCalculado: number | null;
+  edificioId: number;
+  edificioName: string;
 }
 
 /** Última leitura registada para um tipo de consumo (usada nos cards do topo) */
 export interface UltimaLeitura {
-  tipo: TipoConsumo;
-  valor: number;
+  nomeEdificio: string;
+  tipoConsumo: number;
+  leituraAnterior: number;
+  dataRegisto: Date;
+  leituraAtual: number;
   consumo: number | null;
-  dataHora: string;
 }
 
 /** Contagem de registos por tipo, para os badges das abas */
-export interface ConsumoContadores {
-  todas: number;
-  agua: number;
-  eletricidade: number;
-  gas: number;
+export interface CountTabelas {
+  tipoConsumo: number;
+  count: number;
 }
 
-export type PeriodoFiltro = "" | "hoje" | "semana" | "mes";
+export type PeriodoFiltro = "" | "HOJE" | "SEMANA" | "MES";
 
 export interface ConsumoFiltro {
-  tipo?: TipoConsumo;
+  tipo?: string;
   periodo?: PeriodoFiltro;
   pesquisa?: string;
   /** página baseada em 0, tal como o Spring Data Pageable */
@@ -42,15 +48,15 @@ export interface ConsumoFiltro {
 
 /** Resposta paginada no formato Spring Data Page<T> */
 export interface PageResponse<T> {
-  content: T[];
+  consumos: T[];
   totalElements: number;
   totalPages: number;
-  number: number;
+  page: number;
   size: number;
 }
 
 export interface ConsumoPayload {
-  tipo: TipoConsumo;
+  tipo: TipoConsumoType;
   valor: number;
   observacao: string;
   dataHora?: string;
