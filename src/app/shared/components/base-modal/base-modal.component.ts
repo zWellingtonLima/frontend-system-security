@@ -17,6 +17,13 @@ import {
   templateUrl: "./base-modal.component.html",
   styleUrls: ["./base-modal.component.scss"],
   animations: [
+    trigger("overlay", [
+      transition(":enter", [
+        style({ opacity: 0 }),
+        animate("200ms ease", style({ opacity: 1 })),
+      ]),
+      transition(":leave", [animate("200ms ease", style({ opacity: 0 }))]),
+    ]),
     trigger("modal", [
       transition(":enter", [
         style({ opacity: 0, transform: "translateY(12px)" }),

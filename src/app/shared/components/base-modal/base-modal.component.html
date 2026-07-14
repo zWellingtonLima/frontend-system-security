@@ -1,10 +1,15 @@
 <div
   class="portaria-modal-overlay"
   *ngIf="modalEstaAberto"
-  @modal
   (click)="onOverlayClick()"
+  #overlayRef
+  @overlay
 >
-  <div class="portaria-modal" (click)="$event.stopPropagation()">
+  <div
+    @modal
+    class="portaria-modal"
+    (click)="$event.stopPropagation()"
+  >
     <header class="portaria-modal__header">
       <div>
         <h3 class="portaria-modal__title">{{ titulo }}</h3>
