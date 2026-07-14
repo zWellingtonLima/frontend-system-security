@@ -75,7 +75,7 @@ export const ESTADO_OCORRENCIA_CONFIG: Record<
 > = {
   PENDENTE: {
     classe: "estado--pendente",
-    icone: "fas fa-clock",
+    icone: "ft-clock",
     label: "Pendente",
   },
   RESOLVIDA: {

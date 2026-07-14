@@ -1,11 +1,14 @@
 import { Component, OnInit } from "@angular/core";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
+  ESTADO_OCORRENCIA_CONFIG,
   EstadoOcorrenciaEnumType,
   TabConfig,
+  TIPO_OCORRENCIA_CONFIG,
   TipoOcorrenciaEnumType,
   TIPOS_OCORRENCIA,
 } from "../../models/enums";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-ocorrencias",
@@ -13,6 +16,9 @@ import {
   styleUrls: ["./ocorrencias.component.scss"],
 })
 export class OcorrenciasComponent implements OnInit {
+  criarOcorrenciaForm!: FormGroup;
+  modalIsOpen: boolean = true;
+
   tabs = this.ocorrenciasService.tabs;
   tipos = TIPOS_OCORRENCIA;
 
@@ -23,10 +29,22 @@ export class OcorrenciasComponent implements OnInit {
 
   paginaAtual = 0;
 
-  constructor(private ocorrenciasService: OcorrenciasService) {}
+  constructor(
+    private ocorrenciasService: OcorrenciasService,
+    private fb: FormBuilder,
+  ) {}
 
   ngOnInit() {
+    // Carrega Ocorrências
     this.ocorrenciasService.inicializar();
+
+    this.criarOcorrenciaForm = this.fb.group({
+      tipoOcorrencia: [
+        TIPO_OCORRENCIA_CONFIG.ACESSO_NAO_AUTORIZADO.label,
+        [Validators.required],
+      ],
+      ocorrencia: [Validators.required],
+    });
   }
 
   onTabChange(tab: TabConfig) {
@@ -45,6 +63,11 @@ export class OcorrenciasComponent implements OnInit {
 
   onTipoChange(tipo: TipoOcorrenciaEnumType | "") {
     this.ocorrenciasService.setFiltroLocal({ tipo });
+  }
+
+  // Modal
+  alternarVisibilidadeModal(): void {
+    this.modalIsOpen = !this.modalIsOpen;
   }
 
   // UPDATE
