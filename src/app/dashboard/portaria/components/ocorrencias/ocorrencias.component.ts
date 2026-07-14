@@ -5,7 +5,7 @@ import {
   TabConfig,
   TIPO_OCORRENCIA_CONFIG,
   TipoOcorrenciaEnumType,
-  TIPOS_OCORRENCIA
+  TIPOS_OCORRENCIA,
 } from "../../models/enums";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
@@ -22,6 +22,7 @@ export class OcorrenciasComponent implements OnInit {
   // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
   tipos = TIPOS_OCORRENCIA;
+  tipoFiltro$ = this.ocorrenciasService.tipoFiltro$;
 
   ocorrenciasFiltradas$ = this.ocorrenciasService.ocorrenciasFiltradas$;
   totalPaginas$ = this.ocorrenciasService.totalPaginas$;
@@ -52,6 +53,7 @@ export class OcorrenciasComponent implements OnInit {
   onTabChange(tab: TabConfig) {
     this.paginaAtual = 0;
     this.ocorrenciasService.setTab(tab);
+    console.log(this.tipoFiltro$);
   }
 
   onSearchChange(search: string) {

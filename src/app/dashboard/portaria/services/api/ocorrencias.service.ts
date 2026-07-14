@@ -50,6 +50,9 @@ export class OcorrenciasService {
     search: "",
   });
 
+  readonly tipoFiltro$: Observable<TipoOcorrenciaEnumType | ""> =
+    this.filtrosLocais$.pipe(map((f) => f.tipo));
+
   tabs = TABS;
   // É sempre iniciada com [0] porque o primeiro elemento lá no TABS é o PENDENTE
   tabAtiva$ = new BehaviorSubject<TabConfig>(TABS[0]);
@@ -80,7 +83,7 @@ export class OcorrenciasService {
 
   setTab(tab: TabConfig): void {
     this.tabAtiva$.next(tab);
-    this.filtrosLocais$.next({ tipo: "", search: "" });
+    this.filtrosLocais$.next({ ...this.filtrosLocais$.value, tipo: "" });
     this.carregarOcorrencias(tab, 0);
   }
 

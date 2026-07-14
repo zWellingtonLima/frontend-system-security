@@ -45,9 +45,10 @@
     <select
       class="filter-select"
       name="filter-select"
+      [value]="tipoFiltro$ | async"
       (change)="onTipoChange($event.target.value)"
     >
-      <option value="">Todos os tipos</option>
+      <option value="">Todos os Tipos</option>
       <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
     </select>
   </div>
