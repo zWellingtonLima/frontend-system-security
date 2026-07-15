@@ -54,166 +54,177 @@
   </div>
 
   <!-- LISTAGEM DE OCORRÊNCIAS -->
-  <ng-container *ngIf="ocorrenciasFiltradas$ | async as ocorrencias">
-    <div
-      class="ocorrencia-lista"
-      *ngIf="ocorrencias.length > 0; else EstadoVazio"
-    >
-      <div
-        class="ocorrencia-card"
-        [ngClass]="ocor.tipoConfig.classe"
-        *ngFor="let ocor of ocorrencias; trackBy: trackById"
-      >
-        <!-- <input type="hidden" name="id_ocorrencia" [value]="ocor.id" /> -->
-        <div class="icon-area" [ngClass]="ocor.tipoConfig.classe">
-          <i [ngClass]="ocor.tipoConfig.icone"></i>
-        </div>
-
-        <div class="ocorrencia-card--main">
-          <p class="title">{{ ocor.tipoConfig.label }}</p>
-          <p class="ocorrencia">
-            {{ ocor.ocorrencia }}
-          </p>
-
-          <div class="footer">
-            <span class="estado-badge" [ngClass]="ocor.estadoConfig.classe">
-              <i [ngClass]="ocor.estadoConfig.icone"></i>
-              {{ ocor.estadoConfig.label }}
-            </span>
-            <span class="date">
-              Criada em:
-              {{
-                ocor.createDate
-                  | date: "d 'de' MMMM 'de' y 'às' HH:mm" : "Europe/Lisbon"
-              }}
-            </span>
-          </div>
-        </div>
-
-        <!-- ADICIONAR ACOES PARA EDICAO -->
-        <div class="acoes" *ngIf="ocor.estado === 'PENDENTE'">
-          <button
-            class="portaria-btn portaria-btn--secondary"
-            title="Marcar ocorrência como concluída"
-            (click)="alterarEstado('RESOLVIDA', ocor.id)"
-          >
-            <i class="ft-check-circle"></i>
-          </button>
-          <button
-            class="portaria-btn portaria-btn--danger"
-            title="Cancelar ocorrência"
-            (click)="alterarEstado('CANCELADA', ocor.id)"
-          >
-            <i class="ft-x-circle"></i>
-          </button>
-        </div>
-
-        <!-- VOLTAR AO ESTADO PENDENTE -->
-        <div class="acoes" *ngIf="ocor.estado !== 'PENDENTE'">
-          <button
-            class="portaria-btn portaria-btn--ghost"
-            title="Marcar ocorrência como pendente"
-            (click)="alterarEstado('PENDENTE', ocor.id)"
-          >
-            <i class="ft-alert-circle"></i>
-            Pendente
-          </button>
-        </div>
-      </div>
+  <ng-container *ngIf="carregando$ | async; else listaOcorrencias">
+    <div class="loading-state">
+      <img class="loader" src="assets/img/oval.svg" alt="" />
+      <p>Carregando ocorrências...</p>
     </div>
+  </ng-container>
 
-    <ng-template #EstadoVazio>
-      <div class="empty-state">
-        <i class="ft-x-circle"></i>
-        <p>Nenhuma ocorrência encontrada.</p>
-      </div>
-    </ng-template>
+  <ng-template #listaOcorrencias>
+    <ng-container *ngIf="ocorrenciasFiltradas$ | async as ocorrencias">
+      <div
+        class="ocorrencia-lista"
+        *ngIf="ocorrencias.length > 0; else EstadoVazio"
+      >
+        <div
+          class="ocorrencia-card"
+          [ngClass]="ocor.tipoConfig.classe"
+          *ngFor="let ocor of ocorrencias; trackBy: trackById"
+        >
+          <div class="icon-area" [ngClass]="ocor.tipoConfig.classe">
+            <i [ngClass]="ocor.tipoConfig.icone"></i>
+          </div>
 
-    <!-- PAGINACAÇÃO -->
-    <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
-      <ng-container *ngIf="tabAtiva.paginada">
-        <ng-container *ngIf="totalPaginas$ | async as totalPaginas">
-          <div class="paginacao" *ngIf="totalPaginas > 1">
+          <div class="ocorrencia-card--main">
+            <p class="title">{{ ocor.tipoConfig.label }}</p>
+            <p class="ocorrencia">
+              {{ ocor.ocorrencia }}
+            </p>
+
+            <div class="footer">
+              <span class="estado-badge" [ngClass]="ocor.estadoConfig.classe">
+                <i [ngClass]="ocor.estadoConfig.icone"></i>
+                {{ ocor.estadoConfig.label }}
+              </span>
+              <span class="date">
+                Criada em:
+                {{
+                  ocor.createDate
+                    | date: "d 'de' MMMM 'de' y 'às' HH:mm" : "Europe/Lisbon"
+                }}
+              </span>
+            </div>
+          </div>
+
+          <!-- ADICIONAR ACOES PARA EDICAO -->
+          <div class="acoes" *ngIf="ocor.estado === 'PENDENTE'">
             <button
-              [disabled]="paginaAtual === 0"
-              (click)="onPageChange(paginaAtual - 1)"
+              class="portaria-btn portaria-btn--secondary"
+              title="Marcar ocorrência como concluída"
+              (click)="alterarEstado('RESOLVIDA', ocor.id)"
             >
-              <i class="ft-arrow-left"></i>
+              <i class="ft-check-circle"></i>
             </button>
-            <span> {{ paginaAtual + 1 }} / {{ totalPaginas }} </span>
             <button
-              [disabled]="paginaAtual === totalPaginas - 1"
-              (click)="onPageChange(paginaAtual + 1)"
+              class="portaria-btn portaria-btn--danger"
+              title="Cancelar ocorrência"
+              (click)="alterarEstado('CANCELADA', ocor.id)"
             >
-              <i class="ft-arrow-right"></i>
+              <i class="ft-x-circle"></i>
             </button>
           </div>
+
+          <!-- VOLTAR AO ESTADO PENDENTE -->
+          <div class="acoes" *ngIf="ocor.estado !== 'PENDENTE'">
+            <button
+              class="portaria-btn portaria-btn--ghost"
+              title="Marcar ocorrência como pendente"
+              (click)="alterarEstado('PENDENTE', ocor.id)"
+            >
+              <i class="ft-alert-circle"></i>
+              Pendente
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #EstadoVazio>
+        <div class="empty-state">
+          <i class="ft-x-circle"></i>
+          <p>Nenhuma ocorrência encontrada.</p>
+        </div>
+      </ng-template>
+
+      <!-- PAGINACAÇÃO -->
+      <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
+        <ng-container *ngIf="tabAtiva.paginada">
+          <ng-container *ngIf="totalPaginas$ | async as totalPaginas">
+            <div class="paginacao" *ngIf="totalPaginas > 1">
+              <button
+                [disabled]="paginaAtual === 0"
+                (click)="onPageChange(paginaAtual - 1)"
+              >
+                <i class="ft-arrow-left"></i>
+              </button>
+              <span> {{ paginaAtual + 1 }} / {{ totalPaginas }} </span>
+              <button
+                [disabled]="paginaAtual === totalPaginas - 1"
+                (click)="onPageChange(paginaAtual + 1)"
+              >
+                <i class="ft-arrow-right"></i>
+              </button>
+            </div>
+          </ng-container>
         </ng-container>
       </ng-container>
-    </ng-container>
 
-    <!-- MODAL CRIAR OCORRENCIA -->
-    <app-base-modal
-      [modalEstaAberto]="modalIsOpen"
-      titulo="Registar ocorrência"
-      subtitulo="Preencha os dados da ocorrência"
-      (fechar)="alternarVisibilidadeModal()"
-    >
-      <form [formGroup]="criarOcorrenciaForm" class="portaria-modal__body">
-        <p class="form-tipo-title">TIPO DE OCORRÊNCIA</p>
-        <div class="form-tipo-ocor-grid">
-          <div
-            class="tipo-ocorrencia"
-            *ngFor="let t of tipos"
-            [class.selected]="
-              criarOcorrenciaForm.get('tipoOcorrencia').value === t.value
-            "
-            (click)="selecionarTipo(t.value)"
-          >
-            <i [class]="t.icone"></i>
-            <span class="tipo-ocorrencia-label">
-              {{ t.label }}
-            </span>
+      <!-- MODAL CRIAR OCORRENCIA -->
+      <app-base-modal
+        [modalEstaAberto]="modalIsOpen"
+        titulo="Registar ocorrência"
+        subtitulo="Preencha os dados da ocorrência"
+        (fechar)="alternarVisibilidadeModal()"
+      >
+        <form [formGroup]="criarOcorrenciaForm" class="portaria-modal__body">
+          <p class="form-tipo-title">TIPO DE OCORRÊNCIA</p>
+          <div class="form-tipo-ocor-grid">
+            <div
+              class="tipo-ocorrencia"
+              *ngFor="let t of tipos"
+              [class.selected]="
+                criarOcorrenciaForm.get('tipoOcorrencia').value === t.value
+              "
+              (click)="selecionarTipo(t.value)"
+            >
+              <i [class]="t.icone"></i>
+              <span class="tipo-ocorrencia-label">
+                {{ t.label }}
+              </span>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="descricao"
-            >Descrição da ocorrência
-            <span class="field-required">*</span></label
+          <div class="form-group">
+            <label class="form-label" for="descricao"
+              >Descrição da ocorrência
+              <span class="field-required">*</span></label
+            >
+            <textarea
+              name="descricao"
+              placeholder="Descreva a ocorrência..."
+              formControlName="ocorrencia"
+            ></textarea>
+          </div>
+        </form>
+
+        <ng-container
+          slot="footer"
+          *ngIf="{ isCriando: isCriandoOcorrencia$ | async } as vm"
+        >
+          <button
+            [disabled]="vm.isCriando"
+            class="portaria-btn portaria-btn--ghost"
+            (click)="alternarVisibilidadeModal()"
           >
-          <textarea
-            name="descricao"
-            placeholder="Descreva a ocorrência..."
-            formControlName="ocorrencia"
-          ></textarea>
-        </div>
-      </form>
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="criarOcorrenciaForm.invalid || vm.isCriando"
+            (click)="onSubmit()"
+            class="portaria-btn portaria-btn--primary"
+          >
+            <ng-container *ngIf="!vm.isCriando; else loadingState">
+              <i class="ft-file-plus"></i>
+              Registar
+            </ng-container>
 
-      <ng-container slot="footer">
-        <button
-          [disabled]="isCriandoOcorrencia$.value"
-          class="portaria-btn portaria-btn--ghost"
-          (click)="alternarVisibilidadeModal()"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          [disabled]="criarOcorrenciaForm.invalid || isCriandoOcorrencia$.value"
-          (click)="onSubmit()"
-          class="portaria-btn portaria-btn--primary"
-        >
-          <ng-container *ngIf="!isCriandoOcorrencia$.value; else loadingState">
-            <i class="ft-file-plus"></i>
-            Registar
-          </ng-container>
-
-          <ng-template #loadingState>
-            <img class="loader" src="assets/img/oval.svg" alt="" />
-            A processar...
-          </ng-template>
-        </button>
-      </ng-container>
-    </app-base-modal>
-  </ng-container>
+            <ng-template #loadingState>
+              <img class="loader" src="assets/img/oval.svg" alt="" />
+              A processar...
+            </ng-template>
+          </button>
+        </ng-container>
+      </app-base-modal>
+    </ng-container>
+  </ng-template>
 </app-portaria-shell>

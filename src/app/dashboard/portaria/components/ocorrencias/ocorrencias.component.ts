@@ -8,7 +8,6 @@ import {
   TIPOS_OCORRENCIA,
 } from "../../models/enums";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { OcorrenciasCriarDTO } from "../../models/api";
 
 @Component({
   selector: "app-ocorrencias",
@@ -88,17 +87,8 @@ export class OcorrenciasComponent implements OnInit {
       return;
     }
 
-    // Valida formulário no component, envia correto para o service
-    // Regex remove multiplos espacos entre as palavras e o trim limpa começo e final do texto
-    const dados: OcorrenciasCriarDTO = {
-      ...this.criarOcorrenciaForm.value,
-      ocorrencia: String(this.criarOcorrenciaForm.value.ocorrencia || "")
-        .replace(/\s+/g, " ")
-        .trim(),
-    };
-
     this.ocorrenciasService
-      .criarOcorrencia(dados)
+      .criarOcorrencia(this.criarOcorrenciaForm.value)
       .pipe(take(1))
       .subscribe((sucesso) => {
         if (sucesso) {

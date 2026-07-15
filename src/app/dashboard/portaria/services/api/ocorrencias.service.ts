@@ -78,7 +78,7 @@ export class OcorrenciasService {
 
   constructor(private http: HttpClient) {}
 
-  inicializar(): void {
+  inicializar(): void { // Alterar inicializar para receber parâmetros e deixar de redirecionar o usuário para a página de Pendentes automaticamente
     this.carregarOcorrencias(TABS[0], 0);
     this.tabAtiva$.next(TABS[0]);
   }
@@ -116,10 +116,10 @@ export class OcorrenciasService {
       })
       .pipe(
         catchError((err) => {
-          console.error("OCO-SERV", err);
-          this.carregandoDados$.next(false);
+          console.error("OCO-SERV", err); // implementar componente de Toast
           return of(null);
         }),
+        finalize(() => this.carregandoDados$.next(false)),
       )
       .subscribe((resultado) => {
         if (resultado === null) return;
@@ -127,7 +127,6 @@ export class OcorrenciasService {
         this.ocorrencias$.next(
           resultado.content.map((o) => this.toViewModel(o)),
         );
-        this.carregandoDados$.next(false);
         this.totalPaginas$.next(resultado.page.totalPages);
       });
   }
@@ -157,8 +156,6 @@ export class OcorrenciasService {
       .subscribe((resultado) => {
         if (resultado === null) return;
 
-        // Adicionar mensagem de sucesso ou erro para o utilizador
-        this.carregandoDados$.next(false);
         this.inicializar();
       });
   }
@@ -170,8 +167,16 @@ export class OcorrenciasService {
     // Inicializa estado de loading
     this.criandoOcorrencia$.next(true);
 
+    const dadosNormalizados: OcorrenciasCriarDTO = {
+      ...data,
+      ocorrencia: this.normalizarTexto(data.ocorrencia),
+    };
+
     return this.http
-      .post<OcorrenciasCriarDTO>(environment.ocorrenciaApiUrl, { ...data })
+      .post<OcorrenciasCriarDTO>(
+        environment.ocorrenciaApiUrl,
+        dadosNormalizados,
+      )
       .pipe(
         map(() => {
           this.inicializar();
@@ -189,6 +194,13 @@ export class OcorrenciasService {
 
   // ================================
   // ========== UTILITARIOS =========
+  // Regex remove multiplos espacos entre as palavras e o trim limpa começo e final do texto
+  private normalizarTexto(texto: string): string {
+    return String(texto || "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   // Método usado para inserir as propriedades tipoConfig e estadoConfig aos dados retornados pelo backend
   private toViewModel(o: OcorrenciasResponseDTO): OcorrenciaViewModel {
     return {

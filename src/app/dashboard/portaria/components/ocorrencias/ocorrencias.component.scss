@@ -157,7 +157,8 @@ $estados: (
   }
 }
 
-.empty-state {
+.empty-state,
+.loading-state {
   display: flex;
   font-weight: 500;
   flex-direction: column;
@@ -167,14 +168,23 @@ $estados: (
   color: $portaria-color-text-muted;
   gap: 0.5rem;
 
-  i {
-    font-size: 2rem;
-  }
-
   p {
     margin: 0;
     font-size: 0.9rem;
   }
+}
+
+.empty-state i {
+  font-size: 2rem;
+}
+
+.loader {
+  height: 16px;
+  width: 16px;
+}
+
+.loading-state .loader {
+  filter: invert(1) opacity(0.6);
 }
 
 .paginacao {
