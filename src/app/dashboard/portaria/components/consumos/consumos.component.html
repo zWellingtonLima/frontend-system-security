@@ -48,6 +48,9 @@
         </div>
         <div class="lc-date">
           Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+          <span class="lc-date bold">
+            {{ ultimaAgua.nomeEdificio }}
+          </span>
         </div>
       </ng-container>
       <ng-template #semAgua>
@@ -95,6 +98,9 @@
         <div class="lc-date">
           Última:
           {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+          <span class="lc-date bold">
+            {{ ultimaEletricidade.nomeEdificio }}</span
+          >
         </div>
       </ng-container>
       <ng-template #semElet>
@@ -136,7 +142,7 @@
         </div>
         <div class="lc-date">
           Última: {{ ultimaGas.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-          {{ ultimaGas.nomeEdificio }}
+          <span class="lc-date bold">{{ ultimaGas.nomeEdificio }}</span>
         </div>
       </ng-container>
       <ng-template #semGas>

@@ -23,9 +23,9 @@ export class ConsumosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.iniciarFormulario();
     this.chamarEdificios();
     this.carregarConsumos();
-    this.iniciarFormulario();
     this.carregarUltimas();
     this.preencherCount();
 
@@ -40,6 +40,12 @@ export class ConsumosComponent implements OnInit {
     this.destroy$.next();
     this.destroy$.complete();
     clearTimeout(this.toastTimeout);
+  }
+
+  carregarAposAlteracao() {
+    this.carregarConsumos();
+    this.carregarUltimas();
+    this.preencherCount();
   }
 
   // ── Cards "leituras actuais" ──
@@ -321,14 +327,16 @@ export class ConsumosComponent implements OnInit {
           (res) => {
             console.log(res);
             this.alternarVisibilidadeModal();
-            this.carregarConsumos();
+            this.carregarAposAlteracao();
+            this.mostrarToast("Leitura registada com sucesso!");
           },
           () => {
-            this.mostrarToast("Erro ao carregar as leituras.");
+            this.mostrarToast("Erro ao registar a leitura.");
           },
         );
     }
   }
+
   registarAtualizar() {
     if (this.registarLeituraForm.valid) {
       this.consumoService
@@ -342,24 +350,26 @@ export class ConsumosComponent implements OnInit {
         .subscribe(
           (res) => {
             console.log(res);
+            this.carregarAposAlteracao();
             this.alternarVisibilidadeModal();
-            this.carregarConsumos();
+            this.mostrarToast("Leitura atualizada com sucesso!");
           },
           () => {
-            this.mostrarToast("Erro ao carregar as leituras.");
+            this.mostrarToast("Erro ao atualizar a leitura.");
           },
         );
     }
   }
+
   submeterEliminar() {
     this.consumoService.eliminar(this.registarLeituraForm.value.id).subscribe(
-      (res) => {
-        console.log(res);
-        this.alternarVisibilidadeModal();
-        this.carregarConsumos();
+      () => {
+        this.abrirExcluir("");
+        this.carregarAposAlteracao();
+        this.mostrarToast("Leitura excluída com sucesso!");
       },
       () => {
-        this.mostrarToast("Erro ao carregar as leituras.");
+        this.mostrarToast("Erro ao excluir leitura.");
       },
     );
   }
@@ -370,10 +380,11 @@ export class ConsumosComponent implements OnInit {
         this.edificios = res;
       },
       () => {
-        this.mostrarToast("Erro ao carregar as leituras.");
+        this.mostrarToast("Erro ao carregar os dados");
       },
     );
   }
+
   selecionarTipoConsumo(tipo: string): void {
     this.registarLeituraForm.patchValue({ tipoConsumo: tipo });
     this.pegarUltimaLeituraForm();
@@ -386,6 +397,7 @@ export class ConsumosComponent implements OnInit {
     this.modalExcluirOpen = !this.modalExcluirOpen;
     this.registarLeituraForm.patchValue(item);
   }
+
   abrirEditar(item: any) {
     console.log(item);
     this.modoEdicao = true;

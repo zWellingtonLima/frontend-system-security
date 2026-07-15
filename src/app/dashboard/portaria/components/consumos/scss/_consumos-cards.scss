@@ -144,4 +144,8 @@
   font-size: 11px;
   color: #9ca3af;
   margin-top: 4px;
+  &.bold {
+    color: rgb(135, 135, 135);
+    font-weight: 500;
+  }
 }

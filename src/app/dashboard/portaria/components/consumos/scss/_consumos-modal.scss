@@ -56,6 +56,11 @@
     border-color: #3b82f6;
     background: #eff6ff;
     color: #1d4ed8;
+    &.agua {
+      border-color: #f4ff2c;
+      background: #eff6ff;
+      color: #daa532;
+    }
   }
 }
 
@@ -100,7 +105,7 @@
   max-width: 100%;
 }
 
-// Definição de Variáveis de Cor (Tema de Alerta/Erro)
+//modal excluir
 $bg-alert: #fff5f5; // Fundo rosado suave
 $border-alert: #fcdede; // Borda avermelhada clara
 $text-alert: #4a4a4a; // Cinza escuro para o texto comum
