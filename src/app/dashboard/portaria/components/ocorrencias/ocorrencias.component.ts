@@ -1,15 +1,14 @@
 import { Component, OnInit } from "@angular/core";
+import { take } from "rxjs/operators";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
   EstadoOcorrenciaEnumType,
-  TabConfig, TipoOcorrenciaEnumType,
-  TIPOS_OCORRENCIA
+  TabConfig,
+  TipoOcorrenciaEnumType,
+  TIPOS_OCORRENCIA,
 } from "../../models/enums";
-import {
-  FormControl,
-  FormGroup,
-  Validators
-} from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { OcorrenciasCriarDTO } from "../../models/api";
 
 @Component({
   selector: "app-ocorrencias",
@@ -19,7 +18,10 @@ import {
 export class OcorrenciasComponent implements OnInit {
   // FORM
   criarOcorrenciaForm!: FormGroup;
-  modalIsOpen: boolean = true;
+  isCriandoOcorrencia$ = this.ocorrenciasService.criandoOcorrencia$; // Loader POST
+
+  // MODAL
+  modalIsOpen: boolean = false;
 
   // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
@@ -29,7 +31,7 @@ export class OcorrenciasComponent implements OnInit {
   ocorrenciasFiltradas$ = this.ocorrenciasService.ocorrenciasFiltradas$;
   totalPaginas$ = this.ocorrenciasService.totalPaginas$;
   tabAtiva$ = this.ocorrenciasService.tabAtiva$;
-  carregando$ = this.ocorrenciasService.carregandoDados$;
+  carregando$ = this.ocorrenciasService.carregandoDados$; // Loader GET
 
   paginaAtual = 0;
 
@@ -39,7 +41,6 @@ export class OcorrenciasComponent implements OnInit {
     // Carrega Ocorrências
     this.ocorrenciasService.inicializar();
 
-    // Verificar se existe necessidade de realocar logica dos forms para outro componente
     this.criarOcorrenciaForm = new FormGroup({
       tipoOcorrencia: new FormControl(TIPOS_OCORRENCIA[0].value, [
         Validators.required,
@@ -54,7 +55,6 @@ export class OcorrenciasComponent implements OnInit {
   onTabChange(tab: TabConfig) {
     this.paginaAtual = 0;
     this.ocorrenciasService.setTab(tab);
-    console.log(this.tipoFiltro$);
   }
 
   onSearchChange(search: string) {
@@ -81,20 +81,34 @@ export class OcorrenciasComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.criarOcorrenciaForm.valid) {
-      console.log(this.criarOcorrenciaForm.value);
+    if (this.criarOcorrenciaForm.invalid) {
+      Object.values(this.criarOcorrenciaForm.controls).forEach((control) => {
+        control.markAsTouched();
+      });
+      return;
     }
 
+    // Valida formulário no component, envia correto para o service
     // Regex remove multiplos espacos entre as palavras e o trim limpa começo e final do texto
-    const dados = {
+    const dados: OcorrenciasCriarDTO = {
       ...this.criarOcorrenciaForm.value,
-      ocorrencia: this.criarOcorrenciaForm.value.ocorrencia
+      ocorrencia: String(this.criarOcorrenciaForm.value.ocorrencia || "")
         .replace(/\s+/g, " ")
         .trim(),
     };
 
-    // Criar serviço para enviar os dados
-    console.log(dados);
+    this.ocorrenciasService
+      .criarOcorrencia(dados)
+      .pipe(take(1))
+      .subscribe((sucesso) => {
+        if (sucesso) {
+          this.alternarVisibilidadeModal();
+          this.criarOcorrenciaForm.reset({
+            tipoOcorrencia: TIPOS_OCORRENCIA[0].value,
+            ocorrencia: "",
+          });
+        }
+      });
   }
 
   // Modal

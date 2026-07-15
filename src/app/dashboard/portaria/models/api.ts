@@ -40,6 +40,11 @@ export interface OcorrenciasRequestDTO {
   estadoOcorrenciaEnum: EstadoOcorrenciaEnumType;
 }
 
+export interface OcorrenciasCriarDTO {
+  tipoOcorrencia: TipoOcorrenciaEnumType;
+  ocorrencia: string;
+}
+
 export interface OcorrenciasResponseDTO {
   id: number;
   createDate: ISOTimestamp;

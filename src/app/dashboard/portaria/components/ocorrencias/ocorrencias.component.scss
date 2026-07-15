@@ -106,6 +106,12 @@ $estados: (
   padding: $p-lg;
   margin-bottom: $m-xs;
   border-radius: $portaria-radius-xs;
+  transition: border 0.2s ease;
+
+  &:hover {
+    border: 1px solid lighten($color: $portaria-color-accent, $amount: 20);
+    // background: mix(white, $portaria-color-accent, 95%);
+  }
 
   .icon-area {
     align-self: start;

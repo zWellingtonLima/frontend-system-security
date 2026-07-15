@@ -191,18 +191,27 @@
 
       <ng-container slot="footer">
         <button
+          [disabled]="isCriandoOcorrencia$.value"
           class="portaria-btn portaria-btn--ghost"
           (click)="alternarVisibilidadeModal()"
         >
           Cancelar
         </button>
         <button
-          [disabled]="criarOcorrenciaForm.invalid"
+          type="submit"
+          [disabled]="criarOcorrenciaForm.invalid || isCriandoOcorrencia$.value"
           (click)="onSubmit()"
           class="portaria-btn portaria-btn--primary"
         >
-          <i class="ft-file-plus"></i>
-          Registar
+          <ng-container *ngIf="!isCriandoOcorrencia$.value; else loadingState">
+            <i class="ft-file-plus"></i>
+            Registar
+          </ng-container>
+
+          <ng-template #loadingState>
+            <img class="loader" src="assets/img/oval.svg" alt="" />
+            A processar...
+          </ng-template>
         </button>
       </ng-container>
     </app-base-modal>

@@ -10,11 +10,12 @@ import {
 } from "../../models/enums";
 import {
   FiltrosLocais,
+  OcorrenciasCriarDTO,
   OcorrenciasPage,
   OcorrenciasResponseDTO,
   OcorrenciaViewModel,
 } from "../../models/api";
-import { catchError, map } from "rxjs/operators";
+import { catchError, finalize, map } from "rxjs/operators";
 import { environment } from "src/environments/environment.dev";
 
 // A ordem aqui define a ordem que aparece na tela
@@ -22,7 +23,7 @@ const TABS: TabConfig[] = [
   {
     value: "PENDENTE",
     label: "Pendentes",
-    paginada: true,
+    paginada: false,
     estadoParam: "PENDENTE",
   },
   {
@@ -57,6 +58,7 @@ export class OcorrenciasService {
   // É sempre iniciada com [0] porque o primeiro elemento lá no TABS é o PENDENTE
   tabAtiva$ = new BehaviorSubject<TabConfig>(TABS[0]);
   carregandoDados$ = new BehaviorSubject<boolean>(false);
+  criandoOcorrencia$ = new BehaviorSubject<boolean>(false);
   totalPaginas$ = new BehaviorSubject<number>(0);
 
   ocorrenciasFiltradas$: Observable<OcorrenciaViewModel[]> = combineLatest(
@@ -159,6 +161,30 @@ export class OcorrenciasService {
         this.carregandoDados$.next(false);
         this.inicializar();
       });
+  }
+
+  // =============================================
+  // ================= POST ======================
+
+  criarOcorrencia(data: OcorrenciasCriarDTO): Observable<boolean> {
+    // Inicializa estado de loading
+    this.criandoOcorrencia$.next(true);
+
+    return this.http
+      .post<OcorrenciasCriarDTO>(environment.ocorrenciaApiUrl, { ...data })
+      .pipe(
+        map(() => {
+          this.inicializar();
+          return true;
+        }),
+        catchError((err) => {
+          console.error("OCO-SERV-CREATE: " + err);
+          return of(false);
+        }),
+        finalize(() => {
+          this.criandoOcorrencia$.next(false);
+        }),
+      );
   }
 
   // ================================
