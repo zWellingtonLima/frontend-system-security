@@ -99,3 +99,53 @@
   align-items: center;
   max-width: 100%;
 }
+
+// Definição de Variáveis de Cor (Tema de Alerta/Erro)
+$bg-alert: #fff5f5; // Fundo rosado suave
+$border-alert: #fcdede; // Borda avermelhada clara
+$text-alert: #4a4a4a; // Cinza escuro para o texto comum
+$bold-alert: #000000; // Preto puro para o texto em destaque
+$icon-alert: #df4747; // Vermelho do triângulo de aviso
+
+.modal-body {
+  display: flex;
+  flex-direction: column; // Mantém a ordem dos elementos de cima para baixo
+  justify-content: center; // Centraliza na vertical
+  align-items: center; // Centraliza na horizontal
+  min-height: 100px; // Defina uma altura para o container fazer efeito vertical
+  width: 100%;
+}
+
+.alert-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background-color: $bg-alert;
+  border: 1px solid $border-alert;
+  border-radius: 12px; // Cantos arredondados do card
+  max-width: 500px; // Largura aproximada da imagem
+  font-family: Arial, sans-serif;
+  justify-content: center;
+  align-items: center;
+
+  &__icon {
+    color: $icon-alert;
+    font-size: 30px;
+    line-height: 1;
+    margin-top: 2px; // Alinhamento com a primeira linha de texto
+    flex-shrink: 0; // Impede o ícone de esmagar em telas menores
+  }
+
+  &__content {
+    color: $text-alert;
+    font-size: 13.5px;
+    line-height: 1.45;
+    letter-spacing: -0.1px;
+
+    strong {
+      color: $bold-alert;
+      font-weight: 700;
+    }
+  }
+}

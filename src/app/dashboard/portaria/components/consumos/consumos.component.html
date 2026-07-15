@@ -238,7 +238,9 @@
               <span
                 class="bold-text"
                 [ngClass]="
-                  item.consumoCalculado > 100 ? 'danger-value' : 'green-value'
+                  item.consumoCalculado > consumoElevado
+                    ? 'danger-value'
+                    : 'green-value'
                 "
               >
                 {{ item.consumoCalculado > 0 ? "+" : "" }}
@@ -254,6 +256,7 @@
             </td>
             <td [title]="item.observacao">
               {{ item.observacao ? (item.observacao | slice: 0 : 20) : "_" }}
+              {{ item.observacao ? "..." : "" }}
             </td>
             <td>
               {{ item.edificioName }}
@@ -385,17 +388,34 @@
         </div>
 
         <!-- Leitura anterior / Consumo calculado -->
-        <div class="info-box">
-          <div class="info-box-item">
-            <span class="info-box-label">Leitura anterior</span>
-            <span class="info-box-valor"
-              >{{ ultimaLieituraForm && ultimaLieituraForm.leituraAtual }}
-            </span>
-          </div>
-          <div class="info-box-divider"></div>
-          <div class="info-box-item">
-            <span class="info-box-label">Consumo calculado</span>
-            <span class="info-box-valor"> {{ consumoCalculadoPreview }}</span>
+        <div *ngIf="!modoEdicao">
+          <div class="info-box">
+            <div class="info-box-item">
+              <span class="info-box-label">Leitura anterior</span>
+              <span class="info-box-valor"
+                >{{
+                  ultimaLieituraForm && ultimaLieituraForm.leituraAtual
+                    | number: "1.2-2"
+                }}
+                {{
+                  ultimaLieituraForm && ultimaLieituraForm.leituraAtual
+                    ? Unidades[registarLeituraForm.value.tipoConsumo]
+                    : ""
+                }}
+              </span>
+            </div>
+            <div class="info-box-divider"></div>
+            <div class="info-box-item">
+              <span class="info-box-label">Consumo calculado</span>
+              <span class="info-box-valor">
+                {{ consumoCalculadoPreview }}
+                {{
+                  consumoCalculadoPreview
+                    ? Unidades[registarLeituraForm.value.tipoConsumo]
+                    : ""
+                }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -416,7 +436,16 @@
           </div>
           <div class="form-group">
             <label for="unidade">Unidade</label>
-            <input id="unidade" type="text" [value]="unidadeAtual" disabled />
+            <input
+              id="unidade"
+              type="text"
+              [value]="
+                Unidades[registarLeituraForm.value.tipoConsumo]
+                  ? Unidades[registarLeituraForm.value.tipoConsumo]
+                  : null
+              "
+              disabled
+            />
           </div>
         </div>
 
@@ -441,10 +470,51 @@
         <button
           class="portaria-btn portaria-btn--primary"
           [disabled]="registarLeituraForm.invalid"
-          (click)="registarLeitura()"
+          (click)="modoEdicao ? registarAtualizar() : registarLeitura()"
         >
           <i class="ft-file-plus"></i>
           {{ botaoEnvio }}
+        </button>
+      </ng-container>
+    </app-base-modal>
+  </ng-container>
+
+  <ng-container>
+    <!-- MODAL EXCLUIR LEITURA -->
+    <app-base-modal
+      [modalEstaAberto]="modalExcluirOpen"
+      [titulo]="'Excluir leitura'"
+      [subtitulo]="'Menu de exclusão de leituras'"
+      (fechar)="abrirExcluir()"
+    >
+      <form [formGroup]="registarLeituraForm"></form>
+
+      <div class="modal-body">
+        <div class="alert-box">
+          <div class="alert-box__icon">
+            <i class="ft-alert-triangle"></i>
+          </div>
+          <div class="alert-box__content">
+            Esta ação vai <strong>eliminar permanentemente</strong> o registo
+            desta leitura. O consumo calculado das leituras adjacentes será
+            recalculado automaticamente.
+          </div>
+        </div>
+      </div>
+
+      <ng-container slot="footer">
+        <button
+          class="portaria-btn portaria-btn--ghost"
+          (click)="abrirExcluir()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="portaria-btn portaria-btn--primary"
+          (click)="submeterEliminar()"
+        >
+          <i class="ft-file-plus"></i>
+          Excluir
         </button>
       </ng-container>
     </app-base-modal>

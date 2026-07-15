@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import {
   ConsumoLeitura,
+  EdificiosResponse,
   PeriodoFiltro,
   TipoConsumoType,
   UltimaLeitura,
@@ -22,6 +23,7 @@ export class ConsumosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.chamarEdificios();
     this.carregarConsumos();
     this.iniciarFormulario();
     this.carregarUltimas();
@@ -165,7 +167,7 @@ export class ConsumosComponent implements OnInit {
   private pesquisa$ = new Subject<string>();
   private destroy$ = new Subject<void>();
   pesquisa = "";
-  readonly pageSize = 10;
+  readonly pageSize = 20;
 
   onFiltroChange(periodo: PeriodoFiltro) {
     this.periodo = periodo;
@@ -280,17 +282,23 @@ export class ConsumosComponent implements OnInit {
   // FORMULARIO DE REGISTAR LEITURA MODAL
   // ─────────────────────────────────────────────
 
+  registarLeituraForm: FormGroup = new FormGroup({});
+
   unidadeAtual = null;
   consumoCalculadoPreview: number | null = 0;
-  registarLeituraForm: FormGroup = new FormGroup({});
   ultimaLieituraForm: UltimaLeitura | null = null;
+  edificios: EdificiosResponse[] = [];
+  consumoElevado: number = 200;
 
+  modalExcluirOpen: boolean = false;
   modalIsOpen: boolean = false;
   modoEdicao: boolean = false;
+  modoEliminar: boolean = false;
   botaoEnvio: string = "Registar";
 
   iniciarFormulario() {
     this.registarLeituraForm = this.fb.group({
+      id: [null],
       tipoConsumo: ["", Validators.required],
       edificioId: ["", Validators.required],
       leituraAtual: [0, [Validators.required, Validators.min(0)]],
@@ -321,7 +329,51 @@ export class ConsumosComponent implements OnInit {
         );
     }
   }
+  registarAtualizar() {
+    if (this.registarLeituraForm.valid) {
+      this.consumoService
+        .atualizar(this.registarLeituraForm.value.id, {
+          valorLeitura: this.registarLeituraForm.value.leituraAtual,
+          notas: this.registarLeituraForm.value.observacao,
+          edificioId: this.registarLeituraForm.value.edificioId,
+          tipoConsumo: this.registarLeituraForm.value.tipoConsumo,
+          dataRegisto: "",
+        })
+        .subscribe(
+          (res) => {
+            console.log(res);
+            this.alternarVisibilidadeModal();
+            this.carregarConsumos();
+          },
+          () => {
+            this.mostrarToast("Erro ao carregar as leituras.");
+          },
+        );
+    }
+  }
+  submeterEliminar() {
+    this.consumoService.eliminar(this.registarLeituraForm.value.id).subscribe(
+      (res) => {
+        console.log(res);
+        this.alternarVisibilidadeModal();
+        this.carregarConsumos();
+      },
+      () => {
+        this.mostrarToast("Erro ao carregar as leituras.");
+      },
+    );
+  }
 
+  chamarEdificios() {
+    this.consumoService.preencherEdificio().subscribe(
+      (res) => {
+        this.edificios = res;
+      },
+      () => {
+        this.mostrarToast("Erro ao carregar as leituras.");
+      },
+    );
+  }
   selecionarTipoConsumo(tipo: string): void {
     this.registarLeituraForm.patchValue({ tipoConsumo: tipo });
     this.pegarUltimaLeituraForm();
@@ -330,27 +382,17 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
   // ─────────────────────────────────────────────
-  submeterEliminar() {}
-
+  abrirExcluir(item: any) {
+    this.modalExcluirOpen = !this.modalExcluirOpen;
+    this.registarLeituraForm.patchValue(item);
+  }
   abrirEditar(item: any) {
+    console.log(item);
     this.modoEdicao = true;
     this.modalIsOpen = true;
     this.botaoEnvio = "Atualizar";
     this.registarLeituraForm.patchValue(item);
   }
-
-  abrirExcluir() {}
-
-  edificios = [
-    {
-      id: 1,
-      nome: "EDIFÍCIO A",
-    },
-    {
-      id: 2,
-      nome: "EDIFÍCIO B",
-    },
-  ];
 
   onLeituraAtualChange(): void {
     const valorAtual = this.registarLeituraForm.value.leituraAtual;

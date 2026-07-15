@@ -8,6 +8,7 @@ import {
   ConsumoLeitura,
   ConsumoPayload,
   CountTabelas,
+  EdificiosResponse,
   PageResponse,
   UltimaLeitura,
 } from "../../models/consumo.model";
@@ -72,5 +73,9 @@ export class ConsumosService {
 
   eliminar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  preencherEdificio(): Observable<EdificiosResponse[]> {
+    return this.http.get<EdificiosResponse[]>(`${this.apiUrl}/edificios`);
   }
 }

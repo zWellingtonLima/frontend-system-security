@@ -62,3 +62,7 @@ export interface ConsumoPayload {
   tipoConsumo: TipoConsumoType;
   dataRegisto?: string;
 }
+export interface EdificiosResponse {
+  id: number;
+  nome: string;
+}
