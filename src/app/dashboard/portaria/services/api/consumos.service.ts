@@ -24,6 +24,19 @@ export class ConsumosService {
     return this.http.get<UltimaLeitura[]>(`${this.apiUrl}/ultimas`);
   }
 
+  ultimaLeituraForm(
+    tipoId: string,
+    edificioId: string,
+  ): Observable<UltimaLeitura> {
+    let params = new HttpParams()
+      .set("tipoId", tipoId)
+      .set("edificioId", edificioId);
+
+    return this.http.get<UltimaLeitura>(`${this.apiUrl}/ultima/formulario`, {
+      params: params,
+    });
+  }
+
   countTabelas(): Observable<CountTabelas[]> {
     return this.http.get<CountTabelas[]>(`${this.apiUrl}/count`);
   }

@@ -253,8 +253,7 @@
               }}</span>
             </td>
             <td [title]="item.observacao">
-              {{ item.observacao | slice: 0 : 20 }}
-              {{ item.observacao?.length > 20 ? "..." : "" }}
+              {{ item.observacao ? (item.observacao | slice: 0 : 20) : "_" }}
             </td>
             <td>
               {{ item.edificioName }}
@@ -325,8 +324,12 @@
     <!-- MODAL REGISTAR LEITURA -->
     <app-base-modal
       [modalEstaAberto]="modalIsOpen"
-      titulo="Registar leitura"
-      subtitulo="Insira o valor actual do contador"
+      [titulo]="modoEdicao ? 'Editar Leitura' : 'Registar Leitura'"
+      [subtitulo]="
+        modoEdicao
+          ? 'Altere os valores do contador abaixo'
+          : 'Insira o valor actual do contador'
+      "
       (fechar)="alternarVisibilidadeModal()"
     >
       <form [formGroup]="registarLeituraForm" class="form-leitura">
@@ -369,7 +372,11 @@
         <!-- Edifício -->
         <div class="form-group">
           <label for="edificioId">Edifício</label>
-          <select id="edificioId" formControlName="edificioId">
+          <select
+            id="edificioId"
+            (change)="pegarUltimaLeituraForm()"
+            formControlName="edificioId"
+          >
             <option [ngValue]="null" disabled>Selecione um edifício</option>
             <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
               {{ edificio.nome }}
@@ -381,12 +388,14 @@
         <div class="info-box">
           <div class="info-box-item">
             <span class="info-box-label">Leitura anterior</span>
-            <span class="info-box-valor"> </span>
+            <span class="info-box-valor"
+              >{{ ultimaLieituraForm && ultimaLieituraForm.leituraAtual }}
+            </span>
           </div>
           <div class="info-box-divider"></div>
           <div class="info-box-item">
             <span class="info-box-label">Consumo calculado</span>
-            <span class="info-box-valor"> </span>
+            <span class="info-box-valor"> {{ consumoCalculadoPreview }}</span>
           </div>
         </div>
 
@@ -401,7 +410,7 @@
               type="number"
               step="0.01"
               formControlName="leituraAtual"
-              placeholder="Ex: 1250.50"
+              placeholder="Ex: 1250"
               (input)="onLeituraAtualChange()"
             />
           </div>
@@ -435,7 +444,7 @@
           (click)="registarLeitura()"
         >
           <i class="ft-file-plus"></i>
-          Registar
+          {{ botaoEnvio }}
         </button>
       </ng-container>
     </app-base-modal>

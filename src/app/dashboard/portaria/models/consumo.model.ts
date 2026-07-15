@@ -23,7 +23,7 @@ export interface ConsumoLeitura {
 export interface UltimaLeitura {
   nomeEdificio: string;
   tipoConsumo: number;
-  leituraAnterior: number;
+  leituraAnterior: number | null;
   dataRegisto: Date;
   leituraAtual: number;
   consumo: number | null;
@@ -56,8 +56,9 @@ export interface PageResponse<T> {
 }
 
 export interface ConsumoPayload {
-  tipo: TipoConsumoType;
-  valor: number;
-  observacao: string;
-  dataHora?: string;
+  valorLeitura: number;
+  notas: string;
+  edificioId: number;
+  tipoConsumo: TipoConsumoType;
+  dataRegisto?: string;
 }

@@ -1208,9 +1208,8 @@ $m-xl: 22px;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  margin-top: -60px;
   background: rgba(1, 1, 1, 0.52);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(2px);
 }
 
 .portaria-modal {
@@ -1391,8 +1390,6 @@ $m-xl: 22px;
     }
   }
 }
-
-
 
 .portaria-historico {
   border: 1px solid #e5edf3;

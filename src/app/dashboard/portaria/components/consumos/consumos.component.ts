@@ -22,14 +22,8 @@ export class ConsumosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.registarLeituraForm = this.fb.group({
-      tipoConsumo: ["", Validators.required],
-      edificioId: ["", Validators.required],
-      leituraAtual: [null, [Validators.required, Validators.min(0)]],
-      observacao: [""],
-    });
-
     this.carregarConsumos();
+    this.iniciarFormulario();
     this.carregarUltimas();
     this.preencherCount();
 
@@ -38,7 +32,6 @@ export class ConsumosComponent implements OnInit {
       .subscribe(() => {
         this.currentPage = 1;
         this.carregarConsumos();
-        console.log(this.pesquisa);
       });
   }
   ngOnDestroy(): void {
@@ -73,15 +66,6 @@ export class ConsumosComponent implements OnInit {
   totalEletricidade = 0;
   totalGas = 0;
   totalAgua = 0;
-
-  // ── Modal: editar leitura ──
-  modalEditarAberto = false;
-  editId: number | null = null;
-  editTipo: TipoConsumoType = "AGUA";
-  editValor: number | null = null;
-  editObs = "";
-  editData = "";
-  salvandoEdicao = false;
 
   // ── Modal: eliminar leitura ──
   modalEliminarAberto = false;
@@ -122,7 +106,7 @@ export class ConsumosComponent implements OnInit {
       );
   }
   // ─────────────────────────────────────────────
-  // CARREGA AS ULTIMAS LEITURAS PARA POR NOS CARDS
+  // CARREGA AS ULTIMAS LEITURAS PARA POR NOS CARDS onInit
   // ─────────────────────────────────────────────
   carregarUltimas(): void {
     this.consumoService.ultimas().subscribe(
@@ -148,7 +132,7 @@ export class ConsumosComponent implements OnInit {
   }
 
   // ─────────────────────────────────────────────
-  // PREENCHE O COUNT | AGUA - ELETRICIDADE - GAS
+  // PREENCHE O COUNT | AGUA - ELETRICIDADE - GAS - onInit
   // ─────────────────────────────────────────────
 
   preencherCount() {
@@ -194,7 +178,6 @@ export class ConsumosComponent implements OnInit {
   }
 
   filtroPesquisa() {}
-  abrirExcluir() {}
 
   // ─────────────────────────────────────────────
   // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
@@ -222,15 +205,6 @@ export class ConsumosComponent implements OnInit {
     this.toastVisivel = true;
     clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
-  }
-
-  // ─────────────────────────────────────────────
-  // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
-  // ─────────────────────────────────────────────
-  submeterEliminar() {}
-
-  abrirEditar(leitura: ConsumoLeitura): void {
-    this.modalEditarAberto = true;
   }
 
   // ─────────────────────────────────────────────
@@ -306,31 +280,121 @@ export class ConsumosComponent implements OnInit {
   // FORMULARIO DE REGISTAR LEITURA MODAL
   // ─────────────────────────────────────────────
 
-  selecionarTipoConsumo(tipo: string): void {
-    this.registarLeituraForm?.patchValue({ tipoConsumo: tipo });
+  unidadeAtual = null;
+  consumoCalculadoPreview: number | null = 0;
+  registarLeituraForm: FormGroup = new FormGroup({});
+  ultimaLieituraForm: UltimaLeitura | null = null;
+
+  modalIsOpen: boolean = false;
+  modoEdicao: boolean = false;
+  botaoEnvio: string = "Registar";
+
+  iniciarFormulario() {
+    this.registarLeituraForm = this.fb.group({
+      tipoConsumo: ["", Validators.required],
+      edificioId: ["", Validators.required],
+      leituraAtual: [0, [Validators.required, Validators.min(0)]],
+      observacao: ["", [Validators.maxLength(255)]],
+    });
   }
+
+  registarLeitura() {
+    if (this.registarLeituraForm.valid) {
+      console.log(this.registarLeituraForm.value);
+      this.consumoService
+        .criar({
+          valorLeitura: this.registarLeituraForm.value.leituraAtual,
+          notas: this.registarLeituraForm.value.observacao,
+          edificioId: this.registarLeituraForm.value.edificioId,
+          tipoConsumo: this.registarLeituraForm.value.tipoConsumo,
+          dataRegisto: "",
+        })
+        .subscribe(
+          (res) => {
+            console.log(res);
+            this.alternarVisibilidadeModal();
+            this.carregarConsumos();
+          },
+          () => {
+            this.mostrarToast("Erro ao carregar as leituras.");
+          },
+        );
+    }
+  }
+
+  selecionarTipoConsumo(tipo: string): void {
+    this.registarLeituraForm.patchValue({ tipoConsumo: tipo });
+    this.pegarUltimaLeituraForm();
+  }
+
+  // ─────────────────────────────────────────────
+  // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
+  // ─────────────────────────────────────────────
+  submeterEliminar() {}
+
+  abrirEditar(item: any) {
+    this.modoEdicao = true;
+    this.modalIsOpen = true;
+    this.botaoEnvio = "Atualizar";
+    this.registarLeituraForm.patchValue(item);
+  }
+
+  abrirExcluir() {}
 
   edificios = [
     {
       id: 1,
-      nome: "Edificio A",
+      nome: "EDIFÍCIO A",
     },
     {
       id: 2,
-      nome: "Edificio B",
+      nome: "EDIFÍCIO B",
     },
   ];
-  unidadeAtual = null;
 
-  onLeituraAtualChange() {}
+  onLeituraAtualChange(): void {
+    const valorAtual = this.registarLeituraForm.value.leituraAtual;
+    this.consumoCalculadoPreview =
+      this.ultimaLieituraForm &&
+      this.ultimaLieituraForm.leituraAtual !== null &&
+      valorAtual
+        ? valorAtual - this.ultimaLieituraForm.leituraAtual
+        : null;
+  }
 
-  registarLeituraForm?: FormGroup;
-  modalIsOpen: boolean = false;
+  pegarUltimaLeituraForm() {
+    const tipo = this.registarLeituraForm.get("tipoConsumo");
+    const edificio = this.registarLeituraForm.get("edificioId");
+    if (
+      tipo &&
+      tipo.value != null &&
+      tipo.value !== "" &&
+      edificio &&
+      edificio.value != null &&
+      edificio.value !== ""
+    ) {
+      console.log(this.leituras[1].leituraAtual);
+      this.consumoService
+        .ultimaLeituraForm(tipo.value, edificio.value)
+        .subscribe((res) => {
+          this.ultimaLieituraForm = res;
+        });
+    }
+  }
 
   alternarVisibilidadeModal() {
     this.modalIsOpen = !this.modalIsOpen;
+
+    if (this.modalIsOpen) {
+      this.botaoEnvio = "Registar";
+      this.modoEdicao = false;
+      this.registarLeituraForm.reset({ tipoConsumo: this.abaAtiva });
+    }
+
+    this.registarLeituraForm.reset();
+    this.ultimaLieituraForm = null;
+    this.consumoCalculadoPreview = null;
   }
-  registarLeitura() {}
 
   Unidades = {
     ELETRICIDADE: "kWh",
