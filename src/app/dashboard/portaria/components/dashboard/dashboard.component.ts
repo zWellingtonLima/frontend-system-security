@@ -13,6 +13,7 @@ export class DashboardComponent implements OnInit {
   chavesEmAtraso = 1;
   statusLabel = "Atrasada";
   ocorrenciasAbertas = 1;
+  visitasRegistadas = 1;
   visitasHoje = 8;
   ocorrenciasPendentes = 0;
 

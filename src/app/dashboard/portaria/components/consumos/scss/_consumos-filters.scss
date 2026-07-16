@@ -1,0 +1,94 @@
+// ── FILTROS: PESQUISA + PERÍODO ──────────────────────────────────────
+$azul-padrao: #1b99b2;
+$azul-padrao-claro: #32d0ef;
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.search-wrap {
+  flex: 1;
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: #9ca3af;
+    pointer-events: none;
+  }
+}
+
+.search-input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px 0 32px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  transition: border-color 0.13s;
+  font-family: inherit;
+
+  &:focus {
+    border-color: $azul-padrao;
+    background: #fff;
+  }
+}
+
+.filter-select {
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+//Gas  - Eletricicadade - Agua
+.tab {
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition:
+    color 0.13s,
+    border-color 0.13s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.tab:hover {
+  color: rgb(45, 45, 45);
+}
+
+.tab.active {
+  color: $azul-padrao;
+  border-bottom-color: $azul-padrao;
+}
+.tab .tab-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #6b7280;
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+.tab.active .tab-count {
+  background: var($azul-padrao-claro, #e0f4fb);
+  color: $azul-padrao;
+}

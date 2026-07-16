@@ -97,3 +97,19 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
   const chave = k as TipoOcorrenciaEnumType;
   return { value: chave, ...TIPO_OCORRENCIA_CONFIG[chave] };
 });
+
+// ============================================================
+// CHAVES
+// ============================================================
+
+export enum TipoChaveEnum {
+  CHAVE = "CHAVE",
+  MOLHO = "MOLHO",
+}
+
+export type TipoChaveEnumType = keyof typeof TipoChaveEnum;
+
+export const TipoChaveLabel = {
+  [TipoChaveEnum.CHAVE]: "Chave",
+  [TipoChaveEnum.MOLHO]: "Molho",
+};

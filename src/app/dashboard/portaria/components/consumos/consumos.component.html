@@ -1,3 +1,533 @@
-<p>
-  consumos Funcionaaaaa!
-</p>
+<app-portaria-shell>
+  <!-- Titulo e Registar leitura  -->
+  <div class="titulo-dashboard-buttons">
+    <div class="titulo-dashboard">
+      <h3>Consumos</h3>
+      <p>Registo de leituras de água, eletricidade e gás</p>
+    </div>
+
+    <div>
+      <button
+        class="portaria-btn portaria-btn--primary"
+        (click)="alternarVisibilidadeModal()"
+      >
+        <i class="ft-plus"></i>
+        Registar Leitura
+      </button>
+    </div>
+  </div>
+
+  <div class="leituras-grid">
+    <div class="leitura-card lc-agua">
+      <div class="lc-header">
+        <div class="lc-icon li-agua">
+          <i class="ft-droplet"></i>
+        </div>
+        <div>
+          <div class="lc-tipo agua">Água</div>
+          <div class="lc-unidade agua">m³ — contador</div>
+        </div>
+      </div>
+      <ng-container *ngIf="ultimaAgua; else semAgua">
+        <div class="lc-valor agua">
+          {{ ultimaAgua.leituraAtual | number: "1.2-2" }} m³
+        </div>
+        <div class="lc-delta agua">
+          <ng-container *ngIf="ultimaAgua.consumo !== null; else primeiraAgua">
+            <i
+              [ngClass]="
+                ultimaAgua.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
+              "
+            ></i>
+            {{ ultimaAgua.consumo >= 0 ? "+" : ""
+            }}{{ ultimaAgua.consumo | number: "1.2-2" }} m³ desde anterior
+          </ng-container>
+          <ng-template #primeiraAgua
+            ><i class="ft-minus"></i> primeira leitura</ng-template
+          >
+        </div>
+        <div class="lc-date">
+          Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+          <span class="lc-date bold">
+            {{ ultimaAgua.nomeEdificio }}
+          </span>
+        </div>
+      </ng-container>
+      <ng-template #semAgua>
+        <div class="lc-valor agua">—</div>
+        <div class="lc-delta agua">
+          <i class="ft-minus"></i> sem dados anteriores
+        </div>
+        <div class="lc-date">—</div>
+      </ng-template>
+    </div>
+
+    <div class="leitura-card lc-eletricidade">
+      <div class="lc-header">
+        <div class="lc-icon li-elet">
+          <i class="ft-zap"></i>
+        </div>
+        <div>
+          <div class="lc-tipo elet">Eletricidade</div>
+          <div class="lc-unidade elet">kWh — contador</div>
+        </div>
+      </div>
+      <ng-container *ngIf="ultimaEletricidade; else semElet">
+        <div class="lc-valor elet">
+          {{ ultimaEletricidade.leituraAtual | number: "1.2-2" }} kWh
+        </div>
+        <div class="lc-delta elet">
+          <ng-container
+            *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
+          >
+            <i
+              [ngClass]="
+                ultimaEletricidade.consumo >= 0
+                  ? 'ft-arrow-up'
+                  : 'ft-arrow-down'
+              "
+            ></i>
+            {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
+            }}{{ ultimaEletricidade.consumo | number: "1.2-2" }} kWh desde
+            anterior
+          </ng-container>
+          <ng-template #primeiraElet
+            ><i class="ft-minus"></i> primeira leitura</ng-template
+          >
+        </div>
+        <div class="lc-date">
+          Última:
+          {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+          <span class="lc-date bold">
+            {{ ultimaEletricidade.nomeEdificio }}</span
+          >
+        </div>
+      </ng-container>
+      <ng-template #semElet>
+        <div class="lc-valor elet">—</div>
+        <div class="lc-delta elet">
+          <i class="ft-minus"></i> sem dados anteriores
+        </div>
+        <div class="lc-date">—</div>
+      </ng-template>
+    </div>
+
+    <div class="leitura-card lc-gas">
+      <div class="lc-header">
+        <div class="lc-icon li-gas">
+          <i class="icon-fire"></i>
+        </div>
+        <div>
+          <div class="lc-tipo gas">Gás</div>
+          <div class="lc-unidade gas">m³ — contador</div>
+        </div>
+      </div>
+      <ng-container *ngIf="ultimaGas; else semGas">
+        <div class="lc-valor gas">
+          {{ ultimaGas.leituraAtual | number: "1.2-2" }} m³
+        </div>
+        <div class="lc-delta gas">
+          <ng-container *ngIf="ultimaGas.consumo !== null; else primeiraGas">
+            <i
+              [ngClass]="
+                ultimaGas.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
+              "
+            ></i>
+            {{ ultimaGas.consumo >= 0 ? "+" : ""
+            }}{{ ultimaGas.consumo | number: "1.2-2" }} m³ desde anterior
+          </ng-container>
+          <ng-template #primeiraGas
+            ><i class="ft-minus"></i> primeira leitura</ng-template
+          >
+        </div>
+        <div class="lc-date">
+          Última: {{ ultimaGas.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+          <span class="lc-date bold">{{ ultimaGas.nomeEdificio }}</span>
+        </div>
+      </ng-container>
+      <ng-template #semGas>
+        <div class="lc-valor gas">—</div>
+        <div class="lc-delta gas">
+          <i class="ft-minus"></i> sem dados anteriores
+        </div>
+        <div class="lc-date">—</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="filtros-pesquisa">
+    <div
+      class="tab"
+      [class.active]="abaAtiva === 'AGUA'"
+      (click)="selecionarAba(1, 'AGUA')"
+    >
+      Água <span class="tab-cnt">{{ totalAgua }}</span>
+    </div>
+    <div
+      class="tab"
+      [class.active]="abaAtiva === 'ELETRICIDADE'"
+      (click)="selecionarAba(2, 'ELETRICIDADE')"
+    >
+      Eletricidade <span class="tab-cnt">{{ totalEletricidade }}</span>
+    </div>
+    <div
+      class="tab"
+      [class.active]="abaAtiva === 'GAS'"
+      (click)="selecionarAba(3, 'GAS')"
+    >
+      Gás <span class="tab-cnt">{{ totalGas }}</span>
+    </div>
+  </div>
+
+  <div class="barra-pesquisa-container">
+    <div class="barra-pesquisa">
+      <i class="ft-search"></i>
+      <input
+        #barraPesquisa
+        class="search-input"
+        type="text"
+        (input)="onPesquisaChange(barraPesquisa.value)"
+        placeholder="Pesquisar por edifício ou observação..."
+      />
+    </div>
+    <select
+      #barraSelect
+      class="barra-pesquisa-select"
+      (change)="onFiltroChange(barraSelect.value)"
+    >
+      <option value="">Todos os períodos</option>
+      <option value="HOJE">Hoje</option>
+      <option value="SEMANA">Esta semana</option>
+      <option value="MES">Este mês</option>
+    </select>
+  </div>
+
+  <div>
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Leitura actual</th>
+          <th>Consumo</th>
+          <th>Data / hora</th>
+          <th>Observação</th>
+          <th>Edifício</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <!-- Estado: a carregar -->
+        <tr *ngIf="carregando">
+          <td colspan="6" class="tbl-status">
+            <div class="spinner-inline"></div>
+          </td>
+        </tr>
+
+        <!-- Estado: sem dados / erro -->
+        <tr *ngIf="!carregando && leituras.length === 0">
+          <td colspan="6" class="tbl-status">
+            <i class="ft-alert-circle"></i>
+            Nenhum dado encontrado.
+          </td>
+        </tr>
+
+        <!-- Estado: com dados -->
+        <ng-container *ngIf="!carregando && leituras.length !== 0">
+          <tr *ngFor="let item of leituras">
+            <td>
+              <span class="bold-text">{{
+                item.leituraAtual | number: "1.2-2"
+              }}</span>
+              {{ Unidades[item.tipoConsumo] }}
+            </td>
+            <td>
+              <span
+                class="bold-text"
+                [ngClass]="
+                  item.consumoCalculado > consumoElevado
+                    ? 'danger-value'
+                    : 'green-value'
+                "
+              >
+                {{ item.consumoCalculado > 0 ? "+" : "" }}
+                {{ item.consumoCalculado | number: "1.2-2" }}
+              </span>
+              {{ item.consumoCalculado > 0 ? Unidades[item.tipoConsumo] : "_" }}
+            </td>
+
+            <td>
+              <span class="data">{{
+                item.dataRegisto | date: "dd/MM/yyyy HH:mm"
+              }}</span>
+            </td>
+            <td [title]="item.observacao">
+              {{ item.observacao ? (item.observacao | slice: 0 : 20) : "_" }}
+              {{ item.observacao ? "..." : "" }}
+            </td>
+            <td>
+              {{ item.edificioName }}
+            </td>
+            <td>
+              <button class="action-btn edit" (click)="abrirEditar(item)">
+                <i class="icon-pencil"></i>
+              </button>
+              <button class="action-btn del" (click)="abrirExcluir(item)">
+                <i class="ft-trash-2"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <!-- Paginação -->
+    <div class="pag-row">
+      <span class="pag-info">
+        {{ textoPaginacao }}
+      </span>
+      <div class="pag-controls">
+        <button
+          class="pag-btn"
+          [disabled]="currentPage === 1"
+          (click)="irParaPagina(currentPage - 1)"
+          aria-label="Anterior"
+        >
+          <i class="ft-chevron-left"></i>
+        </button>
+        <ng-container *ngFor="let p of paginasVisiveis">
+          <button
+            *ngIf="!ehReticencia(p)"
+            class="pag-btn"
+            [class.active]="isPaginaAtual(p)"
+            (click)="irParaPagina(p)"
+          >
+            {{ p }}
+          </button>
+          <button
+            *ngIf="ehReticencia(p)"
+            class="pag-btn"
+            disabled
+            style="
+              border: none;
+              background: none;
+              cursor: default;
+              color: #9ca3af;
+            "
+          >
+            …
+          </button>
+        </ng-container>
+        <button
+          class="pag-btn"
+          [disabled]="currentPage === totalPages || totalPages === 0"
+          (click)="irParaPagina(currentPage + 1)"
+          aria-label="Seguinte"
+        >
+          <i class="ft-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container>
+    <!-- MODAL REGISTAR LEITURA -->
+    <app-base-modal
+      [modalEstaAberto]="modalIsOpen"
+      [titulo]="modoEdicao ? 'Editar Leitura' : 'Registar Leitura'"
+      [subtitulo]="
+        modoEdicao
+          ? 'Altere os valores do contador abaixo'
+          : 'Insira o valor actual do contador'
+      "
+      (fechar)="alternarVisibilidadeModal()"
+    >
+      <form [formGroup]="registarLeituraForm" class="form-leitura">
+        <!-- Tipo de consumo -->
+        <div class="form-group">
+          <label class="form-label-caps">Tipo de consumo</label>
+          <div class="tipo-consumo-grid">
+            <button
+              type="button"
+              class="tipo-consumo-card"
+              [class.active]="registarLeituraForm.value.tipoConsumo === 'AGUA'"
+              (click)="selecionarTipoConsumo('AGUA')"
+            >
+              <i class="ft-droplet"></i>
+              <span>Água</span>
+            </button>
+            <button
+              type="button"
+              class="tipo-consumo-card"
+              [class.active]="
+                registarLeituraForm.value.tipoConsumo === 'ELETRICIDADE'
+              "
+              (click)="selecionarTipoConsumo('ELETRICIDADE')"
+            >
+              <i class="ft-zap"></i>
+              <span>Eletricidade</span>
+            </button>
+            <button
+              type="button"
+              class="tipo-consumo-card"
+              [class.active]="registarLeituraForm.value.tipoConsumo === 'GAS'"
+              (click)="selecionarTipoConsumo('GAS')"
+            >
+              <i class="icon-fire"></i>
+              <span>Gás</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Edifício -->
+        <div class="form-group">
+          <label for="edificioId">Edifício</label>
+          <select
+            id="edificioId"
+            (change)="pegarUltimaLeituraForm()"
+            formControlName="edificioId"
+          >
+            <option [ngValue]="null" disabled>Selecione um edifício</option>
+            <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
+              {{ edificio.nome }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Leitura anterior / Consumo calculado -->
+        <div *ngIf="!modoEdicao">
+          <div class="info-box">
+            <div class="info-box-item">
+              <span class="info-box-label">Leitura anterior</span>
+              <span class="info-box-valor"
+                >{{
+                  ultimaLieituraForm && ultimaLieituraForm.leituraAtual
+                    | number: "1.2-2"
+                }}
+                {{
+                  ultimaLieituraForm && ultimaLieituraForm.leituraAtual
+                    ? Unidades[registarLeituraForm.value.tipoConsumo]
+                    : ""
+                }}
+              </span>
+            </div>
+            <div class="info-box-divider"></div>
+            <div class="info-box-item">
+              <span class="info-box-label">Consumo calculado</span>
+              <span class="info-box-valor">
+                {{ consumoCalculadoPreview }}
+                {{
+                  consumoCalculadoPreview
+                    ? Unidades[registarLeituraForm.value.tipoConsumo]
+                    : ""
+                }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Valor da leitura + Unidade -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="leituraAtual">
+              Valor da leitura <span class="required">*</span>
+            </label>
+            <input
+              id="leituraAtual"
+              type="number"
+              step="0.01"
+              formControlName="leituraAtual"
+              placeholder="Ex: 1250"
+              (input)="onLeituraAtualChange()"
+            />
+          </div>
+          <div class="form-group">
+            <label for="unidade">Unidade</label>
+            <input
+              id="unidade"
+              type="text"
+              [value]="
+                Unidades[registarLeituraForm.value.tipoConsumo]
+                  ? Unidades[registarLeituraForm.value.tipoConsumo]
+                  : null
+              "
+              disabled
+            />
+          </div>
+        </div>
+
+        <!-- Observação -->
+        <div class="form-group">
+          <label for="observacao">Observação</label>
+          <textarea
+            id="observacao"
+            formControlName="observacao"
+            placeholder="Notas sobre esta leitura (opcional)..."
+          ></textarea>
+        </div>
+      </form>
+
+      <ng-container slot="footer">
+        <button
+          class="portaria-btn portaria-btn--ghost"
+          (click)="alternarVisibilidadeModal()"
+        >
+          Cancelar
+        </button>
+        <button
+          class="portaria-btn portaria-btn--primary"
+          [disabled]="registarLeituraForm.invalid"
+          (click)="modoEdicao ? registarAtualizar() : registarLeitura()"
+        >
+          <i class="ft-file-plus"></i>
+          {{ botaoEnvio }}
+        </button>
+      </ng-container>
+    </app-base-modal>
+  </ng-container>
+
+  <ng-container>
+    <!-- MODAL EXCLUIR LEITURA -->
+    <app-base-modal
+      [modalEstaAberto]="modalExcluirOpen"
+      [titulo]="'Excluir leitura'"
+      [subtitulo]="'Menu de exclusão de leituras'"
+      (fechar)="modalExcluirOpen = false"
+    >
+      <form [formGroup]="registarLeituraForm"></form>
+
+      <div class="modal-body">
+        <div class="alert-box">
+          <div class="alert-box__icon">
+            <i class="ft-alert-triangle"></i>
+          </div>
+          <div class="alert-box__content">
+            Esta ação vai <strong>eliminar permanentemente</strong> o registo
+            desta leitura. O consumo calculado das leituras adjacentes será
+            recalculado automaticamente.
+          </div>
+        </div>
+      </div>
+
+      <ng-container slot="footer">
+        <button
+          class="portaria-btn portaria-btn--ghost"
+          (click)="modalExcluirOpen = false"
+        >
+          Cancelar
+        </button>
+        <button
+          class="portaria-btn portaria-btn--danger"
+          (click)="submeterEliminar()"
+        >
+          <i class="ft-file-plus"></i>
+          Excluir
+        </button>
+      </ng-container>
+    </app-base-modal>
+  </ng-container>
+</app-portaria-shell>
+
+<div class="toast" [class.show]="toastVisivel">
+  <i class="ft-check-circle"></i>
+  <span>{{ toastMensagem }}</span>
+</div>

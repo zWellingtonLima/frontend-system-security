@@ -1,0 +1,15 @@
+// contador em cima Agua - Eletricidade - Gás
+
+.tab-cnt {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #6b7280;
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+
+.tab.active .tab-cnt {
+  background: #dbeafe;
+  color: #1e40af;
+}

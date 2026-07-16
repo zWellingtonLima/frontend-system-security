@@ -1,0 +1,258 @@
+@import "src/app/dashboard/portaria/components/dashboard/dashboard.component.scss";
+@import "src/app/dashboard/portaria/portaria.component.scss";
+
+.barra-pesquisa {
+  flex: 1;
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: #9ca3af;
+    pointer-events: none;
+  }
+}
+
+.search-input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px 0 32px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  transition: border-color 0.13s;
+}
+.search-input:focus {
+  border-color: var(--accent);
+  background: #fff;
+}
+
+.titulo-dashboard-buttons {
+  display: flex;
+  justify-content: space-between;
+
+  select {
+    max-width: 20%;
+    flex: 1;
+  }
+}
+.barra-pesquisa-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.barra-pesquisa-select {
+  height: 34px;
+  border: 1px solid #dde3ea;
+  border-radius: 7px;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #374151;
+  background: #fafbfc;
+  outline: none;
+  cursor: pointer;
+}
+
+i,
+button {
+  margin-right: 5px;
+}
+.filtros-pesquisa {
+  display: flex;
+  gap: 0;
+  margin-bottom: 18px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 600px;
+
+  thead {
+    background: #f8fafc;
+  }
+  th {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #edf0f4;
+    border-top: 1px solid #edf0f4;
+  }
+  td {
+    font-size: 12px;
+    color: #374151;
+    border-bottom: 1px solid #f3f5f7;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  tbody tr:hover td {
+    background: #f8fafc;
+  }
+}
+
+/* Molho, emprestas, etc */
+.tab {
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition:
+    color 0.13s,
+    border-color 0.13s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab .tab-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #6b7280;
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+.tab.active .tab-count {
+  background: var(--accent-light, #e0f4fb);
+  color: var(--accent);
+}
+
+/* Subtextos (ex: "Molho de chaves") */
+.sub-text {
+  display: block;
+  font-size: 12px;
+  color: #a0a0a0;
+}
+
+.bold-text {
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Alinhamento de traços vazios (-) */
+.empty-dash {
+  color: #d0d0d0;
+}
+
+/* Badges / Etiquetas de Estado */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Estilo Tipo: Molho */
+.badge-tipo {
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #e0e7ff;
+}
+
+/* Estilo Estado: Disponível */
+.badge-disponivel {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Estilo Estado: Atrasada */
+.badge-atrasada {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Destaque de Tempo Atrasado */
+.time-highlight {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Botões de Ação */
+.btn-action {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-action:hover {
+  background-color: #f0f0f0;
+}
+
+.btn-return {
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  background-color: #f0fdf4;
+}
+
+.btn-return:hover {
+  background-color: #dcfce7;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #ffffff;
+}
+
+.page-info {
+  font-size: 13px;
+  color: #666;
+}
+
+.btn-page {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #cccccc;
+}
+
+.btn-page:disabled {
+  color: #c0c0c0;
+  background-color: #fafafa;
+  cursor: not-allowed;
+}

@@ -1,0 +1,30 @@
+// ── CABEÇALHO DA PÁGINA ──────────────────────────────────────────────
+$cor-azul: #2f6feb;
+$cor-texto-titulo: #1a1a1a;
+$cor-texto-cinza: #8a8f98;
+
+.titulo-dashboard {
+  margin-bottom: 20px;
+
+  h5 {
+    color: $cor-azul;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+  }
+
+  h3 {
+    color: $cor-texto-titulo;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  p {
+    color: $cor-texto-cinza;
+    font-size: 14px;
+    margin: 0;
+  }
+}

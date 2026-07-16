@@ -7,13 +7,15 @@ import { SharedModule } from "src/app/shared/shared.module";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
-import { ReactiveFormsModule } from "@angular/forms";
+import { ChavesComponent } from "./components/chaves/chaves.component";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   imports: [
     CommonModule,
     PortariaRoutingModule,
     SharedModule,
+    FormsModule,
     ReactiveFormsModule,
   ],
   declarations: [
@@ -21,6 +23,7 @@ import { ReactiveFormsModule } from "@angular/forms";
     DashboardComponent,
     ConsumosComponent,
     OcorrenciasComponent,
+    ChavesComponent,
   ],
   exports: [PortariaComponent],
 })

@@ -1,0 +1,33 @@
+// ── TOAST POP DE AVISO ---
+
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 11px 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+  pointer-events: none;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  i {
+    font-size: 16px;
+    color: #4ade80;
+  }
+}
