@@ -23,7 +23,7 @@ const TABS: TabConfig[] = [
   {
     value: "PENDENTE",
     label: "Pendentes",
-    paginada: false,
+    paginada: true,
     estadoParam: "PENDENTE",
   },
   {
@@ -99,7 +99,7 @@ export class OcorrenciasService {
   }
 
   // =============================================
-  // ================= GET ====================
+  // ================= GET =======================
 
   carregarOcorrencias(tab: TabConfig, page: number): void {
     this.carregandoDados$.next(true);

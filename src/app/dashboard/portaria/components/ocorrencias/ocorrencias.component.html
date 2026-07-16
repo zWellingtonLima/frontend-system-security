@@ -93,6 +93,17 @@
                   ocor.createDate
                     | date: "d 'de' MMMM 'de' y 'às' HH:mm" : "Europe/Lisbon"
                 }}
+
+                <!-- Adiciona um campo adicional (modificadoEm) quando a label não é PENDENTE  -->
+                <ng-container
+                  *ngIf="ocor.modificadoEm && ocor.estado !== 'PENDENTE'"
+                >
+                  | {{ ocor.estadoConfig.label }} em:
+                  {{
+                    ocor.modificadoEm
+                      | date: "d 'de' MMMM 'de' y 'às' HH:mm" : "Europe/Lisbon"
+                  }}
+                </ng-container>
               </span>
             </div>
           </div>

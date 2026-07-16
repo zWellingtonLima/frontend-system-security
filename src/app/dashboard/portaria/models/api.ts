@@ -52,6 +52,7 @@ export interface OcorrenciasResponseDTO {
   ocorrencia: string;
   estado: EstadoOcorrenciaEnumType;
   horaOcorrencia: ISOTimestamp;
+  modificadoEm: ISOTimestamp;
 }
 
 // Verificar se o formato definitivo sera esse

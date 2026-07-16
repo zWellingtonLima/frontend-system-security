@@ -48,6 +48,7 @@ export class OcorrenciasComponent implements OnInit {
         Validators.required,
         Validators.minLength(5),
       ]),
+      data: new FormControl("", [Validators.required]),
     });
   }
 
@@ -80,6 +81,8 @@ export class OcorrenciasComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log(this.criarOcorrenciaForm.value);
+
     if (this.criarOcorrenciaForm.invalid) {
       Object.values(this.criarOcorrenciaForm.controls).forEach((control) => {
         control.markAsTouched();
