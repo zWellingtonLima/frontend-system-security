@@ -1,6 +1,7 @@
 import {
   EstadoOcorrenciaEnumType,
   OcorrenciaConfigBase,
+  TipoChaveEnumType,
   TipoOcorrenciaEnumType,
 } from "./enums";
 

@@ -17,7 +17,7 @@ import {
   providedIn: "root",
 })
 export class ConsumosService {
-  private readonly apiUrl = `${environment.consumosApiUrl}/consumos`;
+  private readonly apiUrl = environment.consumosApiUrl;
 
   constructor(private http: HttpClient) {}
 
