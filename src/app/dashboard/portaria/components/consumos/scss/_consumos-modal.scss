@@ -53,13 +53,30 @@
   }
 
   &.active {
-    border-color: #3b82f6;
-    background: #eff6ff;
-    color: #1d4ed8;
-    &.agua {
-      border-color: #f4ff2c;
-      background: #eff6ff;
-      color: #daa532;
+    &.sel-agua {
+      border-color: #3b82f6;
+      background: #eff8ff;
+      i {
+        color: #185fa5;
+      }
+    }
+
+    &.sel-elet {
+      border-color: #ca8a04;
+      color: #92400e;
+      background: #fefce8;
+      i {
+        color: #ca8a04;
+      }
+    }
+
+    &.sel-gas {
+      border-color: #e11d48;
+
+      background: #fff1f2;
+      i {
+        color: #e11d48;
+      }
     }
   }
 }
