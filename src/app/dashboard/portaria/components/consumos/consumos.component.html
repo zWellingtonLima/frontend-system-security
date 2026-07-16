@@ -348,7 +348,7 @@
           <div class="tipo-consumo-grid">
             <button
               type="button"
-              class="tipo-consumo-card"
+              class="tipo-consumo-card sel-agua"
               [class.active]="registarLeituraForm.value.tipoConsumo === 'AGUA'"
               (click)="selecionarTipoConsumo('AGUA')"
             >
@@ -357,7 +357,7 @@
             </button>
             <button
               type="button"
-              class="tipo-consumo-card"
+              class="tipo-consumo-card sel-elet"
               [class.active]="
                 registarLeituraForm.value.tipoConsumo === 'ELETRICIDADE'
               "
@@ -368,7 +368,7 @@
             </button>
             <button
               type="button"
-              class="tipo-consumo-card"
+              class="tipo-consumo-card sel-gas"
               [class.active]="registarLeituraForm.value.tipoConsumo === 'GAS'"
               (click)="selecionarTipoConsumo('GAS')"
             >
