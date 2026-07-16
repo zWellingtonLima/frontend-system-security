@@ -294,7 +294,8 @@ export class ConsumosComponent implements OnInit {
   consumoCalculadoPreview: number | null = 0;
   ultimaLieituraForm: UltimaLeitura | null = null;
   edificios: EdificiosResponse[] = [];
-  consumoElevado: number = 200;
+  consumoElevado: number = 800;
+  edificioId?: number;
 
   modalExcluirOpen: boolean = false;
   modalIsOpen: boolean = false;
@@ -331,6 +332,7 @@ export class ConsumosComponent implements OnInit {
             this.mostrarToast("Leitura registada com sucesso!");
           },
           () => {
+            this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao registar a leitura.");
           },
         );
@@ -355,6 +357,7 @@ export class ConsumosComponent implements OnInit {
             this.mostrarToast("Leitura atualizada com sucesso!");
           },
           () => {
+            this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao atualizar a leitura.");
           },
         );
@@ -362,13 +365,15 @@ export class ConsumosComponent implements OnInit {
   }
 
   submeterEliminar() {
-    this.consumoService.eliminar(this.registarLeituraForm.value.id).subscribe(
+    console.log(this.edificioId);
+    this.consumoService.eliminar(this.edificioId).subscribe(
       () => {
-        this.abrirExcluir("");
+        this.modalExcluirOpen = false;
         this.carregarAposAlteracao();
         this.mostrarToast("Leitura excluída com sucesso!");
       },
       () => {
+        this.modalExcluirOpen = false;
         this.mostrarToast("Erro ao excluir leitura.");
       },
     );
@@ -395,11 +400,11 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   abrirExcluir(item: any) {
     this.modalExcluirOpen = !this.modalExcluirOpen;
-    this.registarLeituraForm.patchValue(item);
+    this.edificioId = item.id;
   }
 
   abrirEditar(item: any) {
-    console.log(item);
+    this.registarLeituraForm.reset();
     this.modoEdicao = true;
     this.modalIsOpen = true;
     this.botaoEnvio = "Atualizar";
@@ -440,9 +445,8 @@ export class ConsumosComponent implements OnInit {
     this.modalIsOpen = !this.modalIsOpen;
 
     if (this.modalIsOpen) {
-      this.botaoEnvio = "Registar";
       this.modoEdicao = false;
-      this.registarLeituraForm.reset({ tipoConsumo: this.abaAtiva });
+      this.botaoEnvio = "Registar";
     }
 
     this.registarLeituraForm.reset();

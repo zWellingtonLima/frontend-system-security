@@ -71,7 +71,7 @@ export class ConsumosService {
     return this.http.put<ConsumoLeitura>(`${this.apiUrl}/${id}`, payload);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id?: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 

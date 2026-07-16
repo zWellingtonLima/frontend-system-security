@@ -491,7 +491,7 @@
       [modalEstaAberto]="modalExcluirOpen"
       [titulo]="'Excluir leitura'"
       [subtitulo]="'Menu de exclusão de leituras'"
-      (fechar)="abrirExcluir()"
+      (fechar)="modalExcluirOpen = false"
     >
       <form [formGroup]="registarLeituraForm"></form>
 
@@ -511,12 +511,12 @@
       <ng-container slot="footer">
         <button
           class="portaria-btn portaria-btn--ghost"
-          (click)="abrirExcluir()"
+          (click)="modalExcluirOpen = false"
         >
           Cancelar
         </button>
         <button
-          class="portaria-btn portaria-btn--primary"
+          class="portaria-btn portaria-btn--danger"
           (click)="submeterEliminar()"
         >
           <i class="ft-file-plus"></i>
