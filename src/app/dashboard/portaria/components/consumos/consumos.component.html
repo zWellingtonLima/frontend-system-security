@@ -261,7 +261,7 @@
               }}</span>
             </td>
             <td [title]="item.observacao">
-              {{ item.observacao ? (item.observacao | slice: 0 : 20) : "_" }}
+              {{ item.observacao ? (item.observacao | slice: 0 : 15) : "_" }}
               {{ item.observacao ? "..." : "" }}
             </td>
             <td>
@@ -495,16 +495,14 @@
     >
       <form [formGroup]="registarLeituraForm"></form>
 
-      <div class="modal-body">
-        <div class="alert-box">
-          <div class="alert-box__icon">
-            <i class="ft-alert-triangle"></i>
-          </div>
-          <div class="alert-box__content">
-            Esta ação vai <strong>eliminar permanentemente</strong> o registo
-            desta leitura. O consumo calculado das leituras adjacentes será
-            recalculado automaticamente.
-          </div>
+      <div class="alert-box">
+        <div class="alert-box__icon">
+          <i class="ft-alert-triangle"></i>
+        </div>
+        <div class="alert-box__content">
+          Esta ação vai <strong>eliminar permanentemente</strong> o registo
+          desta leitura. O consumo calculado das leituras adjacentes será
+          recalculado automaticamente.
         </div>
       </div>
 

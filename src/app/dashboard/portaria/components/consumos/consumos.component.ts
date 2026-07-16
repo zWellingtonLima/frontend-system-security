@@ -36,6 +36,7 @@ export class ConsumosComponent implements OnInit {
         this.carregarConsumos();
       });
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -53,13 +54,6 @@ export class ConsumosComponent implements OnInit {
   ultimaEletricidade: UltimaLeitura | null = null;
   ultimaGas: UltimaLeitura | null = null;
 
-  // ── Modal: nova leitura ──
-  modalNovoAberto = false;
-  novoTipo: TipoConsumoType = "AGUA";
-  novoValor: number | null = null;
-  novaObs = "";
-  salvandoNovo = false;
-
   // ── Tabela / paginação ──
   leituras: ConsumoLeitura[] = [];
   totalElements = 0;
@@ -67,18 +61,15 @@ export class ConsumosComponent implements OnInit {
   currentPage = 1;
   carregando = false;
 
+  // ── Mudança dos estiloss ──
   abaAtiva: any = "AGUA";
   abaCarregar: string = "1";
   periodo: PeriodoFiltro = "";
 
+  // ── Tabela / count(*) das leituas de cada tipo ──
   totalEletricidade = 0;
   totalGas = 0;
   totalAgua = 0;
-
-  // ── Modal: eliminar leitura ──
-  modalEliminarAberto = false;
-  leituraParaEliminar: ConsumoLeitura | null = null;
-  eliminando = false;
 
   // ── Toast ──
   toastVisivel = false;
@@ -190,6 +181,7 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
   // ─────────────────────────────────────────────
+  novoTipo: TipoConsumoType = "AGUA";
 
   selecionarAba(aba: string, abaStyle: TipoConsumoType): void {
     if (this.abaAtiva === abaStyle) {
@@ -395,22 +387,6 @@ export class ConsumosComponent implements OnInit {
     this.pegarUltimaLeituraForm();
   }
 
-  // ─────────────────────────────────────────────
-  // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
-  // ─────────────────────────────────────────────
-  abrirExcluir(item: any) {
-    this.modalExcluirOpen = !this.modalExcluirOpen;
-    this.edificioId = item.id;
-  }
-
-  abrirEditar(item: any) {
-    this.registarLeituraForm.reset();
-    this.modoEdicao = true;
-    this.modalIsOpen = true;
-    this.botaoEnvio = "Atualizar";
-    this.registarLeituraForm.patchValue(item);
-  }
-
   onLeituraAtualChange(): void {
     const valorAtual = this.registarLeituraForm.value.leituraAtual;
     this.consumoCalculadoPreview =
@@ -439,6 +415,22 @@ export class ConsumosComponent implements OnInit {
           this.ultimaLieituraForm = res;
         });
     }
+  }
+
+  // ─────────────────────────────────────────────
+  // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
+  // ─────────────────────────────────────────────
+  abrirExcluir(item: any) {
+    this.modalExcluirOpen = !this.modalExcluirOpen;
+    this.edificioId = item.id;
+  }
+
+  abrirEditar(item: any) {
+    this.registarLeituraForm.reset();
+    this.modoEdicao = true;
+    this.modalIsOpen = true;
+    this.botaoEnvio = "Atualizar";
+    this.registarLeituraForm.patchValue(item);
   }
 
   alternarVisibilidadeModal() {

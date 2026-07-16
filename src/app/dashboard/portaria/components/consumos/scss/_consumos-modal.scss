@@ -130,7 +130,7 @@ $text-alert: #4a4a4a; // Cinza escuro para o texto comum
 $bold-alert: #000000; // Preto puro para o texto em destaque
 $icon-alert: #df4747; // Vermelho do triângulo de aviso
 
-.modal-body {
+.modal-body- {
   display: flex;
   flex-direction: column; // Mantém a ordem dos elementos de cima para baixo
   justify-content: center; // Centraliza na vertical
@@ -147,7 +147,7 @@ $icon-alert: #df4747; // Vermelho do triângulo de aviso
   background-color: $bg-alert;
   border: 1px solid $border-alert;
   border-radius: 12px; // Cantos arredondados do card
-  max-width: 500px; // Largura aproximada da imagem
+  max-width: 900px; // Largura aproximada da imagem
   font-family: Arial, sans-serif;
   justify-content: center;
   align-items: center;
