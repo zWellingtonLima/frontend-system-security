@@ -158,20 +158,19 @@ export class ConsumosComponent implements OnInit {
   abaAtiva: any = "AGUA";
 
   readonly pageSize = 20;
-
   filtroInicio(dataInicio: Date) {
-    console.log(dataInicio);
+    this.currentPage = 1;
     this.dataInicio = dataInicio;
-
     this.carregarConsumos();
   }
+
   filtroFim(dataFim: Date) {
-    console.log(dataFim);
+    this.currentPage = 1;
     this.dataFim = dataFim;
     this.carregarConsumos();
   }
   filtroEdificio(edificio: number) {
-    console.log(edificio);
+    this.currentPage = 1;
     this.edificioId = edificio;
     this.carregarConsumos();
   }
