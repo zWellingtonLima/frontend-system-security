@@ -85,7 +85,7 @@ export class BaseModalComponent implements OnChanges, OnDestroy {
 
   @HostListener("document:keydown.escape")
   onEscape() {
-    this.fechar.emit();
+    if (this.modalEstaAberto) this.fechar.emit();
   }
 
   onOverlayClick() {
