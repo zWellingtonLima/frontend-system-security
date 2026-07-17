@@ -76,6 +76,9 @@ export class ConsumosComponent implements OnInit {
     this.consumoService
       .listar({
         tipo: this.abaCarregar,
+        dataInicio: this.dataInicio,
+        dataFim: this.dataFim,
+        edificioId: this.edificioId,
         page: this.currentPage - 1,
         size: this.pageSize,
       })
@@ -151,17 +154,23 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
 
   private destroy$ = new Subject<void>();
+  dataInicio?: Date;
+  dataFim?: Date;
+  edificioId?: number;
 
   readonly pageSize = 20;
 
   filtroInicio(dataInicio: Date) {
     console.log(dataInicio);
+    this.dataInicio = dataInicio;
   }
   filtroFim(dataFim: Date) {
     console.log(dataFim);
+    this.dataFim = dataFim;
   }
   filtroEdificio(edificio: number) {
     console.log(edificio);
+    this.edificioId = edificio;
   }
 
   // ─────────────────────────────────────────────
@@ -272,7 +281,6 @@ export class ConsumosComponent implements OnInit {
   ultimaLieituraForm: UltimaLeitura | null = null;
   edificios: EdificiosResponse[] = [];
   consumoElevado: number = 800;
-  edificioId?: number;
 
   modalExcluirOpen: boolean = false;
   modalIsOpen: boolean = false;
