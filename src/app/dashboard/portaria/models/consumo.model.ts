@@ -39,6 +39,7 @@ export interface ConsumoFiltro {
   tipo?: string;
   dataInicio?: Date;
   dataFim?: Date;
+  edificioId?: number;
   /** página baseada em 0, tal como o Spring Data Pageable */
   page: number;
   size: number;

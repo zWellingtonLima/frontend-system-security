@@ -50,11 +50,14 @@ export class ConsumosService {
     if (filtro.tipo) {
       params = params.set("tipo", filtro.tipo);
     }
-    if (filtro.periodo) {
-      params = params.set("periodo", filtro.periodo);
+    if (filtro.dataInicio) {
+      params = params.set("dataInicio", String(filtro.dataInicio));
     }
-    if (filtro.pesquisa) {
-      params = params.set("pesquisa", filtro.pesquisa);
+    if (filtro.dataFim) {
+      params = params.set("dataFim", String(filtro.dataFim));
+    }
+    if (filtro.edificioId) {
+      params = params.set("edificioId", String(filtro.edificioId));
     }
 
     return this.http.get<PageResponse<ConsumoLeitura>>(
