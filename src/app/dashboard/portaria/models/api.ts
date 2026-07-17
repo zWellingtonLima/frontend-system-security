@@ -42,6 +42,9 @@ export interface ChavesHistorico {
   observacoes: string;
 }
 
+// ============================================================
+// OCORRÊNCIAS
+// ============================================================
 export interface Ocorrencias {
   id: number;
   createDate: Date;

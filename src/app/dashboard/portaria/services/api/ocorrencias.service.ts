@@ -66,7 +66,7 @@ export class OcorrenciasService {
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
-    this.carregarOcorrencias(TABS[0], 0);
+    this.carregarOcorrencias(TABS[0]);
     this.tabAtiva$.next(TABS[0]);
   }
 
@@ -79,7 +79,7 @@ export class OcorrenciasService {
 
   setFiltro(parcial: Partial<Filtros>): void {
     this.filtros$.next({ ...this.filtros$.value, ...parcial });
-    this.carregarOcorrencias(this.tabAtiva$.value, 0);
+    this.carregarOcorrencias(this.tabAtiva$.value);
   }
 
   setPagina(page: string): void {
@@ -89,13 +89,13 @@ export class OcorrenciasService {
       ? this.paginaAtual$.next(paginaAtual - 1)
       : this.paginaAtual$.next(paginaAtual + 1);
 
-    this.carregarOcorrencias(this.tabAtiva$.value, paginaAtual);
+    this.carregarOcorrencias(this.tabAtiva$.value);
   }
 
   // =============================================
   // ================= GET =======================
 
-  carregarOcorrencias(tab: TabConfig, page?: number): void {
+  carregarOcorrencias(tab: TabConfig): void {
     this.estaCarregandoDados$.next(true);
 
     const tipoOcorrenciaSelecionada = this.filtros$.value.tipo;
@@ -109,7 +109,9 @@ export class OcorrenciasService {
     if (textoDigitado) parametros = parametros.set("q", textoDigitado);
 
     if (tab.paginada)
-      parametros = parametros.set("page", String(page)).set("size", "20");
+      parametros = parametros
+        .set("page", String(this.paginaAtual$.value))
+        .set("size", "20");
 
     this.http
       .get<OcorrenciasPage>(environment.ocorrenciaApiUrl, {
