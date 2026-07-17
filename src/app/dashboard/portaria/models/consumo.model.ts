@@ -35,12 +35,10 @@ export interface CountTabelas {
   count: number;
 }
 
-export type PeriodoFiltro = "" | "HOJE" | "SEMANA" | "MES";
-
 export interface ConsumoFiltro {
   tipo?: string;
-  periodo?: PeriodoFiltro;
-  pesquisa?: string;
+  dataInicio?: Date;
+  dataFim?: Date;
   /** página baseada em 0, tal como o Spring Data Pageable */
   page: number;
   size: number;

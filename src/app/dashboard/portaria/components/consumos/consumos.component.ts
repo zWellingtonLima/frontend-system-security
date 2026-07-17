@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import {
   ConsumoLeitura,
   EdificiosResponse,
-  PeriodoFiltro,
   TipoConsumoType,
   UltimaLeitura,
 } from "../../models/consumo.model";
@@ -28,13 +27,6 @@ export class ConsumosComponent implements OnInit {
     this.carregarConsumos();
     this.carregarUltimas();
     this.preencherCount();
-
-    this.pesquisa$
-      .pipe(debounceTime(400), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.currentPage = 1;
-        this.carregarConsumos();
-      });
   }
 
   ngOnDestroy(): void {
@@ -64,7 +56,6 @@ export class ConsumosComponent implements OnInit {
   // ── Mudança dos estiloss ──
   abaAtiva: any = "AGUA";
   abaCarregar: string = "1";
-  periodo: PeriodoFiltro = "";
 
   // ── Tabela / count(*) das leituas de cada tipo ──
   totalEletricidade = 0;
@@ -84,9 +75,7 @@ export class ConsumosComponent implements OnInit {
 
     this.consumoService
       .listar({
-        periodo: this.periodo,
         tipo: this.abaCarregar,
-        pesquisa: this.pesquisa,
         page: this.currentPage - 1,
         size: this.pageSize,
       })
@@ -161,22 +150,19 @@ export class ConsumosComponent implements OnInit {
   // LÓGICA DOS FILTROS DE PESQUISA
   // ─────────────────────────────────────────────
 
-  private pesquisa$ = new Subject<string>();
   private destroy$ = new Subject<void>();
-  pesquisa = "";
+
   readonly pageSize = 20;
 
-  onFiltroChange(periodo: PeriodoFiltro) {
-    this.periodo = periodo;
-    this.carregarConsumos();
+  filtroInicio(dataInicio: Date) {
+    console.log(dataInicio);
   }
-
-  onPesquisaChange(valor: string): void {
-    this.pesquisa = valor;
-    this.pesquisa$.next(valor);
+  filtroFim(dataFim: Date) {
+    console.log(dataFim);
   }
-
-  filtroPesquisa() {}
+  filtroEdificio(edificio: number) {
+    console.log(edificio);
+  }
 
   // ─────────────────────────────────────────────
   // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
@@ -279,7 +265,6 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   // FORMULARIO DE REGISTAR LEITURA MODAL
   // ─────────────────────────────────────────────
-
   registarLeituraForm: FormGroup = new FormGroup({});
 
   unidadeAtual = null;
