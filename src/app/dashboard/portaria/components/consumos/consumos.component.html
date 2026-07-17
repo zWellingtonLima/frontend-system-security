@@ -28,38 +28,80 @@
           <div class="lc-unidade agua">m³ — contador</div>
         </div>
       </div>
-      <ng-container *ngIf="ultimaAgua; else semAgua">
-        <div class="lc-valor agua">
-          {{ ultimaAgua.leituraAtual | number: "1.2-2" }} m³
-        </div>
-        <div class="lc-delta agua">
-          <ng-container *ngIf="ultimaAgua.consumo !== null; else primeiraAgua">
-            <i
-              [ngClass]="
-                ultimaAgua.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
-              "
-            ></i>
-            {{ ultimaAgua.consumo >= 0 ? "+" : ""
-            }}{{ ultimaAgua.consumo | number: "1.2-2" }} m³ desde anterior
+
+      <div class="leitura-agua">
+        <!-- LEITURA DO EDIFICIO A-->
+        <div class="edificio-container">
+          <div class="nome-edificio">EDIFÍCIO A</div>
+          <ng-container *ngIf="ultimaAgua; else semAgua">
+            <div class="lc-valor agua">
+              {{ ultimaAgua.leituraAtual | number: "1.2-2" }} m³
+            </div>
+            <div class="lc-delta agua">
+              <ng-container
+                *ngIf="ultimaAgua.consumo !== null; else primeiraAgua"
+              >
+                <i
+                  [ngClass]="
+                    ultimaAgua.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
+                  "
+                ></i>
+                {{ ultimaAgua.consumo >= 0 ? "+" : ""
+                }}{{ ultimaAgua.consumo | number: "1.2-2" }} m³ desde anterior
+              </ng-container>
+              <ng-template #primeiraAgua
+                ><i class="ft-minus"></i> primeira leitura</ng-template
+              >
+            </div>
+            <div class="lc-date bold">
+              Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+            </div>
           </ng-container>
-          <ng-template #primeiraAgua
-            ><i class="ft-minus"></i> primeira leitura</ng-template
-          >
+          <ng-template #semAgua>
+            <div class="lc-valor agua">—</div>
+            <div class="lc-delta agua">
+              <i class="ft-minus"></i> sem dados anteriores
+            </div>
+            <div class="lc-date">—</div>
+          </ng-template>
         </div>
-        <div class="lc-date">
-          Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-          <span class="lc-date bold">
-            {{ ultimaAgua.nomeEdificio }}
-          </span>
+
+        <!-- LEITURA AGUA DO EDIFICIO B-->
+        <div class="edificio-container">
+          <div class="nome-edificio">EDIFÍCIO B</div>
+          <ng-container *ngIf="ultimaAgua; else semAgua">
+            <div class="lc-valor agua">
+              {{ ultimaAgua.leituraAtual | number: "1.2-2" }} m³
+            </div>
+            <div class="lc-delta agua">
+              <ng-container
+                *ngIf="ultimaAgua.consumo !== null; else primeiraAgua"
+              >
+                <i
+                  [ngClass]="
+                    ultimaAgua.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
+                  "
+                ></i>
+                {{ ultimaAgua.consumo >= 0 ? "+" : ""
+                }}{{ ultimaAgua.consumo | number: "1.2-2" }} m³ desde anterior
+              </ng-container>
+              <ng-template #primeiraAgua
+                ><i class="ft-minus"></i> primeira leitura</ng-template
+              >
+            </div>
+            <div class="lc-date bold">
+              Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+            </div>
+          </ng-container>
+          <ng-template #semAgua>
+            <div class="lc-valor agua">—</div>
+            <div class="lc-delta agua">
+              <i class="ft-minus"></i> sem dados anteriores
+            </div>
+            <div class="lc-date">—</div>
+          </ng-template>
         </div>
-      </ng-container>
-      <ng-template #semAgua>
-        <div class="lc-valor agua">—</div>
-        <div class="lc-delta agua">
-          <i class="ft-minus"></i> sem dados anteriores
-        </div>
-        <div class="lc-date">—</div>
-      </ng-template>
+      </div>
     </div>
 
     <div class="leitura-card lc-eletricidade">
@@ -72,37 +114,79 @@
           <div class="lc-unidade elet">kWh — contador</div>
         </div>
       </div>
-      <ng-container *ngIf="ultimaEletricidade; else semElet">
-        <div class="lc-valor elet">
-          {{ ultimaEletricidade.leituraAtual | number: "1.2-2" }} kWh
-        </div>
-        <div class="lc-delta elet">
-          <ng-container
-            *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
-          >
-            <i
-              [ngClass]="
-                ultimaEletricidade.consumo >= 0
-                  ? 'ft-arrow-up'
-                  : 'ft-arrow-down'
-              "
-            ></i>
-            {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
-            }}{{ ultimaEletricidade.consumo | number: "1.2-2" }} kWh desde
-            anterior
-          </ng-container>
-          <ng-template #primeiraElet
-            ><i class="ft-minus"></i> primeira leitura</ng-template
-          >
-        </div>
-        <div class="lc-date">
-          Última:
-          {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-          <span class="lc-date bold">
-            {{ ultimaEletricidade.nomeEdificio }}</span
-          >
-        </div>
-      </ng-container>
+
+      <!--LEITURA DE ELETRICIDADE EDIFICIO A-->
+      <div class="edificio-container">
+        <div class="nome-edificio">EDIFICIO A</div>
+        <ng-container *ngIf="ultimaEletricidade; else semElet">
+          <div class="lc-valor elet">
+            {{ ultimaEletricidade.leituraAtual | number: "1.2-2" }} kWh
+          </div>
+          <div class="lc-delta elet">
+            <ng-container
+              *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
+            >
+              <i
+                [ngClass]="
+                  ultimaEletricidade.consumo >= 0
+                    ? 'ft-arrow-up'
+                    : 'ft-arrow-down'
+                "
+              ></i>
+              {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
+              }}{{ ultimaEletricidade.consumo | number: "1.2-2" }} kWh desde
+              anterior
+            </ng-container>
+            <ng-template #primeiraElet
+              ><i class="ft-minus"></i> primeira leitura</ng-template
+            >
+          </div>
+          <div class="lc-date">
+            Última:
+            {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+            <span class="lc-date bold">
+              {{ ultimaEletricidade.nomeEdificio }}</span
+            >
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- LEIRURA DE ELETRICIDADE DO EDIFICIO B-->
+      <div class="edificio-container">
+        <div class="nome-edificio">EDIFICIO B</div>
+        <ng-container *ngIf="ultimaEletricidade; else semElet">
+          <div class="lc-valor elet">
+            {{ ultimaEletricidade.leituraAtual | number: "1.2-2" }} kWh
+          </div>
+          <div class="lc-delta elet">
+            <ng-container
+              *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
+            >
+              <i
+                [ngClass]="
+                  ultimaEletricidade.consumo >= 0
+                    ? 'ft-arrow-up'
+                    : 'ft-arrow-down'
+                "
+              ></i>
+              {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
+              }}{{ ultimaEletricidade.consumo | number: "1.2-2" }} kWh desde
+              anterior
+            </ng-container>
+            <ng-template #primeiraElet
+              ><i class="ft-minus"></i> primeira leitura</ng-template
+            >
+          </div>
+          <div class="lc-date">
+            Última:
+            {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
+            <span class="lc-date bold">
+              {{ ultimaEletricidade.nomeEdificio }}</span
+            >
+          </div>
+        </ng-container>
+      </div>
+
       <ng-template #semElet>
         <div class="lc-valor elet">—</div>
         <div class="lc-delta elet">
@@ -155,6 +239,7 @@
     </div>
   </div>
 
+  <!--AGUA - ELETRICIDADE - GAS-->
   <div class="filtros-pesquisa">
     <div
       class="tab"
@@ -179,27 +264,34 @@
     </div>
   </div>
 
+  <!-- BARRA DE PESQUISA TABELA-->
   <div class="barra-pesquisa-container">
-    <div class="barra-pesquisa">
-      <i class="ft-search"></i>
+    <select
+      #barraEdificio
+      class="barra-pesquisa-select"
+      (change)="filtroEdificio(barraEdificio.value)"
+    >
+      <option value="">Todos os edificios</option>
+      <option [value]="item.id" *ngFor="let item of edificios">
+        {{ item.nome }}
+      </option>
+    </select>
+    <div>
+      <span> de: </span>
       <input
-        #barraPesquisa
-        class="search-input"
-        type="text"
-        (input)="onPesquisaChange(barraPesquisa.value)"
-        placeholder="Pesquisar por edifício ou observação..."
+        #inicio
+        (change)="filtroInicio(inicio.value)"
+        type="date"
+        class="barra-pesquisa-select"
+      />
+      <span> até: </span>
+      <input
+        #fim
+        (change)="filtroFim(fim.value)"
+        type="date"
+        class="barra-pesquisa-select"
       />
     </div>
-    <select
-      #barraSelect
-      class="barra-pesquisa-select"
-      (change)="onFiltroChange(barraSelect.value)"
-    >
-      <option value="">Todos os períodos</option>
-      <option value="HOJE">Hoje</option>
-      <option value="SEMANA">Esta semana</option>
-      <option value="MES">Este mês</option>
-    </select>
   </div>
 
   <div>
