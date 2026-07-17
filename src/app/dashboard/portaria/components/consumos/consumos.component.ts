@@ -54,8 +54,6 @@ export class ConsumosComponent implements OnInit {
   carregando = false;
 
   // ── Mudança dos estiloss ──
-  abaAtiva: any = "AGUA";
-  abaCarregar: string = "1";
 
   // ── Tabela / count(*) das leituas de cada tipo ──
   totalEletricidade = 0;
@@ -75,7 +73,7 @@ export class ConsumosComponent implements OnInit {
 
     this.consumoService
       .listar({
-        tipo: this.abaCarregar,
+        tipo: this.abaAtiva,
         dataInicio: this.dataInicio,
         dataFim: this.dataFim,
         edificioId: this.edificioId,
@@ -157,20 +155,25 @@ export class ConsumosComponent implements OnInit {
   dataInicio?: Date;
   dataFim?: Date;
   edificioId?: number;
+  abaAtiva: any = "AGUA";
 
   readonly pageSize = 20;
 
   filtroInicio(dataInicio: Date) {
     console.log(dataInicio);
     this.dataInicio = dataInicio;
+
+    this.carregarConsumos();
   }
   filtroFim(dataFim: Date) {
     console.log(dataFim);
     this.dataFim = dataFim;
+    this.carregarConsumos();
   }
   filtroEdificio(edificio: number) {
     console.log(edificio);
     this.edificioId = edificio;
+    this.carregarConsumos();
   }
 
   // ─────────────────────────────────────────────
@@ -178,12 +181,12 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   novoTipo: TipoConsumoType = "AGUA";
 
-  selecionarAba(aba: string, abaStyle: TipoConsumoType): void {
+  selecionarAba(abaStyle: TipoConsumoType): void {
+    console.log(abaStyle);
     if (this.abaAtiva === abaStyle) {
       return;
     }
     this.abaAtiva = abaStyle;
-    this.abaCarregar = aba;
     this.currentPage = 1;
     this.carregarConsumos();
   }
