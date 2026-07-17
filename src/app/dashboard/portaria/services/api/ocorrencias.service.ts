@@ -9,7 +9,7 @@ import {
   TipoOcorrenciaEnumType,
 } from "../../models/enums";
 import {
-  FiltrosLocais,
+  Filtros,
   OcorrenciasCriarDTO,
   OcorrenciasPage,
   OcorrenciasResponseDTO,
@@ -46,67 +46,68 @@ const TABS: TabConfig[] = [
 })
 export class OcorrenciasService {
   private ocorrencias$ = new BehaviorSubject<OcorrenciaViewModel[]>([]);
-  private filtrosLocais$ = new BehaviorSubject<FiltrosLocais>({
+  private filtros$ = new BehaviorSubject<Filtros>({
     tipo: "",
     search: "",
   });
 
-  readonly tipoFiltro$: Observable<TipoOcorrenciaEnumType | ""> =
-    this.filtrosLocais$.pipe(map((f) => f.tipo));
+  readonly filtrosRead$ = this.filtros$.asObservable();
+  readonly ocorrenciasList$ = this.ocorrencias$.asObservable();
 
   tabs = TABS;
   // É sempre iniciada com [0] porque o primeiro elemento lá no TABS é o PENDENTE
   tabAtiva$ = new BehaviorSubject<TabConfig>(TABS[0]);
-  carregandoDados$ = new BehaviorSubject<boolean>(false);
-  criandoOcorrencia$ = new BehaviorSubject<boolean>(false);
-  totalPaginas$ = new BehaviorSubject<number>(0);
+  estaCarregandoDados$ = new BehaviorSubject<boolean>(false);
+  estaCriandoOcorrencia$ = new BehaviorSubject<boolean>(false);
 
-  ocorrenciasFiltradas$: Observable<OcorrenciaViewModel[]> = combineLatest(
-    this.ocorrencias$,
-    this.filtrosLocais$,
-  ).pipe(
-    map(([listaOcorrencias, filtros]) =>
-      listaOcorrencias
-        .filter((o) => !filtros.tipo || o.tipo === filtros.tipo)
-        .filter(
-          (o) =>
-            !filtros.search ||
-            o.ocorrencia.toLowerCase().includes(filtros.search.toLowerCase()),
-        ),
-    ),
-  );
+  paginaAtual$ = new BehaviorSubject<number>(0);
+  totalPaginas$ = new BehaviorSubject<number>(0);
 
   constructor(private http: HttpClient) {}
 
-  inicializar(): void { // Alterar inicializar para receber parâmetros e deixar de redirecionar o usuário para a página de Pendentes automaticamente
+  inicializar(): void {
     this.carregarOcorrencias(TABS[0], 0);
     this.tabAtiva$.next(TABS[0]);
   }
 
   setTab(tab: TabConfig): void {
     this.tabAtiva$.next(tab);
-    this.filtrosLocais$.next({ ...this.filtrosLocais$.value, tipo: "" });
-    this.carregarOcorrencias(tab, 0);
+    this.paginaAtual$.next(0);
+    this.filtros$.next({ ...this.filtros$.value });
+    this.carregarOcorrencias(tab);
   }
 
-  setFiltroLocal(parcial: Partial<FiltrosLocais>): void {
-    this.filtrosLocais$.next({ ...this.filtrosLocais$.value, ...parcial });
+  setFiltro(parcial: Partial<Filtros>): void {
+    this.filtros$.next({ ...this.filtros$.value, ...parcial });
+    this.carregarOcorrencias(this.tabAtiva$.value, 0);
   }
 
-  setPagina(page: number): void {
-    this.filtrosLocais$.next({ tipo: "", search: "" });
-    this.carregarOcorrencias(this.tabAtiva$.value, page);
+  setPagina(page: string): void {
+    const paginaAtual: number = this.paginaAtual$.value;
+
+    page === "-" // melhorar lógica daqui
+      ? this.paginaAtual$.next(paginaAtual - 1)
+      : this.paginaAtual$.next(paginaAtual + 1);
+
+    this.carregarOcorrencias(this.tabAtiva$.value, paginaAtual);
   }
 
   // =============================================
   // ================= GET =======================
 
-  carregarOcorrencias(tab: TabConfig, page: number): void {
-    this.carregandoDados$.next(true);
+  carregarOcorrencias(tab: TabConfig, page?: number): void {
+    this.estaCarregandoDados$.next(true);
 
-    // Seta os par"ametros caso existam
+    const tipoOcorrenciaSelecionada = this.filtros$.value.tipo;
+    const textoDigitado = this.normalizarTexto(this.filtros$.value.search);
+
+    // Insere cada parâmetro existente
     let parametros = new HttpParams();
     if (tab.estadoParam) parametros = parametros.set("estado", tab.estadoParam);
+    if (tipoOcorrenciaSelecionada)
+      parametros = parametros.set("tipo", tipoOcorrenciaSelecionada);
+    if (textoDigitado) parametros = parametros.set("q", textoDigitado);
+
     if (tab.paginada)
       parametros = parametros.set("page", String(page)).set("size", "20");
 
@@ -119,7 +120,7 @@ export class OcorrenciasService {
           console.error("OCO-SERV", err); // implementar componente de Toast
           return of(null);
         }),
-        finalize(() => this.carregandoDados$.next(false)),
+        finalize(() => this.estaCarregandoDados$.next(false)),
       )
       .subscribe((resultado) => {
         if (resultado === null) return;
@@ -135,9 +136,8 @@ export class OcorrenciasService {
   // ================= UPDATE ====================
 
   // /api/ocorrencias/{id}
-  // TODO: Talvez alterar tipo de retorno
   alterarEstado(estado: EstadoOcorrenciaEnumType, idOcorrencia: number): void {
-    this.carregandoDados$.next(true);
+    this.estaCarregandoDados$.next(true);
 
     this.http
       .patch<OcorrenciasResponseDTO>(
@@ -149,7 +149,7 @@ export class OcorrenciasService {
       .pipe(
         catchError((err) => {
           console.error("OCO-SERV-UPD: " + err);
-          this.carregandoDados$.next(false);
+          this.estaCarregandoDados$.next(false);
           return of(null);
         }),
       )
@@ -165,7 +165,7 @@ export class OcorrenciasService {
 
   criarOcorrencia(data: OcorrenciasCriarDTO): Observable<boolean> {
     // Inicializa estado de loading
-    this.criandoOcorrencia$.next(true);
+    this.estaCriandoOcorrencia$.next(true);
 
     const dadosNormalizados: OcorrenciasCriarDTO = {
       ...data,
@@ -187,7 +187,7 @@ export class OcorrenciasService {
           return of(false);
         }),
         finalize(() => {
-          this.criandoOcorrencia$.next(false);
+          this.estaCriandoOcorrencia$.next(false);
         }),
       );
   }

@@ -1,5 +1,10 @@
-import { Component, OnInit } from "@angular/core";
-import { take } from "rxjs/operators";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  take,
+  takeUntil,
+} from "rxjs/operators";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
   EstadoOcorrenciaEnumType,
@@ -8,16 +13,20 @@ import {
   TIPOS_OCORRENCIA,
 } from "../../models/enums";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "app-ocorrencias",
   templateUrl: "./ocorrencias.component.html",
   styleUrls: ["./ocorrencias.component.scss"],
 })
-export class OcorrenciasComponent implements OnInit {
+export class OcorrenciasComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   // FORM
   criarOcorrenciaForm!: FormGroup;
-  isCriandoOcorrencia$ = this.ocorrenciasService.criandoOcorrencia$; // Loader POST
+  isCriandoOcorrencia$ = this.ocorrenciasService.estaCriandoOcorrencia$; // Loader POST
+  filtrosForm!: FormGroup;
 
   // MODAL
   modalIsOpen: boolean = false;
@@ -25,14 +34,14 @@ export class OcorrenciasComponent implements OnInit {
   // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
   tipos = TIPOS_OCORRENCIA;
-  tipoFiltro$ = this.ocorrenciasService.tipoFiltro$;
+  tipoFiltro$ = this.ocorrenciasService.filtrosRead$;
 
-  ocorrenciasFiltradas$ = this.ocorrenciasService.ocorrenciasFiltradas$;
-  totalPaginas$ = this.ocorrenciasService.totalPaginas$;
+  ocorrencias$ = this.ocorrenciasService.ocorrenciasList$;
   tabAtiva$ = this.ocorrenciasService.tabAtiva$;
-  carregando$ = this.ocorrenciasService.carregandoDados$; // Loader GET
+  carregando$ = this.ocorrenciasService.estaCarregandoDados$; // Loader GET
 
-  paginaAtual = 0;
+  paginaAtual$ = this.ocorrenciasService.paginaAtual$;
+  totalPaginas$ = this.ocorrenciasService.totalPaginas$;
 
   constructor(private ocorrenciasService: OcorrenciasService) {}
 
@@ -48,26 +57,46 @@ export class OcorrenciasComponent implements OnInit {
         Validators.required,
         Validators.minLength(5),
       ]),
-      data: new FormControl("", [Validators.required]),
     });
+
+    this.filtrosForm = new FormGroup({
+      search: new FormControl(""),
+      tipo: new FormControl(""),
+    });
+
+    this.filtrosForm
+      .get("search")!
+      .valueChanges.pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((search) => {
+        this.ocorrenciasService.setFiltro({ search });
+      });
+
+    this.filtrosForm
+      .get("tipo")!
+      .valueChanges.pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((tipo) => {
+        this.ocorrenciasService.setFiltro({ tipo });
+      });
   }
 
   onTabChange(tab: TabConfig) {
-    this.paginaAtual = 0;
     this.ocorrenciasService.setTab(tab);
   }
 
   onSearchChange(search: string) {
-    this.ocorrenciasService.setFiltroLocal({ search });
+    this.ocorrenciasService.setFiltro({ search });
   }
 
-  onPageChange(page: number) {
-    this.paginaAtual = page;
+  onPageChange(page: string) {
     this.ocorrenciasService.setPagina(page);
   }
 
   onTipoChange(tipo: TipoOcorrenciaEnumType | "") {
-    this.ocorrenciasService.setFiltroLocal({ tipo });
+    this.ocorrenciasService.setFiltro({ tipo });
   }
 
   // UPDATE
@@ -81,8 +110,6 @@ export class OcorrenciasComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.criarOcorrenciaForm.value);
-
     if (this.criarOcorrenciaForm.invalid) {
       Object.values(this.criarOcorrenciaForm.controls).forEach((control) => {
         control.markAsTouched();
@@ -99,6 +126,7 @@ export class OcorrenciasComponent implements OnInit {
           this.criarOcorrenciaForm.reset({
             tipoOcorrencia: TIPOS_OCORRENCIA[0].value,
             ocorrencia: "",
+            search: "",
           });
         }
       });
@@ -111,5 +139,10 @@ export class OcorrenciasComponent implements OnInit {
 
   trackById(_: number, o: { id: number }) {
     return o.id;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

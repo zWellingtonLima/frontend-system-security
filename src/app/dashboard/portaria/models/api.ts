@@ -88,7 +88,7 @@ export interface OcorrenciasPage {
   };
 }
 
-export interface FiltrosLocais {
+export interface Filtros {
   tipo: TipoOcorrenciaEnumType | "";
   search: string;
 }

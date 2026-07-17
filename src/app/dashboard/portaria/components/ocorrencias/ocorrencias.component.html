@@ -31,7 +31,7 @@
   </ng-container>
 
   <!-- FILTROS -->
-  <div class="filter-container flex">
+  <div class="filter-container flex" [formGroup]="filtrosForm">
     <div class="search-wrap flex content-center">
       <i class="fas fa-search"></i>
       <input
@@ -39,15 +39,10 @@
         name="search-input"
         class="search-input"
         placeholder="Pesquisar por descrição da ocorrência..."
-        (input)="onSearchChange($event.target.value)"
+        formControlName="search"
       />
     </div>
-    <select
-      class="filter-select"
-      name="filter-select"
-      [value]="tipoFiltro$ | async"
-      (change)="onTipoChange($event.target.value)"
-    >
+    <select class="filter-select" name="filter-select" formControlName="tipo">
       <option value="">Todos os Tipos</option>
       <option *ngFor="let t of tipos" [value]="t.value">{{ t.label }}</option>
     </select>
@@ -62,8 +57,8 @@
   </ng-container>
 
   <ng-template #listaOcorrencias>
-    <ng-container *ngIf="ocorrenciasFiltradas$ | async as ocorrencias">
-      <div
+    <ng-container *ngIf="ocorrencias$ | async as ocorrencias">
+      <section
         class="ocorrencia-lista"
         *ngIf="ocorrencias.length > 0; else EstadoVazio"
       >
@@ -133,12 +128,12 @@
               title="Marcar ocorrência como pendente"
               (click)="alterarEstado('PENDENTE', ocor.id)"
             >
-              <i class="ft-alert-circle"></i>
-              Pendente
+              <i class="ft-corner-down-left"></i>
+              Marcar como Pendente
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
       <ng-template #EstadoVazio>
         <div class="empty-state">
@@ -151,21 +146,23 @@
       <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
         <ng-container *ngIf="tabAtiva.paginada">
           <ng-container *ngIf="totalPaginas$ | async as totalPaginas">
-            <div class="paginacao" *ngIf="totalPaginas > 1">
-              <button
-                [disabled]="paginaAtual === 0"
-                (click)="onPageChange(paginaAtual - 1)"
-              >
-                <i class="ft-arrow-left"></i>
-              </button>
-              <span> {{ paginaAtual + 1 }} / {{ totalPaginas }} </span>
-              <button
-                [disabled]="paginaAtual === totalPaginas - 1"
-                (click)="onPageChange(paginaAtual + 1)"
-              >
-                <i class="ft-arrow-right"></i>
-              </button>
-            </div>
+            <ng-container *ngIf="{ paginaAtual: paginaAtual$ | async } as vm">
+              <div class="paginacao" *ngIf="totalPaginas > 1">
+                <button
+                  [disabled]="vm.paginaAtual === 0"
+                  (click)="onPageChange('-')"
+                >
+                  <i class="ft-arrow-left"></i>
+                </button>
+                <span> {{ vm.paginaAtual + 1 }} / {{ totalPaginas }} </span>
+                <button
+                  [disabled]="vm.paginaAtual === totalPaginas - 1"
+                  (click)="onPageChange('+')"
+                >
+                  <i class="ft-arrow-right"></i>
+                </button>
+              </div>
+            </ng-container>
           </ng-container>
         </ng-container>
       </ng-container>
