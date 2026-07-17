@@ -47,6 +47,11 @@ export class ConsumosService {
       .set("page", String(filtro.page))
       .set("size", String(filtro.size));
 
+    console.log(filtro.dataFim);
+    console.log(filtro.dataInicio);
+    console.log(filtro.tipo);
+    console.log(filtro.edificioId);
+
     if (filtro.tipo) {
       params = params.set("tipo", filtro.tipo);
     }

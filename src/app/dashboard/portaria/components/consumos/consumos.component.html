@@ -244,21 +244,21 @@
     <div
       class="tab"
       [class.active]="abaAtiva === 'AGUA'"
-      (click)="selecionarAba(1, 'AGUA')"
+      (click)="selecionarAba('AGUA')"
     >
       Água <span class="tab-cnt">{{ totalAgua }}</span>
     </div>
     <div
       class="tab"
       [class.active]="abaAtiva === 'ELETRICIDADE'"
-      (click)="selecionarAba(2, 'ELETRICIDADE')"
+      (click)="selecionarAba('ELETRICIDADE')"
     >
       Eletricidade <span class="tab-cnt">{{ totalEletricidade }}</span>
     </div>
     <div
       class="tab"
       [class.active]="abaAtiva === 'GAS'"
-      (click)="selecionarAba(3, 'GAS')"
+      (click)="selecionarAba('GAS')"
     >
       Gás <span class="tab-cnt">{{ totalGas }}</span>
     </div>
