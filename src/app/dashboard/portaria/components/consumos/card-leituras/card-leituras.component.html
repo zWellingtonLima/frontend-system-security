@@ -1,0 +1,27 @@
+<div class="edificio-container">
+  <div class="nome-edificio">{{ nomeEdificio }}</div>
+
+  <ng-container *ngIf="leituraAtual !== null; else semDados">
+    <div class="lc-valor" [ngClass]="tipoClasse">
+      {{ leituraAtual | number: "1.2-2" }} {{ unidade }}
+    </div>
+    <div class="lc-delta" [ngClass]="tipoClasse">
+      <ng-container *ngIf="consumo !== null; else primeiraLeitura">
+        <i [ngClass]="consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'"></i>
+        {{ consumo >= 0 ? "+" : "" }}{{ consumo | number: "1.2-2" }}
+        {{ unidade }}
+      </ng-container>
+      <ng-template #primeiraLeitura>
+        <i class="ft-minus"></i> primeira leitura
+      </ng-template>
+    </div>
+  </ng-container>
+
+  <ng-template #semDados>
+    <div class="lc-valor" [ngClass]="tipoClasse">—</div>
+    <div class="lc-delta" [ngClass]="tipoClasse">
+      <i class="ft-minus"></i> sem dados
+    </div>
+    <div class="lc-date">—</div>
+  </ng-template>
+</div>
