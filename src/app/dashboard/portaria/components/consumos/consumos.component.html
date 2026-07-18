@@ -20,222 +20,58 @@
   <div class="leituras-grid">
     <div class="leitura-card lc-agua">
       <div class="lc-header">
-        <div class="lc-icon li-agua">
-          <i class="ft-droplet"></i>
-        </div>
-        <div>
-          <div class="lc-tipo agua">Água</div>
-          <div class="lc-unidade agua">m³ — contador</div>
-        </div>
+        <div class="lc-tipo agua">Água</div>
+        <div class="lc-icon li-agua"><i class="ft-droplet"></i></div>
       </div>
-
       <div class="leitura-agua">
-        <!-- LEITURA DO EDIFICIO A-->
-        <div class="edificio-container">
-          <div class="nome-edificio">EDIFÍCIO A</div>
-          <ng-container *ngIf="ultimaAgua; else semAgua">
-            <div class="lc-valor agua">
-              {{ ultimaAgua.leituraAtual | number: "1.2-2" }} m³
-            </div>
-            <div class="lc-delta agua">
-              <ng-container
-                *ngIf="ultimaAgua.consumo !== null; else primeiraAgua"
-              >
-                <i
-                  [ngClass]="
-                    ultimaAgua.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
-                  "
-                ></i>
-                {{ ultimaAgua.consumo >= 0 ? "+" : ""
-                }}{{ ultimaAgua.consumo | number: "1.2-2" }} m³ desde anterior
-              </ng-container>
-              <ng-template #primeiraAgua
-                ><i class="ft-minus"></i> primeira leitura</ng-template
-              >
-            </div>
-            <div class="lc-date bold">
-              Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-            </div>
-          </ng-container>
-          <ng-template #semAgua>
-            <div class="lc-valor agua">—</div>
-            <div class="lc-delta agua">
-              <i class="ft-minus"></i> sem dados anteriores
-            </div>
-            <div class="lc-date">—</div>
-          </ng-template>
-        </div>
-
-        <!-- LEITURA AGUA DO EDIFICIO B-->
-        <div class="edificio-container">
-          <div class="nome-edificio">EDIFÍCIO B</div>
-          <ng-container *ngIf="ultimaAgua; else semAgua">
-            <div class="lc-valor agua">
-              {{ ultimaAgua.leituraAtual | number: "1.2-2" }} m³
-            </div>
-            <div class="lc-delta agua">
-              <ng-container
-                *ngIf="ultimaAgua.consumo !== null; else primeiraAgua"
-              >
-                <i
-                  [ngClass]="
-                    ultimaAgua.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
-                  "
-                ></i>
-                {{ ultimaAgua.consumo >= 0 ? "+" : ""
-                }}{{ ultimaAgua.consumo | number: "1.2-2" }} m³ desde anterior
-              </ng-container>
-              <ng-template #primeiraAgua
-                ><i class="ft-minus"></i> primeira leitura</ng-template
-              >
-            </div>
-            <div class="lc-date bold">
-              Última: {{ ultimaAgua.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-            </div>
-          </ng-container>
-          <ng-template #semAgua>
-            <div class="lc-valor agua">—</div>
-            <div class="lc-delta agua">
-              <i class="ft-minus"></i> sem dados anteriores
-            </div>
-            <div class="lc-date">—</div>
-          </ng-template>
-        </div>
+        <app-card-leituras
+          *ngFor="let leitura of leiturasAgua"
+          [nomeEdificio]="leitura.nomeEdificio"
+          [leituraAtual]="leitura.leituraAtual"
+          [consumo]="leitura.consumo"
+          unidade="m³"
+          tipoClasse="agua"
+        >
+        </app-card-leituras>
       </div>
     </div>
-
+      
     <div class="leitura-card lc-eletricidade">
       <div class="lc-header">
-        <div class="lc-icon li-elet">
-          <i class="ft-zap"></i>
-        </div>
-        <div>
-          <div class="lc-tipo elet">Eletricidade</div>
-          <div class="lc-unidade elet">kWh — contador</div>
-        </div>
+        <div class="lc-tipo elet">Elet.</div>
+        <div class="lc-icon li-elet"><i class="icon-energy"></i></div>
       </div>
-
-      <!--LEITURA DE ELETRICIDADE EDIFICIO A-->
-      <div class="edificio-container">
-        <div class="nome-edificio">EDIFICIO A</div>
-        <ng-container *ngIf="ultimaEletricidade; else semElet">
-          <div class="lc-valor elet">
-            {{ ultimaEletricidade.leituraAtual | number: "1.2-2" }} kWh
-          </div>
-          <div class="lc-delta elet">
-            <ng-container
-              *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
-            >
-              <i
-                [ngClass]="
-                  ultimaEletricidade.consumo >= 0
-                    ? 'ft-arrow-up'
-                    : 'ft-arrow-down'
-                "
-              ></i>
-              {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
-              }}{{ ultimaEletricidade.consumo | number: "1.2-2" }} kWh desde
-              anterior
-            </ng-container>
-            <ng-template #primeiraElet
-              ><i class="ft-minus"></i> primeira leitura</ng-template
-            >
-          </div>
-          <div class="lc-date">
-            Última:
-            {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-            <span class="lc-date bold">
-              {{ ultimaEletricidade.nomeEdificio }}</span
-            >
-          </div>
-        </ng-container>
+      <div class="container-flex">
+        <app-card-leituras
+          *ngFor="let leitura of leiturasEletricidade"
+          [nomeEdificio]="leitura.nomeEdificio"
+          [leituraAtual]="leitura.leituraAtual"
+          [consumo]="leitura.consumo"
+          [dataRegisto]="leitura.dataRegisto"
+          unidade="kWh"
+          tipoClasse="elet"
+        >
+        </app-card-leituras>
       </div>
-
-      <!-- LEIRURA DE ELETRICIDADE DO EDIFICIO B-->
-      <div class="edificio-container">
-        <div class="nome-edificio">EDIFICIO B</div>
-        <ng-container *ngIf="ultimaEletricidade; else semElet">
-          <div class="lc-valor elet">
-            {{ ultimaEletricidade.leituraAtual | number: "1.2-2" }} kWh
-          </div>
-          <div class="lc-delta elet">
-            <ng-container
-              *ngIf="ultimaEletricidade.consumo !== null; else primeiraElet"
-            >
-              <i
-                [ngClass]="
-                  ultimaEletricidade.consumo >= 0
-                    ? 'ft-arrow-up'
-                    : 'ft-arrow-down'
-                "
-              ></i>
-              {{ ultimaEletricidade.consumo >= 0 ? "+" : ""
-              }}{{ ultimaEletricidade.consumo | number: "1.2-2" }} kWh desde
-              anterior
-            </ng-container>
-            <ng-template #primeiraElet
-              ><i class="ft-minus"></i> primeira leitura</ng-template
-            >
-          </div>
-          <div class="lc-date">
-            Última:
-            {{ ultimaEletricidade.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-            <span class="lc-date bold">
-              {{ ultimaEletricidade.nomeEdificio }}</span
-            >
-          </div>
-        </ng-container>
-      </div>
-
-      <ng-template #semElet>
-        <div class="lc-valor elet">—</div>
-        <div class="lc-delta elet">
-          <i class="ft-minus"></i> sem dados anteriores
-        </div>
-        <div class="lc-date">—</div>
-      </ng-template>
     </div>
-
+      
     <div class="leitura-card lc-gas">
       <div class="lc-header">
-        <div class="lc-icon li-gas">
-          <i class="icon-fire"></i>
-        </div>
-        <div>
-          <div class="lc-tipo gas">Gás</div>
-          <div class="lc-unidade gas">m³ — contador</div>
-        </div>
+        <div class="lc-tipo gas">Gás</div>
+        <div class="lc-icon li-gas"><i class="icon-fire"></i></div>
       </div>
-      <ng-container *ngIf="ultimaGas; else semGas">
-        <div class="lc-valor gas">
-          {{ ultimaGas.leituraAtual | number: "1.2-2" }} m³
-        </div>
-        <div class="lc-delta gas">
-          <ng-container *ngIf="ultimaGas.consumo !== null; else primeiraGas">
-            <i
-              [ngClass]="
-                ultimaGas.consumo >= 0 ? 'ft-arrow-up' : 'ft-arrow-down'
-              "
-            ></i>
-            {{ ultimaGas.consumo >= 0 ? "+" : ""
-            }}{{ ultimaGas.consumo | number: "1.2-2" }} m³ desde anterior
-          </ng-container>
-          <ng-template #primeiraGas
-            ><i class="ft-minus"></i> primeira leitura</ng-template
-          >
-        </div>
-        <div class="lc-date">
-          Última: {{ ultimaGas.dataRegisto | date: "dd/MM/yyy, HH:mm" }}
-          <span class="lc-date bold">{{ ultimaGas.nomeEdificio }}</span>
-        </div>
-      </ng-container>
-      <ng-template #semGas>
-        <div class="lc-valor gas">—</div>
-        <div class="lc-delta gas">
-          <i class="ft-minus"></i> sem dados anteriores
-        </div>
-        <div class="lc-date">—</div>
-      </ng-template>
+      <div class="container-flex">
+        <app-card-leituras
+          *ngFor="let leitura of leiturasGas"
+          [nomeEdificio]="leitura.nomeEdificio"
+          [leituraAtual]="leitura.leituraAtual"
+          [consumo]="leitura.consumo"
+          [dataRegisto]="leitura.dataRegisto"
+          unidade="m³"
+          tipoClasse="gas"
+        >
+        </app-card-leituras>
+      </div>
     </div>
   </div>
 

@@ -9,6 +9,7 @@ import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
 import { ChavesComponent } from "./components/chaves/chaves.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { CardLeiturasComponent } from "./components/consumos/card-leituras/card-leituras.component";
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
     ConsumosComponent,
     OcorrenciasComponent,
     ChavesComponent,
+    CardLeiturasComponent,
   ],
   exports: [PortariaComponent],
 })
