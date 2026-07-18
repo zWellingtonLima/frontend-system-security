@@ -446,4 +446,49 @@ export class ConsumosComponent implements OnInit {
     AGUA: "m³",
     GAS: "m³",
   };
+
+  leiturasAgua: any[] = [
+    {
+      nomeEdificio: "EDIFÍCIO A",
+      leituraAtual: 1900.0,
+      consumo: 200.0,
+      dataRegisto: "2026-07-15T09:30:00",
+    },
+    {
+      nomeEdificio: "EDIFÍCIO B",
+      leituraAtual: 1640.0,
+      consumo: -80.0,
+      dataRegisto: "2026-07-14T14:10:00",
+    },
+  ];
+
+  leiturasEletricidade: any[] = [
+    {
+      nomeEdificio: "EDIFÍCIO A",
+      leituraAtual: 5420.75,
+      consumo: 310.25,
+      dataRegisto: "2026-07-15T09:32:00",
+    },
+    {
+      nomeEdificio: "EDIFÍCIO B",
+      leituraAtual: 467890.0,
+      consumo: null, // testa o caso "primeira leitura"
+      dataRegisto: "2026-07-15T09:35:00",
+    },
+  ];
+
+  leiturasGas: any[] = [
+    {
+      nomeEdificio: "EDIFÍCIO A",
+      leituraAtual: 320.5,
+      consumo: 15.5,
+      dataRegisto: "2026-07-15T09:40:00",
+    },
+    {
+      nomeEdificio: "EDIFÍCIO B",
+      leituraAtual: 320.5,
+      consumo: 15.5,
+      dataRegisto: "2026-07-15T09:40:00",
+    },
+  ];
 }
