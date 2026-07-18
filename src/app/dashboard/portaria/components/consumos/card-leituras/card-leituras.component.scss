@@ -1,0 +1,59 @@
+:host {
+  display: contents;
+}
+
+.edificio-container {
+  border-left: 2px solid rgba(147, 147, 147, 0.299);
+  padding: 0 12px;
+  min-width: 0;
+  text-align: left;
+}
+.edificio-container:not(:first-of-type) {
+  border-left: none;
+}
+
+.nome-edificio {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.lc-valor {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+
+  &.agua {
+    color: #0c447c;
+  }
+  &.elet {
+    color: #713f12;
+  }
+  &.gas {
+    color: #881337;
+  }
+}
+
+.lc-delta {
+  font-size: 10px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+
+  &.agua {
+    color: #185fa5;
+  }
+  &.elet {
+    color: #92400e;
+  }
+  &.gas {
+    color: #9f1239;
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
