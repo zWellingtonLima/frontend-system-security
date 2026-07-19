@@ -42,6 +42,7 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
 
   paginaAtual$ = this.ocorrenciasService.paginaAtual$;
   totalPaginas$ = this.ocorrenciasService.totalPaginas$;
+  paginasVisiveis$ = this.ocorrenciasService.paginasVisiveis$;
 
   constructor(private ocorrenciasService: OcorrenciasService) {}
 
@@ -91,8 +92,15 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
     this.ocorrenciasService.setFiltro({ search });
   }
 
-  onPageChange(page: string) {
-    this.ocorrenciasService.setPagina(page);
+  // Setas anterior/seguinte - recebe a página de destino (0-based)
+  onPageChange(pagina: number) {
+    this.ocorrenciasService.setPagina(pagina);
+  }
+
+  // Botões numerados - converte a página exibida (1-based) para 0-based
+  irParaPagina(p: number | "...") {
+    if (typeof p !== "number") return;
+    this.ocorrenciasService.setPagina(p - 1);
   }
 
   onTipoChange(tipo: TipoOcorrenciaEnumType | "") {

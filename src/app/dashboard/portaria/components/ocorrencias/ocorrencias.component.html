@@ -150,14 +150,27 @@
               <div class="paginacao" *ngIf="totalPaginas > 1">
                 <button
                   [disabled]="vm.paginaAtual === 0"
-                  (click)="onPageChange('-')"
+                  (click)="onPageChange(vm.paginaAtual - 1)"
                 >
                   <i class="ft-arrow-left"></i>
                 </button>
-                <span> {{ vm.paginaAtual + 1 }} / {{ totalPaginas }} </span>
+
+                <ng-container *ngFor="let p of paginasVisiveis$ | async">
+                  <button
+                    *ngIf="p !== '...'; else reticencia"
+                    [class.active]="p === vm.paginaAtual + 1"
+                    (click)="irParaPagina(p)"
+                  >
+                    {{ p }}
+                  </button>
+                  <ng-template #reticencia>
+                    <span class="reticencia">…</span>
+                  </ng-template>
+                </ng-container>
+
                 <button
                   [disabled]="vm.paginaAtual === totalPaginas - 1"
-                  (click)="onPageChange('+')"
+                  (click)="onPageChange(vm.paginaAtual + 1)"
                 >
                   <i class="ft-arrow-right"></i>
                 </button>

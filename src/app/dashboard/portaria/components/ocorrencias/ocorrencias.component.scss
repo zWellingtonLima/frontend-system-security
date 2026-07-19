@@ -198,8 +198,8 @@ $estados: (
     width: 32px;
     height: 32px;
     border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface);
+    border: 1px solid $portaria-color-border;
+    background: $portaria-color-bg-soft;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -214,11 +214,25 @@ $estados: (
     &:not(:disabled):hover {
       background: $portaria-color-bg-hover;
     }
+
+    &.active {
+      border-color: $portaria-color-accent;
+      background: $portaria-color-accent;
+      color: #fff;
+      font-weight: 600;
+
+      &:hover {
+        background: $portaria-color-accent-dark;
+      }
+    }
   }
 
-  span {
+  .reticencia {
+    width: 32px;
+    text-align: center;
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: $portaria-color-text-muted;
+    user-select: none;
   }
 }
 

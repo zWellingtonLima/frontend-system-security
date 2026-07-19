@@ -63,6 +63,14 @@ export class OcorrenciasService {
   paginaAtual$ = new BehaviorSubject<number>(0);
   totalPaginas$ = new BehaviorSubject<number>(0);
 
+  // Páginas exibidas na barra de paginação: 1ª, atual e vizinhas, última
+  paginasVisiveis$ = combineLatest([
+    this.paginaAtual$,
+    this.totalPaginas$,
+  ]).pipe(
+    map(([atual, total]) => this.calcularPaginasVisiveis(atual + 1, total)),
+  );
+
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
@@ -82,13 +90,14 @@ export class OcorrenciasService {
     this.carregarOcorrencias(this.tabAtiva$.value);
   }
 
-  setPagina(page: string): void {
-    const paginaAtual: number = this.paginaAtual$.value;
+  // Recebe a página de destino (0-based, igual ao backend)
+  setPagina(pagina: number): void {
+    const total = this.totalPaginas$.value;
+    const dentroDoLimite = pagina >= 0 && pagina <= total - 1;
 
-    page === "-" // melhorar lógica daqui
-      ? this.paginaAtual$.next(paginaAtual - 1)
-      : this.paginaAtual$.next(paginaAtual + 1);
+    if (!dentroDoLimite || pagina === this.paginaAtual$.value) return;
 
+    this.paginaAtual$.next(pagina);
     this.carregarOcorrencias(this.tabAtiva$.value);
   }
 
@@ -211,5 +220,26 @@ export class OcorrenciasService {
       estadoConfig:
         ESTADO_OCORRENCIA_CONFIG[o.estado as EstadoOcorrenciaEnumType],
     };
+  }
+
+  private calcularPaginasVisiveis(
+    atual: number,
+    total: number,
+  ): (number | "...")[] {
+    if (total <= 1) return [];
+
+    const paginasRelevantes = Array.from(
+      new Set([1, atual - 1, atual, atual + 1, total]),
+    )
+      .filter((p) => p >= 1 && p <= total)
+      .sort((a, b) => a - b);
+
+    const resultado: (number | "...")[] = [];
+    paginasRelevantes.forEach((p, i) => {
+      if (i > 0 && p - paginasRelevantes[i - 1] > 1) resultado.push("...");
+      resultado.push(p);
+    });
+
+    return resultado;
   }
 }
