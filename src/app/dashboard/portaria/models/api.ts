@@ -20,22 +20,28 @@ export interface LoginResponse extends TokenResponse {
 // ============================================================
 // CHAVES
 // ============================================================
+export interface ChavesListagem {
+  id: number;
+  idSala: number;
+  codigo: string;
+}
+
 export interface ChaveEmprestadas {
   idEntrega: number;
   idChave: number;
   descricao: string; // CHV-101 ou "Molho TI"
   tipo: TipoChaveEnumType;
   sala: number; // número da sala ou null se molho
-  nomePessoa: string; // quem tem a chave
+  nomePessoa: string;
   horaEntrega: Date;
   observacoes: string;
 }
 
-export interface ChavesHistorico {
-  descricao: string;
-  tipo: TipoChaveEnumType;
+export interface HistoricoEntregaChave {
+  idEntrega: string;
+  edificio: string;
   sala: string;
-  nomePessoa: string;
+  nomePessoa: string;// quem pegou a chave
   horaEntrega: Date;
   horaDevolucao: Date;
   devolvidaPor: string;
@@ -54,10 +60,6 @@ export interface Ocorrencias {
   estado: EstadoOcorrenciaEnumType;
   horaOcorrencia: Date;
 }
-
-// ============================================================
-// OCORRÊNCIAS
-// ============================================================
 
 export interface OcorrenciasRequestDTO {
   tipoOcorrencia: TipoOcorrenciaEnumType;

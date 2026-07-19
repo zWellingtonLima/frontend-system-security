@@ -1,5 +1,4 @@
-@import "src/app/dashboard/portaria/components/dashboard/dashboard.component.scss";
-@import "src/app/dashboard/portaria/portaria.component.scss";
+@import "src/app/app.component.scss";
 
 .barra-pesquisa {
   flex: 1;
@@ -74,6 +73,7 @@ button {
 .tbl {
   width: 100%;
   border-collapse: collapse;
+  text-align: center;
   table-layout: fixed;
   min-width: 600px;
 
@@ -85,7 +85,6 @@ button {
     font-weight: 600;
     color: #6b7280;
     padding: 10px 12px;
-    text-align: left;
     border-bottom: 1px solid #edf0f4;
     border-top: 1px solid #edf0f4;
   }

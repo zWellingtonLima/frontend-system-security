@@ -8,8 +8,9 @@ export const environment = {
   ocorrenciaApiUrl: "http://localhost:8080/api/ocorrencias",
   ocorrenciasHojeApiUrl: "http://localhost:8080/api/ocorrencias/hoje",
   // CHAVES
+  chavesListagemApiUrl: "http://localhost:8080/api/chaves",
   chavesEmprestadasApiURL: "http://localhost:8080/api/chaves/emprestadas",
-  chavesHisoricoApiUrl: "http://localhost:8080/api/chaves/historico",
+  chavesHistoricoApiUrl: "http://localhost:8080/api/chaves/historico",
   //Consumos
   consumosApiUrl: "http://localhost:8080/api/consumos",
 };
