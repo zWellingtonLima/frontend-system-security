@@ -9,6 +9,7 @@ import {
   ConsumoPayload,
   CountTabelas,
   EdificiosResponse,
+  ListaUltimasCard,
   PageResponse,
   UltimaLeitura,
 } from "../../models/consumo.model";
@@ -21,8 +22,8 @@ export class ConsumosService {
 
   constructor(private http: HttpClient) {}
 
-  ultimas(): Observable<UltimaLeitura[]> {
-    return this.http.get<UltimaLeitura[]>(`${this.apiUrl}/ultimas`);
+  ultimas(): Observable<ListaUltimasCard[]> {
+    return this.http.get<ListaUltimasCard[]>(`${this.apiUrl}/ultimas`);
   }
 
   ultimaLeituraForm(

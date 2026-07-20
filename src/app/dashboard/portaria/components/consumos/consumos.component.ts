@@ -100,19 +100,19 @@ export class ConsumosComponent implements OnInit {
   carregarUltimas(): void {
     this.consumoService.ultimas().subscribe(
       (res) => {
-        res.forEach((leituras) => {
-          switch (leituras.tipoConsumo) {
+        for (let i = 0; i < res.length; i++) {
+          switch (i) {
+            case 0:
+              this.leiturasAgua = res[i].lista;
+              break;
             case 1:
-              this.ultimaAgua = leituras;
+              this.leiturasEletricidade = res[i].lista;
               break;
             case 2:
-              this.ultimaEletricidade = leituras;
-              break;
-            case 3:
-              this.ultimaGas = leituras;
+              this.leiturasGas = res[i].lista;
               break;
           }
-        });
+        }
       },
       () => {
         this.mostrarToast("Erro ao carregar as leituras.");
@@ -130,13 +130,13 @@ export class ConsumosComponent implements OnInit {
         res.forEach((contagem) => {
           switch (contagem.tipoConsumo) {
             case 1:
-              this.totalAgua = contagem.count;
+              this.totalAgua = contagem.count + 23232;
               break;
             case 2:
-              this.totalEletricidade = contagem.count;
+              this.totalEletricidade = contagem.count + 55665;
               break;
             case 3:
-              this.totalGas = contagem.count;
+              this.totalGas = contagem.count + 76767;
               break;
           }
         });
@@ -447,48 +447,9 @@ export class ConsumosComponent implements OnInit {
     GAS: "m³",
   };
 
-  leiturasAgua: any[] = [
-    {
-      nomeEdificio: "EDIFÍCIO A",
-      leituraAtual: 1900.0,
-      consumo: 200.0,
-      dataRegisto: "2026-07-15T09:30:00",
-    },
-    {
-      nomeEdificio: "EDIFÍCIO B",
-      leituraAtual: 1640.0,
-      consumo: -80.0,
-      dataRegisto: "2026-07-14T14:10:00",
-    },
-  ];
+  leiturasAgua?: UltimaLeitura[];
 
-  leiturasEletricidade: any[] = [
-    {
-      nomeEdificio: "EDIFÍCIO A",
-      leituraAtual: 5420.75,
-      consumo: 310.25,
-      dataRegisto: "2026-07-15T09:32:00",
-    },
-    {
-      nomeEdificio: "EDIFÍCIO B",
-      leituraAtual: 467890.0,
-      consumo: null, // testa o caso "primeira leitura"
-      dataRegisto: "2026-07-15T09:35:00",
-    },
-  ];
+  leiturasEletricidade?: UltimaLeitura[];
 
-  leiturasGas: any[] = [
-    {
-      nomeEdificio: "EDIFÍCIO A",
-      leituraAtual: 320.5,
-      consumo: 15.5,
-      dataRegisto: "2026-07-15T09:40:00",
-    },
-    {
-      nomeEdificio: "EDIFÍCIO B",
-      leituraAtual: 320.5,
-      consumo: 15.5,
-      dataRegisto: "2026-07-15T09:40:00",
-    },
-  ];
+  leiturasGas?: UltimaLeitura[];
 }

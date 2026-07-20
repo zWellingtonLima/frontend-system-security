@@ -24,9 +24,12 @@ export interface UltimaLeitura {
   nomeEdificio: string;
   tipoConsumo: number;
   leituraAnterior: number | null;
-  dataRegisto: Date;
   leituraAtual: number;
+  dataRegisto: Date;
   consumo: number | null;
+}
+export interface ListaUltimasCard {
+  lista: UltimaLeitura[];
 }
 
 /** Contagem de registos por tipo, para os badges das abas */
