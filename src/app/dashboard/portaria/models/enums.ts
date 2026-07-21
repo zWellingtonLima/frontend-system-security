@@ -36,39 +36,41 @@ export interface TipoOcorrencia extends ConfigBase {
 export type OcorrenciaTabConfig = TabConfig<TabOcorrencia>;
 
 // Não serve para iteração direta no *ngFor mas é bom para CONFIG["AVARIA_EQUIPAMENTO"] por exempo
-export const TIPO_OCORRENCIA_CONFIG: Record<TipoOcorrenciaEnumType, ConfigBase> =
-  {
-    ACESSO_NAO_AUTORIZADO: {
-      icone: "ft-shield",
-      label: "Acesso Não Autorizado",
-      classe: "tipo--acesso",
-    },
-    ALARME_DISPARADO: {
-      classe: "tipo--alarme",
-      icone: "far fa-bell",
-      label: "Alarme Disparado",
-    },
-    AVARIA_EQUIPAMENTO: {
-      icone: "ft-x-square",
-      classe: "tipo--avaria",
-      label: "Avaria de Equipamento",
-    },
-    OBJETO_PERDIDO_ENCONTRADO: {
-      icone: "ft-box",
-      label: "Objeto Perdido/Encontrado",
-      classe: "tipo--objeto",
-    },
-    INCIDENTE_COM_VISITANTE: {
-      icone: "ft-user-x",
-      classe: "tipo--visitante",
-      label: "Incidente com Visitante",
-    },
-    OUTROS: {
-      label: "Outros",
-      icone: "ft-help-circle",
-      classe: "tipo--outros",
-    },
-  };
+export const TIPO_OCORRENCIA_CONFIG: Record<
+  TipoOcorrenciaEnumType,
+  ConfigBase
+> = {
+  ACESSO_NAO_AUTORIZADO: {
+    icone: "ft-shield",
+    label: "Acesso Não Autorizado",
+    classe: "tipo--acesso",
+  },
+  ALARME_DISPARADO: {
+    classe: "tipo--alarme",
+    icone: "far fa-bell",
+    label: "Alarme Disparado",
+  },
+  AVARIA_EQUIPAMENTO: {
+    icone: "ft-x-square",
+    classe: "tipo--avaria",
+    label: "Avaria de Equipamento",
+  },
+  OBJETO_PERDIDO_ENCONTRADO: {
+    icone: "ft-box",
+    label: "Objeto Perdido/Encontrado",
+    classe: "tipo--objeto",
+  },
+  INCIDENTE_COM_VISITANTE: {
+    icone: "ft-user-x",
+    classe: "tipo--visitante",
+    label: "Incidente com Visitante",
+  },
+  OUTROS: {
+    label: "Outros",
+    icone: "ft-help-circle",
+    classe: "tipo--outros",
+  },
+};
 
 export const ESTADO_OCORRENCIA_CONFIG: Record<
   EstadoOcorrenciaEnumType,
@@ -102,6 +104,33 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 // CHAVES
 // ============================================================
-export type TabsChave = "PENDENTES" | "TODAS";
+export type TabsChave = "EMPRESTADAS" | "TODAS";
 
 export type ChavesTabConfig = TabConfig<TabsChave>;
+
+export type StatusChaveEnumType = "EMPRESTADA" | "DISPONIVEL";
+
+export const STATUS_CHAVE_CONFIG: Record<StatusChaveEnumType, ConfigBase> = {
+  EMPRESTADA: {
+    label: "Emprestada",
+    icone: "ft-clock",
+    classe: "badge-emprestada",
+  },
+  DISPONIVEL: {
+    label: "Disponível",
+    icone: "far fa-check-circle",
+    classe: "badge-disponivel",
+  },
+};
+
+// idEdificio chega como Integer; mapeamos para o rótulo exibido
+export const EDIFICIO_LABEL: Record<number, string> = {
+  1: "Edifício A",
+  2: "Edifício B",
+};
+
+export const PISO_LABEL: Record<string, string> = {
+  PRIMEIRO: "Piso 1",
+  SEGUNDO: "Piso 2",
+  TERCEIRO: "Piso 3",
+};

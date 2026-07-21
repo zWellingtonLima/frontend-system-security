@@ -1,4 +1,4 @@
-import { ChaveEmprestadas, OcorrenciasResponseDTO } from "../../models/api";
+import { ChavesResponseDTO, OcorrenciasResponseDTO } from "../../models/api";
 import { Component, OnInit } from "@angular/core";
 import { DashboardService } from "../../services/api/dashboard-service";
 
@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit {
   visitasHoje = 8;
   ocorrenciasPendentes = 0;
 
-  chaves: ChaveEmprestadas[] = [];
+  chaves: ChavesResponseDTO[] = [];
   ocorrencias: OcorrenciasResponseDTO[] = [];
 
   carregarChaves() {

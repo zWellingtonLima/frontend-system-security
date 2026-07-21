@@ -1,6 +1,7 @@
 import {
   ConfigBase,
   EstadoOcorrenciaEnumType,
+  StatusChaveEnumType,
   TipoOcorrenciaEnumType,
 } from "./enums";
 
@@ -19,22 +20,36 @@ export interface LoginResponse extends TokenResponse {
 // ============================================================
 // CHAVES
 // ============================================================
-export interface ChavesListagem {
+export interface ChavesResponseDTO {
   id: number;
-  idSala: number;
+  idEmprestimo: number | null;
+  idEdificio: number;
   codigo: string;
+  sala: number | null;
+  piso: string;
+  status: StatusChaveEnumType;
+  pessoa: string | null;
+  desde: ISOTimestamp | null;
 }
 
-export interface ChaveEmprestadas {
-  idEntrega: number;
-  idChave: number;
-  descricao: string; // CHV-101 ou "Molho TI"
-  // tipo: TipoChaveEnumType;
-  sala: number; // número da sala ou null se molho
-  nomePessoa: string;
-  horaEntrega: Date;
-  observacoes: string;
+// Enriquecida no service com os rótulos prontos para o template
+export interface ChaveViewModel extends ChavesResponseDTO {
+  statusConfig: ConfigBase;
+  edificioLabel: string;
+  pisoLabel: string;
 }
+
+// Interface para preencher as combobox do modal de emprestar cahve
+export interface ChaveDisponivelDTO {
+  id: number;
+  idEdificio: number;
+  codigo: string;
+  piso: string;
+  numeroSala: number | null; // null em caso de molho
+}
+
+// Disponíveis agrupadas por idEdificio (1-> A, 2 -> B) para os selects
+export type ChavesDisponiveisPorEdificio = Record<number, ChaveDisponivelDTO[]>;
 
 export interface HistoricoEntregaChave {
   idEntrega: string;
