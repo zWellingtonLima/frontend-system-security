@@ -25,7 +25,7 @@ export interface EstadoOcorrencia extends OcorrenciaConfigBase {
 }
 
 // Configuracao da paginacao
-export interface TabConfig {
+export interface OcorrenciaTabConfig {
   value: TabOcorrencia;
   label: string;
   paginada: boolean;
@@ -102,14 +102,22 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // CHAVES
 // ============================================================
 
-export enum TipoChaveEnum {
-  CHAVE = "CHAVE",
-  MOLHO = "MOLHO",
+export type TabsChave = "PENDENTES" | "TODAS";
+
+export interface ChavesConfigBase {
+  label: string;
+  icone: string;
+  classe: string;
 }
 
-export type TipoChaveEnumType = keyof typeof TipoChaveEnum;
+export interface Chaves extends ChavesConfigBase {
+  value: TabsChave;
+}
 
-export const TipoChaveLabel = {
-  [TipoChaveEnum.CHAVE]: "Chave",
-  [TipoChaveEnum.MOLHO]: "Molho",
-};
+// Configuracao da paginacao
+export interface ChavesTabConfig {
+  value: TabsChave;
+  label: string;
+  paginada: boolean;
+  parametro: TabsChave;
+}

@@ -4,6 +4,22 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { HistoricoEntregaChave, ChavesListagem } from "../../models/api";
 import { environment } from "src/environments/environment.dev";
 import { catchError } from "rxjs/operators";
+import { ChavesTabConfig } from "../../models/enums";
+
+const TABS: ChavesTabConfig[] = [
+  {
+    value: "PENDENTES",
+    label: "Pendentes",
+    paginada: true,
+    parametro: "PENDENTES",
+  },
+  {
+    value: "TODAS",
+    label: "Todas",
+    paginada: true,
+    parametro: "TODAS",
+  },
+];
 
 @Injectable({
   providedIn: "root",
@@ -11,9 +27,29 @@ import { catchError } from "rxjs/operators";
 export class ChaveService {
   private chavesLista$ = new BehaviorSubject<ChavesListagem[]>([]);
 
-  chaves$ = this.chavesLista$.asObservable();
+  tabs = TABS;
+  tabAtiva$ = new BehaviorSubject<ChavesTabConfig>(TABS[0]);
+
+  chavesList$ = this.chavesLista$.asObservable();
+
+  paginaAtual$ = new BehaviorSubject<number>(0);
+  totalPaginas$ = new BehaviorSubject<number>(0);
 
   constructor(private httpClient: HttpClient) {}
+
+  inicializar(): void {
+    this.carregarTodasChaves();
+    this.tabAtiva$.next(TABS[0]);
+  }
+
+  setTab(tab: ChavesTabConfig): void {
+    this.tabAtiva$.next(tab);
+    this.paginaAtual$.next(0);
+    this.carregarTodasChaves();
+  }
+
+  // =============================================
+  // ================= GET =======================
 
   carregarTodasChaves(): void {
     this.httpClient
@@ -21,7 +57,7 @@ export class ChaveService {
       .pipe(
         catchError((err) => {
           console.error("CHAV-SER: " + err);
-          return of([]);
+          return of(null);
         }),
       )
       .subscribe((resultado) => {

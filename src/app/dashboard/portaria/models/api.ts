@@ -1,7 +1,6 @@
 import {
   EstadoOcorrenciaEnumType,
   OcorrenciaConfigBase,
-  TipoChaveEnumType,
   TipoOcorrenciaEnumType,
 } from "./enums";
 
@@ -30,7 +29,7 @@ export interface ChaveEmprestadas {
   idEntrega: number;
   idChave: number;
   descricao: string; // CHV-101 ou "Molho TI"
-  tipo: TipoChaveEnumType;
+  // tipo: TipoChaveEnumType;
   sala: number; // número da sala ou null se molho
   nomePessoa: string;
   horaEntrega: Date;
@@ -41,7 +40,7 @@ export interface HistoricoEntregaChave {
   idEntrega: string;
   edificio: string;
   sala: string;
-  nomePessoa: string;// quem pegou a chave
+  nomePessoa: string; // quem pegou a chave
   horaEntrega: Date;
   horaDevolucao: Date;
   devolvidaPor: string;

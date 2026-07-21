@@ -15,74 +15,110 @@
   }
 }
 
+.tabs {
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  transition:
+    color 0.13s,
+    border-color 0.13s;
+
+  border-bottom: 1px solid $portaria-color-border;
+  margin-block: $m-lg;
+
+  & .tab {
+    cursor: pointer;
+    padding: $p-xs $p-md;
+    font-weight: 500;
+    color: $portaria-color-text-muted;
+    transition:
+      color 0.13s,
+      border-color 0.13s;
+
+    &.active {
+      color: $portaria-color-accent-dark;
+      box-shadow: 0 3px $portaria-color-accent;
+    }
+  }
+}
+
+.tab .tab-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #6b7280;
+  border-radius: 20px;
+  padding: 1px 7px;
+}
+.tab.active .tab-count {
+  background: var(--accent-light, #e0f4fb);
+  color: var(--accent);
+}
+
+.filter-container {
+  margin-block: $m-lg;
+  gap: $m-xs;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+
+  & i {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    color: $portaria-color-text-muted-alt;
+  }
+}
+
 .search-input {
   width: 100%;
   height: 34px;
-  border: 1px solid #dde3ea;
-  border-radius: 7px;
   padding: 0 10px 0 32px;
   font-size: 12px;
-  color: #374151;
-  background: #fafbfc;
-  outline: none;
-  transition: border-color 0.13s;
-}
-.search-input:focus {
-  border-color: var(--accent);
-  background: #fff;
-}
 
-.titulo-dashboard-buttons {
-  display: flex;
-  justify-content: space-between;
+  border-radius: $portaria-radius-xs;
+  border: 1px solid $portaria-color-border;
+  background: $portaria-color-bg-soft;
 
-  select {
-    max-width: 20%;
-    flex: 1;
+  &:focus {
+    outline: 1px solid $portaria-color-accent;
   }
 }
-.barra-pesquisa-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.barra-pesquisa-select {
-  height: 34px;
-  border: 1px solid #dde3ea;
-  border-radius: 7px;
-  padding: 0 10px;
-  font-size: 12px;
-  color: #374151;
-  background: #fafbfc;
-  outline: none;
-  cursor: pointer;
-}
 
-i,
-button {
-  margin-right: 5px;
-}
-.filtros-pesquisa {
-  display: flex;
-  gap: 0;
-  margin-bottom: 18px;
-  border-bottom: 1px solid #edf0f4;
+.filter-select {
+  font-size: 12px;
+  border-radius: $portaria-radius-xs;
+  border: 1px solid $portaria-color-border;
+  background: transparent;
+  padding: $p-xs $p-md;
+  color: $portaria-color-text-body;
+
+  &:focus {
+    outline: 1px solid $portaria-color-accent-dark;
+    outline-offset: 4px;
+  }
 }
 
 .tbl {
   width: 100%;
   border-collapse: collapse;
-  text-align: center;
+  text-align: left;
   table-layout: fixed;
   min-width: 600px;
 
   thead {
-    background: #f8fafc;
+    background: $portaria-color-bg-soft;
+    text-align: center;
   }
   th {
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 500;
     color: #6b7280;
     padding: 10px 12px;
     border-bottom: 1px solid #edf0f4;
@@ -102,41 +138,6 @@ button {
   }
 }
 
-/* Molho, emprestas, etc */
-.tab {
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #9ca3af;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition:
-    color 0.13s,
-    border-color 0.13s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-.tab .tab-count {
-  font-size: 11px;
-  font-weight: 600;
-  background: #f1f5f9;
-  color: #6b7280;
-  border-radius: 20px;
-  padding: 1px 7px;
-}
-.tab.active .tab-count {
-  background: var(--accent-light, #e0f4fb);
-  color: var(--accent);
-}
-
 /* Subtextos (ex: "Molho de chaves") */
 .sub-text {
   display: block;
@@ -149,7 +150,7 @@ button {
   color: #2c3e50;
 }
 
-/* Alinhamento de traços vazios (-) */
+/* Alinhamento de trsearcaços vazios (-) */
 .empty-dash {
   color: #d0d0d0;
 }
@@ -163,13 +164,6 @@ button {
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
-}
-
-/* Estilo Tipo: Molho */
-.badge-tipo {
-  background-color: #eef2ff;
-  color: #4f46e5;
-  border: 1px solid #e0e7ff;
 }
 
 /* Estilo Estado: Disponível */
@@ -254,4 +248,36 @@ button {
   color: #c0c0c0;
   background-color: #fafafa;
   cursor: not-allowed;
+}
+
+// ESTILOS DO FORM NO MODAL
+
+.form-tipo-title {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: $portaria-color-text-muted-alt;
+  margin-bottom: 4px;
+}
+
+.form-label-port {
+  color: $portaria-color-text-dark;
+
+}
+
+.form-row-port {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+
+  &.full {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group-port {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }

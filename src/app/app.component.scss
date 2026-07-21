@@ -1072,9 +1072,9 @@ $m-xl: 22px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
+  // min-height: 44px;
   gap: $p-xs;
-  padding: 0 18px;
+  padding: 10px;
   border: 1px solid transparent;
   border-radius: $portaria-radius-xs;
   font-size: 14px;
@@ -1131,6 +1131,7 @@ $m-xl: 22px;
 
   &--ghost {
     background: #ffffff;
+    font-size: 12px;
     border-color: $portaria-color-bg-light;
     color: $portaria-color-accent-dark;
 

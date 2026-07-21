@@ -2,9 +2,7 @@
   <div class="page-header-row">
     <div>
       <h1 class="portaria-section-title">Chaves</h1>
-      <p class="portaria-section-copy">
-        Página de gestão das chaves e empréstimos
-      </p>
+      <p class="portaria-section-copy">Gestão e empréstimos de chaves</p>
     </div>
 
     <button
@@ -16,37 +14,40 @@
     </button>
   </div>
 
-  <div class="filtros-pesquisa">
-    <div class="tab active" onclick="setTab('emp')">
-      Emprestadas <span class="tab-count">3</span>
+  <!-- FILTRAGEM POR TABS -->
+  <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
+    <div class="tabs">
+      <div
+        class="tab"
+        *ngFor="let tab of tabs"
+        [class.active]="tabAtiva.value === tab.value"
+        (click)="onTabChange(tab)"
+      >
+        {{ tab.label }}
+      </div>
     </div>
-    <div class="tab" onclick="setTab('todas')">
-      Todas <span class="tab-count">26</span>
-    </div>
-  </div>
+  </ng-container>
 
-  <div class="barra-pesquisa-container">
-    <div class="barra-pesquisa">
-      <i class="ft-search"></i>
+  <!-- FILTROS -->
+  <div class="filter-container flex">
+    <div class="search-wrap flex content-center">
+      <i class="fas fa-search"></i>
       <input
-        class="search-input"
-        id="searchInput"
         type="text"
-        placeholder="Pesquisar por código, sala ou responsável..."
+        name="search-input"
+        class="search-input"
+        placeholder="Pesquisar por descrição da ocorrência..."
       />
     </div>
-    <select
-      class="barra-pesquisa-select"
-      id="filterPiso"
-      onchange="applyFilters()"
-    >
-      <option value="">Todos os pisos</option>
+    <select class="filter-select" name="filter-select">
+      <option value="">Pisos</option>
       <option value="PRIMEIRO">Primeiro</option>
       <option value="SEGUNDO">Segundo</option>
       <option value="TERCEIRO">Terceiro</option>
     </select>
   </div>
 
+  <!-- TABELA -->
   <div>
     <table class="tbl">
       <thead>
@@ -98,11 +99,49 @@
   <!-- MODAL EMPRESTAR CHAVE -->
   <app-base-modal
     [modalEstaAberto]="modalIsOpen"
-    titulo="Empréstimo de chave"
-    subtitulo="Preencha os dados do empréstimo"
+    titulo="Emprestar chave"
+    subtitulo="Selecione a chave e quem a leva"
     (fechar)="alternarVisibilidadeModal()"
   >
-    <form class="portaria-modal__body"></form>
+    <form class="portaria-modal__body">
+      <p class="form-tipo-title">CHAVES DISPONÍVEIS</p>
+
+      <div class="form-row-port">
+        <div class="form-group-port">
+          <!-- EDIFICIO-A CHAVES -->
+          <label for="edificio-a" class="form-label-port">Edifício A</label>
+          <select id="edificio-a" class="filter-select">
+            <option value="">Escolher chave...</option>
+            <option value="1">CHV-01</option>
+          </select>
+        </div>
+        <div class="form-group-port">
+          <!-- EDIFICIO-B CHAVES -->
+          <label for="edificio-b" class="form-label-port">Edifício B</label>
+          <select id="edificio-b" class="filter-select">
+            <option value="">Escolher chave...</option>
+            <option value="1">CHV-01</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-port full">
+        <div class="form-group-port">
+          <label for="emprestimo-pessoa" class="form-label-port"
+            >Nome da pessoa</label
+          >
+          <div class="search-wrap">
+            <i class="icon-user-follow"></i>
+            <input
+              type="text"
+              class="search-input"
+              name="emprestimo-pessoa"
+              id="emprestimo-pessoa"
+              placeholder="Quem está a levar a chave..."
+            />
+          </div>
+        </div>
+      </div>
+    </form>
 
     <ng-container slot="footer">
       <button
@@ -112,7 +151,7 @@
         Cancelar
       </button>
       <button type="submit" class="portaria-btn portaria-btn--primary">
-        <i class="ft-file-plus"></i>
+        <i class="fas fa-key"></i>
         Emprestar
 
         <!-- <ng-template #loadingState>
