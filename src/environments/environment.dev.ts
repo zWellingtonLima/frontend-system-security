@@ -10,6 +10,7 @@ export const environment = {
   // CHAVES
   chavesListagemApiUrl: "http://localhost:8080/api/chaves",
   chavesEmprestadasApiURL: "http://localhost:8080/api/chaves/emprestadas",
+  chavesDisponiveisApiUrl: "http://localhost:8080/api/chaves/disponiveis",
   chavesHistoricoApiUrl: "http://localhost:8080/api/chaves/historico",
   //Consumos
   consumosApiUrl: "http://localhost:8080/api/consumos",
