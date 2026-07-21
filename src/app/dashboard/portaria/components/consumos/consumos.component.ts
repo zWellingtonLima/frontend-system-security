@@ -26,7 +26,6 @@ export class ConsumosComponent implements OnInit {
     this.chamarEdificios();
     this.carregarConsumos();
     this.carregarUltimas();
-    this.preencherCount();
   }
 
   ngOnDestroy(): void {
@@ -38,7 +37,6 @@ export class ConsumosComponent implements OnInit {
   carregarAposAlteracao() {
     this.carregarConsumos();
     this.carregarUltimas();
-    this.preencherCount();
   }
 
   // ── Cards "leituras actuais" ──
@@ -52,13 +50,6 @@ export class ConsumosComponent implements OnInit {
   totalPages = 0;
   currentPage = 1;
   carregando = false;
-
-  // ── Mudança dos estiloss ──
-
-  // ── Tabela / count(*) das leituas de cada tipo ──
-  totalEletricidade = 0;
-  totalGas = 0;
-  totalAgua = 0;
 
   // ── Toast ──
   toastVisivel = false;
@@ -113,33 +104,6 @@ export class ConsumosComponent implements OnInit {
               break;
           }
         }
-      },
-      () => {
-        this.mostrarToast("Erro ao carregar as leituras.");
-      },
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // PREENCHE O COUNT | AGUA - ELETRICIDADE - GAS - onInit
-  // ─────────────────────────────────────────────
-
-  preencherCount() {
-    this.consumoService.countTabelas().subscribe(
-      (res) => {
-        res.forEach((contagem) => {
-          switch (contagem.tipoConsumo) {
-            case 1:
-              this.totalAgua = contagem.count + 23232;
-              break;
-            case 2:
-              this.totalEletricidade = contagem.count + 55665;
-              break;
-            case 3:
-              this.totalGas = contagem.count + 76767;
-              break;
-          }
-        });
       },
       () => {
         this.mostrarToast("Erro ao carregar as leituras.");

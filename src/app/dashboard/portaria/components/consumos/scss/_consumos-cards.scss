@@ -82,8 +82,9 @@
   line-height: 1.25;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
   .leituras-grid {
     display: grid;
+    gap: 2px;
   }
 }
