@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import {
   ESTADO_OCORRENCIA_CONFIG,
   EstadoOcorrenciaEnumType,
-  TabConfig,
+  OcorrenciaTabConfig,
   TIPO_OCORRENCIA_CONFIG,
   TipoOcorrenciaEnumType,
 } from "../../models/enums";
@@ -19,7 +19,7 @@ import { catchError, finalize, map } from "rxjs/operators";
 import { environment } from "src/environments/environment.dev";
 
 // A ordem aqui define a ordem que aparece na tela
-const TABS: TabConfig[] = [
+const TABS: OcorrenciaTabConfig[] = [
   {
     value: "PENDENTE",
     label: "Pendentes",
@@ -51,12 +51,12 @@ export class OcorrenciasService {
     search: "",
   });
 
-  readonly filtrosRead$ = this.filtros$.asObservable();
+  // readonly filtrosRead$ = this.filtros$.asObservable();
   readonly ocorrenciasList$ = this.ocorrencias$.asObservable();
 
   tabs = TABS;
   // É sempre iniciada com [0] porque o primeiro elemento lá no TABS é o PENDENTE
-  tabAtiva$ = new BehaviorSubject<TabConfig>(TABS[0]);
+  tabAtiva$ = new BehaviorSubject<OcorrenciaTabConfig>(TABS[0]);
   estaCarregandoDados$ = new BehaviorSubject<boolean>(false);
   estaCriandoOcorrencia$ = new BehaviorSubject<boolean>(false);
 
@@ -78,10 +78,9 @@ export class OcorrenciasService {
     this.tabAtiva$.next(TABS[0]);
   }
 
-  setTab(tab: TabConfig): void {
+  setTab(tab: OcorrenciaTabConfig): void {
     this.tabAtiva$.next(tab);
     this.paginaAtual$.next(0);
-    this.filtros$.next({ ...this.filtros$.value });
     this.carregarOcorrencias(tab);
   }
 
@@ -104,7 +103,7 @@ export class OcorrenciasService {
   // =============================================
   // ================= GET =======================
 
-  carregarOcorrencias(tab: TabConfig): void {
+  carregarOcorrencias(tab: OcorrenciaTabConfig): void {
     this.estaCarregandoDados$.next(true);
 
     const tipoOcorrenciaSelecionada = this.filtros$.value.tipo;

@@ -2,13 +2,14 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
   debounceTime,
   distinctUntilChanged,
+  finalize,
   take,
   takeUntil,
 } from "rxjs/operators";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
   EstadoOcorrenciaEnumType,
-  TabConfig,
+  OcorrenciaTabConfig,
   TipoOcorrenciaEnumType,
   TIPOS_OCORRENCIA,
 } from "../../models/enums";
@@ -34,7 +35,7 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
   // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
   tipos = TIPOS_OCORRENCIA;
-  tipoFiltro$ = this.ocorrenciasService.filtrosRead$;
+  // tipoFiltro$ = this.ocorrenciasService.filtrosRead$;
 
   ocorrencias$ = this.ocorrenciasService.ocorrenciasList$;
   tabAtiva$ = this.ocorrenciasService.tabAtiva$;
@@ -84,12 +85,8 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
       });
   }
 
-  onTabChange(tab: TabConfig) {
+  onTabChange(tab: OcorrenciaTabConfig) {
     this.ocorrenciasService.setTab(tab);
-  }
-
-  onSearchChange(search: string) {
-    this.ocorrenciasService.setFiltro({ search });
   }
 
   // Setas anterior/seguinte - recebe a página de destino (0-based)
@@ -101,10 +98,6 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
   irParaPagina(p: number | "...") {
     if (typeof p !== "number") return;
     this.ocorrenciasService.setPagina(p - 1);
-  }
-
-  onTipoChange(tipo: TipoOcorrenciaEnumType | "") {
-    this.ocorrenciasService.setFiltro({ tipo });
   }
 
   // UPDATE
