@@ -7,18 +7,8 @@ import { catchError } from "rxjs/operators";
 import { ChavesTabConfig } from "../../models/enums";
 
 const TABS: ChavesTabConfig[] = [
-  {
-    value: "PENDENTES",
-    label: "Pendentes",
-    paginada: true,
-    parametro: "PENDENTES",
-  },
-  {
-    value: "TODAS",
-    label: "Todas",
-    paginada: true,
-    parametro: "TODAS",
-  },
+  { value: "PENDENTES", label: "Pendentes", paginada: true },
+  { value: "TODAS", label: "Todas", paginada: true },
 ];
 
 @Injectable({
@@ -71,9 +61,7 @@ export class ChaveService {
       .get<HistoricoEntregaChave[]>(environment.chavesHistoricoApiUrl)
       .pipe(
         catchError((error) => {
-          console.error(
-            `OCO-SER: Falha ao "CarregarTodasOcorrencias": ${error}`,
-          );
+          console.error(`CHAV-SER: Falha ao "getChavesHistorico": ${error}`);
           return of([]);
         }),
       );

@@ -6,7 +6,6 @@ import {
   EstadoOcorrenciaEnumType,
   OcorrenciaTabConfig,
   TIPO_OCORRENCIA_CONFIG,
-  TipoOcorrenciaEnumType,
 } from "../../models/enums";
 import {
   Filtros,
@@ -14,31 +13,17 @@ import {
   OcorrenciasPage,
   OcorrenciasResponseDTO,
   OcorrenciaViewModel,
+  PaginacaoVM,
 } from "../../models/api";
 import { catchError, finalize, map } from "rxjs/operators";
 import { environment } from "src/environments/environment.dev";
 
 // A ordem aqui define a ordem que aparece na tela
 const TABS: OcorrenciaTabConfig[] = [
-  {
-    value: "PENDENTE",
-    label: "Pendentes",
-    paginada: true,
-    estadoParam: "PENDENTE",
-  },
-  {
-    value: "RESOLVIDA",
-    label: "Resolvidas",
-    paginada: true,
-    estadoParam: "RESOLVIDA",
-  },
-  {
-    value: "CANCELADA",
-    label: "Canceladas",
-    paginada: true,
-    estadoParam: "CANCELADA",
-  },
-  { value: "TODAS", label: "Todas", paginada: true, estadoParam: null },
+  { value: "PENDENTE", label: "Pendentes", paginada: true },
+  { value: "RESOLVIDA", label: "Resolvidas", paginada: true },
+  { value: "CANCELADA", label: "Canceladas", paginada: true },
+  { value: "TODAS", label: "Todas", paginada: true },
 ];
 
 @Injectable({
@@ -51,7 +36,6 @@ export class OcorrenciasService {
     search: "",
   });
 
-  // readonly filtrosRead$ = this.filtros$.asObservable();
   readonly ocorrenciasList$ = this.ocorrencias$.asObservable();
 
   tabs = TABS;
@@ -63,12 +47,21 @@ export class OcorrenciasService {
   paginaAtual$ = new BehaviorSubject<number>(0);
   totalPaginas$ = new BehaviorSubject<number>(0);
 
-  // Páginas exibidas na barra de paginação: 1ª, atual e vizinhas, última
-  paginasVisiveis$ = combineLatest([
+  // Estado consolidado da paginação, pronto para o template (um único async).
+  // As páginas visíveis (1ª, atual e vizinhas, última) são calculadas aqui
+  paginacao$: Observable<PaginacaoVM> = combineLatest(
     this.paginaAtual$,
     this.totalPaginas$,
-  ]).pipe(
-    map(([atual, total]) => this.calcularPaginasVisiveis(atual + 1, total)),
+    this.tabAtiva$,
+  ).pipe(
+    map(([paginaAtual, totalPaginas, tab]) => ({
+      paginaAtual,
+      totalPaginas,
+      paginas: this.calcularPaginasVisiveis(paginaAtual + 1, totalPaginas),
+      temAnterior: paginaAtual > 0,
+      temProximo: paginaAtual < totalPaginas - 1,
+      visivel: tab.paginada && totalPaginas > 1,
+    })),
   );
 
   constructor(private http: HttpClient) {}
@@ -81,11 +74,26 @@ export class OcorrenciasService {
   setTab(tab: OcorrenciaTabConfig): void {
     this.tabAtiva$.next(tab);
     this.paginaAtual$.next(0);
+    this.filtros$.next({ tipo: "", search: "" });
     this.carregarOcorrencias(tab);
   }
 
+  // Recarrega a tab atual mantendo filtros e página (usado após criar/alterar)
+  private recarregar(): void {
+    this.carregarOcorrencias(this.tabAtiva$.value);
+  }
+
+  // Recebe o valor atual e compara com o estado que existe no service
   setFiltro(parcial: Partial<Filtros>): void {
-    this.filtros$.next({ ...this.filtros$.value, ...parcial });
+    const atual = this.filtros$.value;
+    const proximo = { ...atual, ...parcial };
+
+    // Ignora atualizações sem mudança real (mantém setFiltro idempotente e
+    // evita fetch redundante). Após setTab o estado volta a vazio, então o
+    // mesmo texto numa nova tab conta como mudança e busca normalmente.
+    if (proximo.tipo === atual.tipo && proximo.search === atual.search) return;
+
+    this.filtros$.next(proximo);
     this.carregarOcorrencias(this.tabAtiva$.value);
   }
 
@@ -109,9 +117,12 @@ export class OcorrenciasService {
     const tipoOcorrenciaSelecionada = this.filtros$.value.tipo;
     const textoDigitado = this.normalizarTexto(this.filtros$.value.search);
 
+    // A tab "TODAS" não envia estado; as restantes usam o próprio value
+    const estado = tab.value === "TODAS" ? null : tab.value;
+
     // Insere cada parâmetro existente
     let parametros = new HttpParams();
-    if (tab.estadoParam) parametros = parametros.set("estado", tab.estadoParam);
+    if (estado) parametros = parametros.set("estado", estado);
     if (tipoOcorrenciaSelecionada)
       parametros = parametros.set("tipo", tipoOcorrenciaSelecionada);
     if (textoDigitado) parametros = parametros.set("q", textoDigitado);
@@ -138,7 +149,7 @@ export class OcorrenciasService {
         this.ocorrencias$.next(
           resultado.content.map((o) => this.toViewModel(o)),
         );
-        this.totalPaginas$.next(resultado.page.totalPages);
+        this.totalPaginas$.next(resultado.totalPages);
       });
   }
 
@@ -166,7 +177,7 @@ export class OcorrenciasService {
       .subscribe((resultado) => {
         if (resultado === null) return;
 
-        this.inicializar();
+        this.recarregar();
       });
   }
 
@@ -189,7 +200,7 @@ export class OcorrenciasService {
       )
       .pipe(
         map(() => {
-          this.inicializar();
+          this.recarregar();
           return true;
         }),
         catchError((err) => {
@@ -206,18 +217,15 @@ export class OcorrenciasService {
   // ========== UTILITARIOS =========
   // Regex remove multiplos espacos entre as palavras e o trim limpa começo e final do texto
   private normalizarTexto(texto: string): string {
-    return String(texto || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return texto.replace(/\s+/g, " ").trim();
   }
 
   // Método usado para inserir as propriedades tipoConfig e estadoConfig aos dados retornados pelo backend
   private toViewModel(o: OcorrenciasResponseDTO): OcorrenciaViewModel {
     return {
       ...o,
-      tipoConfig: TIPO_OCORRENCIA_CONFIG[o.tipo as TipoOcorrenciaEnumType],
-      estadoConfig:
-        ESTADO_OCORRENCIA_CONFIG[o.estado as EstadoOcorrenciaEnumType],
+      tipoConfig: TIPO_OCORRENCIA_CONFIG[o.tipo],
+      estadoConfig: ESTADO_OCORRENCIA_CONFIG[o.estado],
     };
   }
 

@@ -1,11 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import {
-  debounceTime,
-  distinctUntilChanged,
-  finalize,
-  take,
-  takeUntil,
-} from "rxjs/operators";
+import { debounceTime, take, takeUntil } from "rxjs/operators";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
   EstadoOcorrenciaEnumType,
@@ -35,15 +29,12 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
   // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
   tipos = TIPOS_OCORRENCIA;
-  // tipoFiltro$ = this.ocorrenciasService.filtrosRead$;
 
   ocorrencias$ = this.ocorrenciasService.ocorrenciasList$;
   tabAtiva$ = this.ocorrenciasService.tabAtiva$;
   carregando$ = this.ocorrenciasService.estaCarregandoDados$; // Loader GET
 
-  paginaAtual$ = this.ocorrenciasService.paginaAtual$;
-  totalPaginas$ = this.ocorrenciasService.totalPaginas$;
-  paginasVisiveis$ = this.ocorrenciasService.paginasVisiveis$;
+  paginacao$ = this.ocorrenciasService.paginacao$;
 
   constructor(private ocorrenciasService: OcorrenciasService) {}
 
@@ -68,24 +59,24 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
 
     this.filtrosForm
       .get("search")!
-      .valueChanges.pipe(
-        debounceTime(400),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$),
-      )
+      .valueChanges.pipe(debounceTime(400), takeUntil(this.destroy$))
       .subscribe((search) => {
         this.ocorrenciasService.setFiltro({ search });
       });
 
     this.filtrosForm
       .get("tipo")!
-      .valueChanges.pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((tipo) => {
         this.ocorrenciasService.setFiltro({ tipo });
       });
   }
 
   onTabChange(tab: OcorrenciaTabConfig) {
+    // Limpa a UI dos filtros sem emitir valueChanges (evitaria um fetch duplicado);
+    // o reset do estado interno acontece no service.setTab
+    // remover o emitEvent causa duplo fetch
+    this.filtrosForm.reset({ search: "", tipo: "" }, { emitEvent: false });
     this.ocorrenciasService.setTab(tab);
   }
 
@@ -127,7 +118,6 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
           this.criarOcorrenciaForm.reset({
             tipoOcorrencia: TIPOS_OCORRENCIA[0].value,
             ocorrencia: "",
-            search: "",
           });
         }
       });

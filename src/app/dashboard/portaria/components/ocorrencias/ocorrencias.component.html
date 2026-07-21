@@ -144,41 +144,35 @@
       </ng-template>
 
       <!-- PAGINACAÇÃO -->
-      <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
-        <ng-container *ngIf="tabAtiva.paginada">
-          <ng-container *ngIf="totalPaginas$ | async as totalPaginas">
-            <ng-container *ngIf="{ paginaAtual: paginaAtual$ | async } as vm">
-              <div class="paginacao" *ngIf="totalPaginas > 1">
-                <button
-                  [disabled]="vm.paginaAtual === 0"
-                  (click)="onPageChange(vm.paginaAtual - 1)"
-                >
-                  <i class="ft-arrow-left"></i>
-                </button>
+      <ng-container *ngIf="paginacao$ | async as pag">
+        <div class="paginacao" *ngIf="pag.visivel">
+          <button
+            [disabled]="!pag.temAnterior"
+            (click)="onPageChange(pag.paginaAtual - 1)"
+          >
+            <i class="ft-arrow-left"></i>
+          </button>
 
-                <ng-container *ngFor="let p of paginasVisiveis$ | async">
-                  <button
-                    *ngIf="p !== '...'; else reticencia"
-                    [class.active]="p === vm.paginaAtual + 1"
-                    (click)="irParaPagina(p)"
-                  >
-                    {{ p }}
-                  </button>
-                  <ng-template #reticencia>
-                    <span class="reticencia">…</span>
-                  </ng-template>
-                </ng-container>
-
-                <button
-                  [disabled]="vm.paginaAtual === totalPaginas - 1"
-                  (click)="onPageChange(vm.paginaAtual + 1)"
-                >
-                  <i class="ft-arrow-right"></i>
-                </button>
-              </div>
-            </ng-container>
+          <ng-container *ngFor="let p of pag.paginas">
+            <button
+              *ngIf="p !== '...'; else reticencia"
+              [class.active]="p === pag.paginaAtual + 1"
+              (click)="irParaPagina(p)"
+            >
+              {{ p }}
+            </button>
+            <ng-template #reticencia>
+              <span class="reticencia">…</span>
+            </ng-template>
           </ng-container>
-        </ng-container>
+
+          <button
+            [disabled]="!pag.temProximo"
+            (click)="onPageChange(pag.paginaAtual + 1)"
+          >
+            <i class="ft-arrow-right"></i>
+          </button>
+        </div>
       </ng-container>
 
       <!-- MODAL CRIAR OCORRENCIA -->
