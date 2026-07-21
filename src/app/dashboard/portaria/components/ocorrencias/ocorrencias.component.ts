@@ -9,6 +9,9 @@ import {
 } from "../../models/enums";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { Subject } from "rxjs";
+import { OcorrenciaViewModel } from "../../models/api";
+
+type ModoModal = "criar" | "editar";
 
 @Component({
   selector: "app-ocorrencias",
@@ -19,12 +22,14 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // FORM
-  criarOcorrenciaForm!: FormGroup;
-  isCriandoOcorrencia$ = this.ocorrenciasService.estaCriandoOcorrencia$; // Loader POST
+  ocorrenciaForm!: FormGroup;
+  estaSalvando$ = this.ocorrenciasService.estaSalvando$; // Loader POST/PUT
   filtrosForm!: FormGroup;
 
   // MODAL
   modalIsOpen: boolean = false;
+  modoModal: ModoModal = "criar";
+  ocorrenciaEmEdicao: number | null = null;
 
   // FILTROS e TABS
   tabs = this.ocorrenciasService.tabs;
@@ -42,7 +47,7 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
     // Carrega Ocorrências
     this.ocorrenciasService.inicializar();
 
-    this.criarOcorrenciaForm = new FormGroup({
+    this.ocorrenciaForm = new FormGroup({
       tipoOcorrencia: new FormControl(TIPOS_OCORRENCIA[0].value, [
         Validators.required,
       ]),
@@ -98,34 +103,61 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
 
   // CRIAR NOVA OCORRENCIA
   selecionarTipo(tipo: TipoOcorrenciaEnumType): void {
-    this.criarOcorrenciaForm.get("tipoOcorrencia")!.setValue(tipo);
+    this.ocorrenciaForm.get("tipoOcorrencia")!.setValue(tipo);
+  }
+
+  // Abre o modal em modo edição preenchido com os valores atuais.
+  // A resposta traz `tipo`; o form usa `tipoOcorrencia`.
+  abrirEdicao(ocor: OcorrenciaViewModel): void {
+    this.modoModal = "editar";
+    this.ocorrenciaEmEdicao = ocor.id;
+    this.ocorrenciaForm.patchValue({
+      tipoOcorrencia: ocor.tipo,
+      ocorrencia: ocor.ocorrencia,
+    });
+    this.modalIsOpen = true;
   }
 
   onSubmit() {
-    if (this.criarOcorrenciaForm.invalid) {
-      Object.values(this.criarOcorrenciaForm.controls).forEach((control) => {
+    if (this.ocorrenciaForm.invalid) {
+      Object.values(this.ocorrenciaForm.controls).forEach((control) => {
         control.markAsTouched();
       });
       return;
     }
 
-    this.ocorrenciasService
-      .criarOcorrencia(this.criarOcorrenciaForm.value)
-      .pipe(take(1))
-      .subscribe((sucesso) => {
-        if (sucesso) {
-          this.alternarVisibilidadeModal();
-          this.criarOcorrenciaForm.reset({
-            tipoOcorrencia: TIPOS_OCORRENCIA[0].value,
-            ocorrencia: "",
-          });
-        }
-      });
+    const requisicao =
+      this.modoModal === "editar" && this.ocorrenciaEmEdicao !== null
+        ? this.ocorrenciasService.atualizarOcorrencia(
+            this.ocorrenciaEmEdicao,
+            this.ocorrenciaForm.value,
+          )
+        : this.ocorrenciasService.criarOcorrencia(this.ocorrenciaForm.value);
+
+    requisicao.pipe(take(1)).subscribe((sucesso) => {
+      if (sucesso) this.fecharModal();
+    });
   }
 
   // Modal
-  alternarVisibilidadeModal(): void {
-    this.modalIsOpen = !this.modalIsOpen;
+  abrirCriacao(): void {
+    this.modoModal = "criar";
+    this.ocorrenciaEmEdicao = null;
+    this.ocorrenciaForm.reset({
+      tipoOcorrencia: TIPOS_OCORRENCIA[0].value,
+      ocorrencia: "",
+    });
+    this.modalIsOpen = true;
+  }
+
+  fecharModal(): void {
+    this.modalIsOpen = false;
+    this.modoModal = "criar";
+    this.ocorrenciaEmEdicao = null;
+    this.ocorrenciaForm.reset({
+      tipoOcorrencia: TIPOS_OCORRENCIA[0].value,
+      ocorrencia: "",
+    });
   }
 
   trackById(_: number, o: { id: number }) {

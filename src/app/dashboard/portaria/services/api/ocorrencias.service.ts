@@ -12,6 +12,7 @@ import {
   OcorrenciasCriarDTO,
   OcorrenciasPage,
   OcorrenciasResponseDTO,
+  OcorrenciasUpdateDTO,
   OcorrenciaViewModel,
   PaginacaoVM,
 } from "../../models/api";
@@ -42,7 +43,8 @@ export class OcorrenciasService {
   // É sempre iniciada com [0] porque o primeiro elemento lá no TABS é o PENDENTE
   tabAtiva$ = new BehaviorSubject<OcorrenciaTabConfig>(TABS[0]);
   estaCarregandoDados$ = new BehaviorSubject<boolean>(false);
-  estaCriandoOcorrencia$ = new BehaviorSubject<boolean>(false);
+  // Loader compartilhado pelo modal (criar e o de editar)
+  estaSalvando$ = new BehaviorSubject<boolean>(false);
 
   paginaAtual$ = new BehaviorSubject<number>(0);
   totalPaginas$ = new BehaviorSubject<number>(0);
@@ -186,7 +188,7 @@ export class OcorrenciasService {
 
   criarOcorrencia(data: OcorrenciasCriarDTO): Observable<boolean> {
     // Inicializa estado de loading
-    this.estaCriandoOcorrencia$.next(true);
+    this.estaSalvando$.next(true);
 
     const dadosNormalizados: OcorrenciasCriarDTO = {
       ...data,
@@ -208,7 +210,42 @@ export class OcorrenciasService {
           return of(false);
         }),
         finalize(() => {
-          this.estaCriandoOcorrencia$.next(false);
+          this.estaSalvando$.next(false);
+        }),
+      );
+  }
+
+  // ===========================================
+  // =============== PUT ====================
+
+  // /api/ocorrencias/{id} - atualiza tipo e descrição de uma ocorrência
+  atualizarOcorrencia(
+    id: number,
+    data: OcorrenciasUpdateDTO,
+  ): Observable<boolean> {
+    this.estaSalvando$.next(true);
+
+    const dadosNormalizados: OcorrenciasUpdateDTO = {
+      ...data,
+      ocorrencia: this.normalizarTexto(data.ocorrencia),
+    };
+
+    return this.http
+      .put<OcorrenciasResponseDTO>(
+        `${environment.ocorrenciaApiUrl}/${id}`,
+        dadosNormalizados,
+      )
+      .pipe(
+        map(() => {
+          this.recarregar();
+          return true;
+        }),
+        catchError((err) => {
+          console.error("OCO-SERV-UPDATE: " + err);
+          return of(false);
+        }),
+        finalize(() => {
+          this.estaSalvando$.next(false);
         }),
       );
   }

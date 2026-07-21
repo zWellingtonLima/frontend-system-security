@@ -55,6 +55,8 @@ export interface OcorrenciasCriarDTO {
   ocorrencia: string;
 }
 
+export type OcorrenciasUpdateDTO = OcorrenciasCriarDTO;
+
 export interface OcorrenciasResponseDTO {
   id: number;
   createDate: ISOTimestamp;

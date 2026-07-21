@@ -7,10 +7,7 @@
       </p>
     </div>
 
-    <button
-      class="portaria-btn portaria-btn--primary"
-      (click)="alternarVisibilidadeModal()"
-    >
+    <button class="portaria-btn portaria-btn--primary" (click)="abrirCriacao()">
       <i class="fas fa-plus"></i>
       <span>Registar Ocorrência</span>
     </button>
@@ -104,7 +101,7 @@
             </div>
           </div>
 
-          <!-- ADICIONAR ACOES PARA EDICAO -->
+          <!-- BLOCO DE AÇÕES PARA O UTILIZADOR -->
           <div class="acoes" *ngIf="ocor.estado === 'PENDENTE'">
             <button
               class="portaria-btn portaria-btn--secondary"
@@ -119,6 +116,13 @@
               (click)="alterarEstado('CANCELADA', ocor.id)"
             >
               <i class="ft-x-circle"></i>
+            </button>
+            <button
+              class="portaria-btn portaria-btn--ghost"
+              title="Editar ocorrência"
+              (click)="abrirEdicao(ocor)"
+            >
+              <i class="ft-edit-2"></i>
             </button>
           </div>
 
@@ -175,21 +179,23 @@
         </div>
       </ng-container>
 
-      <!-- MODAL CRIAR OCORRENCIA -->
+      <!-- MODAL CRIAR / EDITAR OCORRENCIA -->
       <app-base-modal
         [modalEstaAberto]="modalIsOpen"
-        titulo="Registar ocorrência"
+        [titulo]="
+          modoModal === 'editar' ? 'Editar ocorrência' : 'Registar ocorrência'
+        "
         subtitulo="Preencha os dados da ocorrência"
-        (fechar)="alternarVisibilidadeModal()"
+        (fechar)="fecharModal()"
       >
-        <form [formGroup]="criarOcorrenciaForm" class="portaria-modal__body">
+        <form [formGroup]="ocorrenciaForm" class="portaria-modal__body">
           <p class="form-tipo-title">TIPO DE OCORRÊNCIA</p>
           <div class="form-tipo-ocor-grid">
             <div
               class="tipo-ocorrencia"
               *ngFor="let t of tipos"
               [class.selected]="
-                criarOcorrenciaForm.get('tipoOcorrencia').value === t.value
+                ocorrenciaForm.get('tipoOcorrencia').value === t.value
               "
               (click)="selecionarTipo(t.value)"
             >
@@ -214,24 +220,30 @@
 
         <ng-container
           slot="footer"
-          *ngIf="{ isCriando: isCriandoOcorrencia$ | async } as vm"
+          *ngIf="{ salvando: estaSalvando$ | async } as vm"
         >
           <button
-            [disabled]="vm.isCriando"
+            [disabled]="vm.salvando"
             class="portaria-btn portaria-btn--ghost"
-            (click)="alternarVisibilidadeModal()"
+            (click)="fecharModal()"
           >
             Cancelar
           </button>
           <button
             type="submit"
-            [disabled]="criarOcorrenciaForm.invalid || vm.isCriando"
+            [disabled]="ocorrenciaForm.invalid || vm.salvando"
             (click)="onSubmit()"
             class="portaria-btn portaria-btn--primary"
           >
-            <ng-container *ngIf="!vm.isCriando; else loadingState">
-              <i class="ft-file-plus"></i>
-              Registar
+            <ng-container *ngIf="!vm.salvando; else loadingState">
+              <ng-container *ngIf="modoModal === 'editar'; else criarLabel">
+                <i class="ft-edit-2"></i>
+                Guardar alterações
+              </ng-container>
+              <ng-template #criarLabel>
+                <i class="ft-file-plus"></i>
+                Registar
+              </ng-template>
             </ng-container>
 
             <ng-template #loadingState>
