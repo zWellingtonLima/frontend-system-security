@@ -7,7 +7,7 @@
 
     <button
       class="portaria-btn portaria-btn--primary"
-      (click)="alternarVisibilidadeModal()"
+      (click)="abrirModalEmprestar()"
     >
       <i class="fas fa-plus"></i>
       <span>Emprestar Chave</span>
@@ -36,7 +36,7 @@
         type="text"
         name="search-input"
         class="search-input"
-        placeholder="Pesquisar por descrição da ocorrência..."
+        placeholder="Pesquisar por código, sala ou responsável..."
       />
     </div>
     <select class="filter-select" name="filter-select">
@@ -47,80 +47,152 @@
     </select>
   </div>
 
-  <!-- TABELA -->
-  <div>
-    <table class="tbl">
-      <thead>
-        <tr>
-          <th>Edifício</th>
-          <th>Chave / Código</th>
-          <th>Sala / Piso</th>
-          <th>Com Quem</th>
-          <th>Desde</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
+  <!-- LISTAGEM DE CHAVES -->
+  <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
+    <ng-container *ngIf="carregando$ | async; else listaChaves">
+      <div class="loading-state">
+        <img class="loader" src="assets/img/oval.svg" alt="" />
+        <p>Carregando chaves...</p>
+      </div>
+    </ng-container>
 
-      <tbody>
-        <!-- <tr *ngFor="let item of historicoChaves">
-          <td>{{ item.edificio }}</td>
-          <td>
-            <span class="bold-text">{{ item.descricao }}</span>
-          </td>
-          <td>{{ item.sala }}</td>
-          <td>{{ item.nomePessoa }}</td>
-          <td>{{ item.horaEntrega | date: "HH:mm:ss" }}</td>
-          <td><button class="btn-action">••• Detalhes</button></td>
-        </tr> -->
-      </tbody>
-    </table>
-  </div>
+    <ng-template #listaChaves>
+      <ng-container *ngIf="chaves$ | async as chaves">
+        <div class="tbl-wrap" *ngIf="chaves.length > 0; else estadoVazio">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Edifício</th>
+                <th>Chave / Código</th>
+                <th>Sala / Piso</th>
+                <th *ngIf="tabAtiva.value === 'TODAS'">Estado</th>
+                <th>Com quem</th>
+                <th>Desde</th>
+                <th *ngIf="tabAtiva.value === 'EMPRESTADAS'">Ações</th>
+              </tr>
+            </thead>
 
-  <!-- <div class="pagination-container">
-    <button
-      [disabled]="paginaAtual === 1"
-      class="btn-page"
-    >
-      <i class="ft-chevron-left"></i>
-    </button>
+            <tbody>
+              <tr *ngFor="let chave of chaves; trackBy: trackById">
+                <td>{{ chave.edificioLabel }}</td>
+                <td>
+                  <span class="bold-text">{{ chave.codigo }}</span>
+                </td>
+                <td>
+                  <ng-container *ngIf="chave.sala != null; else semSala">
+                    Sala {{ chave.sala }}
+                    <span class="sub-text">{{ chave.pisoLabel }}</span>
+                  </ng-container>
+                  <ng-template #semSala>
+                    <span class="empty-dash">—</span>
+                  </ng-template>
+                </td>
+                <td *ngIf="tabAtiva.value === 'TODAS'">
+                  <span class="badge" [ngClass]="chave.statusConfig.classe">
+                    <i [ngClass]="chave.statusConfig.icone"></i>
+                    {{ chave.statusConfig.label }}
+                  </span>
+                </td>
+                <td>
+                  <ng-container *ngIf="chave.pessoa; else semPessoa">
+                    <span class="bold-text">
+                      {{ chave.pessoa }}
+                    </span>
+                  </ng-container>
+                  <ng-template #semPessoa>
+                    <span class="empty-dash">—</span>
+                  </ng-template>
+                </td>
+                <td>
+                  <ng-container *ngIf="chave.desde; else semDesde">
+                    {{ chave.desde | date: "HH:mm" : "Europe/Lisbon" }}
+                  </ng-container>
+                  <ng-template #semDesde>
+                    <span class="empty-dash">—</span>
+                  </ng-template>
+                </td>
+                <td *ngIf="tabAtiva.value === 'EMPRESTADAS'">
+                  <!-- Placeholders: ações (atualizar/devolver) chegam num passo futuro -->
+                  <div class="acoes-chave">
+                    <button class="btn-action" type="button">
+                      <i class="ft-edit-2"></i> Atualizar
+                    </button>
+                    <button class="btn-action btn-return" type="button">
+                      <i class="ft-corner-down-left"></i> Devolver
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-    <span class="page-info">
-      Página <strong>{{ paginaAtual }}</strong> de {{ totalPaginas }}
-    </span>
-
-    <button
-      [disabled]="paginaAtual === totalPaginas"
-      class="btn-page"
-    >
-      <i class="ft-chevron-right"></i>
-    </button>
-  </div> -->
+        <ng-template #estadoVazio>
+          <div class="empty-state">
+            <i class="ft-x-circle"></i>
+            <p>Nenhuma chave encontrada.</p>
+          </div>
+        </ng-template>
+      </ng-container>
+    </ng-template>
+  </ng-container>
 
   <!-- MODAL EMPRESTAR CHAVE -->
   <app-base-modal
     [modalEstaAberto]="modalIsOpen"
     titulo="Emprestar chave"
     subtitulo="Selecione a chave e quem a leva"
-    (fechar)="alternarVisibilidadeModal()"
+    (fechar)="fecharModal()"
   >
-    <form class="portaria-modal__body">
+    <form
+      class="portaria-modal__body"
+      [formGroup]="emprestarForm"
+      *ngIf="{
+        disp: chavesDisponiveis$ | async,
+        carregando: carregandoDisponiveis$ | async
+      } as vm"
+    >
       <p class="form-tipo-title">CHAVES DISPONÍVEIS</p>
 
       <div class="form-row-port">
         <div class="form-group-port">
           <!-- EDIFICIO-A CHAVES -->
           <label for="edificio-a" class="form-label-port">Edifício A</label>
-          <select id="edificio-a" class="filter-select">
-            <option value="">Escolher chave...</option>
-            <option value="1">CHV-01</option>
+          <select
+            id="edificio-a"
+            class="filter-select"
+            formControlName="chaveEdificioA"
+            [attr.disabled]="vm.carregando ? '' : null"
+          >
+            <option value="">
+              {{ vm.carregando ? "A carregar..." : "Escolher chave..." }}
+            </option>
+            <option *ngFor="let c of vm.disp && vm.disp[1]" [value]="c.id">
+              {{ c.codigo }}
+              <ng-container *ngIf="c.sala != null">
+                — Sala {{ c.sala }}</ng-container
+              >
+            </option>
           </select>
         </div>
         <div class="form-group-port">
           <!-- EDIFICIO-B CHAVES -->
           <label for="edificio-b" class="form-label-port">Edifício B</label>
-          <select id="edificio-b" class="filter-select">
-            <option value="">Escolher chave...</option>
-            <option value="1">CHV-01</option>
+          <select
+            id="edificio-b"
+            class="filter-select"
+            formControlName="chaveEdificioB"
+            [attr.disabled]="vm.carregando ? '' : null"
+          >
+            <option value="">
+              {{ vm.carregando ? "A carregar..." : "Escolher chave..." }}
+            </option>
+            <option *ngFor="let c of vm.disp && vm.disp[2]" [value]="c.id">
+              {{ c.codigo
+              }}<ng-container *ngIf="c.sala != null">
+                — Sala {{ c.sala }}</ng-container
+              >
+            </option>
           </select>
         </div>
       </div>
@@ -136,6 +208,7 @@
               class="search-input"
               name="emprestimo-pessoa"
               id="emprestimo-pessoa"
+              formControlName="pessoa"
               placeholder="Quem está a levar a chave..."
             />
           </div>
@@ -144,20 +217,12 @@
     </form>
 
     <ng-container slot="footer">
-      <button
-        class="portaria-btn portaria-btn--ghost"
-        (click)="alternarVisibilidadeModal()"
-      >
+      <button class="portaria-btn portaria-btn--ghost" (click)="fecharModal()">
         Cancelar
       </button>
       <button type="submit" class="portaria-btn portaria-btn--primary">
         <i class="fas fa-key"></i>
         Emprestar
-
-        <!-- <ng-template #loadingState>
-          <img class="loader" src="assets/img/oval.svg" alt="" />
-          A processar...
-        </ng-template> -->
       </button>
     </ng-container>
   </app-base-modal>

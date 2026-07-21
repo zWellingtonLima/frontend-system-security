@@ -105,16 +105,18 @@
   }
 }
 
+.tbl-wrap {
+  overflow-x: auto;
+}
+
 .tbl {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
   table-layout: fixed;
   min-width: 600px;
 
   thead {
     background: $portaria-color-bg-soft;
-    text-align: center;
   }
   th {
     font-size: 12px;
@@ -127,6 +129,7 @@
   td {
     font-size: 12px;
     color: #374151;
+    padding: 10px 12px;
     border-bottom: 1px solid #f3f5f7;
     vertical-align: middle;
   }
@@ -152,7 +155,7 @@
 
 /* Alinhamento de trsearcaços vazios (-) */
 .empty-dash {
-  color: #d0d0d0;
+  color: #9ca3af;
 }
 
 /* Badges / Etiquetas de Estado */
@@ -172,6 +175,12 @@
   color: #16a34a;
 }
 
+/* Estilo Estado: Emprestada */
+.badge-emprestada {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
 /* Estilo Estado: Atrasada */
 .badge-atrasada {
   background-color: #fef2f2;
@@ -182,6 +191,13 @@
 .time-highlight {
   color: #dc2626;
   font-weight: 600;
+}
+
+/* Ações da linha (atualizar / devolver) */
+.acoes-chave {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Botões de Ação */
@@ -262,7 +278,6 @@
 
 .form-label-port {
   color: $portaria-color-text-dark;
-
 }
 
 .form-row-port {
@@ -280,4 +295,36 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+// ESTADOS DE CARREGAMENTO / VAZIO
+
+.empty-state,
+.loading-state {
+  display: flex;
+  font-weight: 500;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: $portaria-color-text-muted;
+  gap: 0.5rem;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.empty-state i {
+  font-size: 2rem;
+}
+
+.loader {
+  height: 16px;
+  width: 16px;
+}
+
+.loading-state .loader {
+  filter: invert(1) opacity(0.6);
 }
