@@ -134,7 +134,7 @@
     <table class="tbl">
       <thead>
         <tr>
-          <th>Leitura actual</th>
+          <th style="width: 10%">Leitura actual</th>
           <th>Consumo</th>
           <th>Data / hora</th>
           <th>Observação</th>
@@ -189,7 +189,7 @@
               }}</span>
             </td>
             <td [title]="item.observacao">
-              {{ item.observacao ? (item.observacao | slice: 0 : 15) : "_" }}
+              {{ item.observacao ? (item.observacao | slice: 0 : 30) : "_" }}
               {{ item.observacao ? "..." : "" }}
             </td>
             <td>
