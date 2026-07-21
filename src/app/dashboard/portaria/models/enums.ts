@@ -129,8 +129,11 @@ export const EDIFICIO_LABEL: Record<number, string> = {
   2: "Edifício B",
 };
 
+// Posso depois alterar para o padrão Português usando Cave, Rés-do-chão etc
 export const PISO_LABEL: Record<string, string> = {
-  PRIMEIRO: "Piso 1",
-  SEGUNDO: "Piso 2",
-  TERCEIRO: "Piso 3",
+  "-1": "Piso -1",
+  "0": "Piso 0",
+  "1": "Piso 1",
+  "2": "Piso 2",
+  "3": "Piso 3",
 };
