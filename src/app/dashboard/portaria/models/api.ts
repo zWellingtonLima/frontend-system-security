@@ -1,6 +1,6 @@
 import {
+  ConfigBase,
   EstadoOcorrenciaEnumType,
-  OcorrenciaConfigBase,
   TipoOcorrenciaEnumType,
 } from "./enums";
 
@@ -50,22 +50,6 @@ export interface HistoricoEntregaChave {
 // ============================================================
 // OCORRÊNCIAS
 // ============================================================
-export interface Ocorrencias {
-  id: number;
-  createDate: Date;
-  createUser: string;
-  tipoOcorrencia: string;
-  ocorrencia: string;
-  estado: EstadoOcorrenciaEnumType;
-  horaOcorrencia: Date;
-}
-
-export interface OcorrenciasRequestDTO {
-  tipoOcorrencia: TipoOcorrenciaEnumType;
-  ocorrencia: string;
-  estadoOcorrenciaEnum: EstadoOcorrenciaEnumType;
-}
-
 export interface OcorrenciasCriarDTO {
   tipoOcorrencia: TipoOcorrenciaEnumType;
   ocorrencia: string;
@@ -81,15 +65,10 @@ export interface OcorrenciasResponseDTO {
   modificadoEm: ISOTimestamp;
 }
 
-// Verificar se o formato definitivo sera esse
 export interface OcorrenciasPage {
   content: OcorrenciasResponseDTO[];
-  page: {
-    size: number;
-    number: number;
-    totalElements: number;
-    totalPages: number;
-  };
+  number: number; // página atual (0-based)
+  totalPages: number;
 }
 
 export interface Filtros {
@@ -98,6 +77,16 @@ export interface Filtros {
 }
 
 export interface OcorrenciaViewModel extends OcorrenciasResponseDTO {
-  tipoConfig: OcorrenciaConfigBase;
-  estadoConfig: OcorrenciaConfigBase;
+  tipoConfig: ConfigBase;
+  estadoConfig: ConfigBase;
+}
+
+// Estado consolidado da barra de paginação para consumir direto no template
+export interface PaginacaoVM {
+  paginaAtual: number;
+  totalPaginas: number;
+  paginas: (number | "...")[];
+  temAnterior: boolean;
+  temProximo: boolean;
+  visivel: boolean;
 }

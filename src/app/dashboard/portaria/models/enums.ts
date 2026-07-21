@@ -1,4 +1,22 @@
 // ============================================================
+// COMPARTILHADO
+// ============================================================
+
+// Forma comum de config visual (labels, ícones, classes) é reutilizada entre páginas
+export interface ConfigBase {
+  label: string;
+  icone: string;
+  classe: string;
+}
+
+// Config de tab genérica. Cada página define o seu próprio tipo de `value`. Por exemplo: Ocorrências possui 4 TABS; Chaves possui 2.
+export interface TabConfig<T> {
+  value: T;
+  label: string;
+  paginada: boolean;
+}
+
+// ============================================================
 // OCORRÊNCIAS
 // ============================================================
 export type TipoOcorrenciaEnumType =
@@ -11,67 +29,50 @@ export type TipoOcorrenciaEnumType =
 export type EstadoOcorrenciaEnumType = "PENDENTE" | "RESOLVIDA" | "CANCELADA";
 export type TabOcorrencia = EstadoOcorrenciaEnumType | "TODAS";
 
-export interface OcorrenciaConfigBase {
-  label: string;
-  icone: string;
-  classe: string;
-}
-
-export interface TipoOcorrencia extends OcorrenciaConfigBase {
+export interface TipoOcorrencia extends ConfigBase {
   value: TipoOcorrenciaEnumType;
 }
-export interface EstadoOcorrencia extends OcorrenciaConfigBase {
-  value: EstadoOcorrenciaEnumType;
-}
 
-// Configuracao da paginacao
-export interface OcorrenciaTabConfig {
-  value: TabOcorrencia;
-  label: string;
-  paginada: boolean;
-  estadoParam: EstadoOcorrenciaEnumType | null;
-}
+export type OcorrenciaTabConfig = TabConfig<TabOcorrencia>;
 
 // Não serve para iteração direta no *ngFor mas é bom para CONFIG["AVARIA_EQUIPAMENTO"] por exempo
-export const TIPO_OCORRENCIA_CONFIG: Record<
-  TipoOcorrenciaEnumType,
-  OcorrenciaConfigBase
-> = {
-  ACESSO_NAO_AUTORIZADO: {
-    icone: "ft-shield",
-    label: "Acesso Não Autorizado",
-    classe: "tipo--acesso",
-  },
-  ALARME_DISPARADO: {
-    classe: "tipo--alarme",
-    icone: "far fa-bell",
-    label: "Alarme Disparado",
-  },
-  AVARIA_EQUIPAMENTO: {
-    icone: "ft-x-square",
-    classe: "tipo--avaria",
-    label: "Avaria de Equipamento",
-  },
-  OBJETO_PERDIDO_ENCONTRADO: {
-    icone: "ft-box",
-    label: "Objeto Perdido/Encontrado",
-    classe: "tipo--objeto",
-  },
-  INCIDENTE_COM_VISITANTE: {
-    icone: "ft-user-x",
-    classe: "tipo--visitante",
-    label: "Incidente com Visitante",
-  },
-  OUTROS: {
-    label: "Outros",
-    icone: "ft-help-circle",
-    classe: "tipo--outros",
-  },
-};
+export const TIPO_OCORRENCIA_CONFIG: Record<TipoOcorrenciaEnumType, ConfigBase> =
+  {
+    ACESSO_NAO_AUTORIZADO: {
+      icone: "ft-shield",
+      label: "Acesso Não Autorizado",
+      classe: "tipo--acesso",
+    },
+    ALARME_DISPARADO: {
+      classe: "tipo--alarme",
+      icone: "far fa-bell",
+      label: "Alarme Disparado",
+    },
+    AVARIA_EQUIPAMENTO: {
+      icone: "ft-x-square",
+      classe: "tipo--avaria",
+      label: "Avaria de Equipamento",
+    },
+    OBJETO_PERDIDO_ENCONTRADO: {
+      icone: "ft-box",
+      label: "Objeto Perdido/Encontrado",
+      classe: "tipo--objeto",
+    },
+    INCIDENTE_COM_VISITANTE: {
+      icone: "ft-user-x",
+      classe: "tipo--visitante",
+      label: "Incidente com Visitante",
+    },
+    OUTROS: {
+      label: "Outros",
+      icone: "ft-help-circle",
+      classe: "tipo--outros",
+    },
+  };
 
 export const ESTADO_OCORRENCIA_CONFIG: Record<
   EstadoOcorrenciaEnumType,
-  OcorrenciaConfigBase
+  ConfigBase
 > = {
   PENDENTE: {
     classe: "estado--pendente",
@@ -101,23 +102,6 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 // CHAVES
 // ============================================================
-
 export type TabsChave = "PENDENTES" | "TODAS";
 
-export interface ChavesConfigBase {
-  label: string;
-  icone: string;
-  classe: string;
-}
-
-export interface Chaves extends ChavesConfigBase {
-  value: TabsChave;
-}
-
-// Configuracao da paginacao
-export interface ChavesTabConfig {
-  value: TabsChave;
-  label: string;
-  paginada: boolean;
-  parametro: TabsChave;
-}
+export type ChavesTabConfig = TabConfig<TabsChave>;
