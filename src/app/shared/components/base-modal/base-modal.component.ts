@@ -87,8 +87,4 @@ export class BaseModalComponent implements OnChanges, OnDestroy {
   onEscape() {
     if (this.modalEstaAberto) this.fechar.emit();
   }
-
-  onOverlayClick() {
-    this.fechar.emit();
-  }
 }
