@@ -23,6 +23,9 @@
         (click)="onTabChange(tab)"
       >
         {{ tab.label }}
+        <span class="tab-count" *ngIf="tab.value === 'PENDENTE'">
+          {{ totalPendentes$ | async }}
+        </span>
       </div>
     </div>
   </ng-container>

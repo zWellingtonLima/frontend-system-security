@@ -37,6 +37,7 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
 
   ocorrencias$ = this.ocorrenciasService.ocorrenciasList$;
   tabAtiva$ = this.ocorrenciasService.tabAtiva$;
+  totalPendentes$ = this.ocorrenciasService.totalPendentes$;
   carregando$ = this.ocorrenciasService.estaCarregandoDados$; // Loader GET
 
   paginacao$ = this.ocorrenciasService.paginacao$;

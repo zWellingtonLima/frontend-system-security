@@ -86,6 +86,7 @@ export interface OcorrenciasPage {
   content: OcorrenciasResponseDTO[];
   number: number; // página atual (0-based)
   totalPages: number;
+  totalElements: number; // total da query, não o total da página
 }
 
 export interface Filtros {

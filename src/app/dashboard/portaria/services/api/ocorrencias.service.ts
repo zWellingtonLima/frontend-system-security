@@ -49,6 +49,9 @@ export class OcorrenciasService {
   paginaAtual$ = new BehaviorSubject<number>(0);
   totalPaginas$ = new BehaviorSubject<number>(0);
 
+  private totalPendentes = new BehaviorSubject<number>(0);
+  readonly totalPendentes$ = this.totalPendentes.asObservable();
+
   // Estado consolidado da paginação, pronto para o template (um único async).
   // As páginas visíveis (1ª, atual e vizinhas, última) são calculadas aqui
   paginacao$: Observable<PaginacaoVM> = combineLatest(
@@ -70,6 +73,7 @@ export class OcorrenciasService {
 
   inicializar(): void {
     this.carregarOcorrencias(TABS[0]);
+    this.carregarTotalPendentes();
     this.tabAtiva$.next(TABS[0]);
   }
 
@@ -78,11 +82,13 @@ export class OcorrenciasService {
     this.paginaAtual$.next(0);
     this.filtros$.next({ tipo: "", search: "" });
     this.carregarOcorrencias(tab);
+    this.carregarTotalPendentes();
   }
 
   // Recarrega a tab atual mantendo filtros e página (usado após criar/alterar)
   private recarregar(): void {
     this.carregarOcorrencias(this.tabAtiva$.value);
+    this.carregarTotalPendentes();
   }
 
   // Recebe o valor atual e compara com o estado que existe no service
@@ -152,6 +158,29 @@ export class OcorrenciasService {
           resultado.content.map((o) => this.toViewModel(o)),
         );
         this.totalPaginas$.next(resultado.totalPages);
+      });
+  }
+
+  // Serviço apenas para carregar o número para o badge de Pendentes e manter sempre atualizado independente da tabAtiva
+  private carregarTotalPendentes(): void {
+    const parametros = new HttpParams()
+      .set("estado", "PENDENTE")
+      .set("page", "0")
+      .set("size", "1");
+
+    this.http
+      .get<OcorrenciasPage>(environment.ocorrenciaApiUrl, {
+        params: parametros,
+      })
+      .pipe(
+        catchError((err) => {
+          console.error("OCO-SERV-CONTAGEM: " + err);
+          return of(null);
+        }),
+      )
+      .subscribe((resultado) => {
+        if (resultado === null) return;
+        this.totalPendentes.next(resultado.totalElements);
       });
   }
 
