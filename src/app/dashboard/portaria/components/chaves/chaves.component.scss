@@ -112,8 +112,6 @@
 .tbl {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  min-width: 600px;
 
   thead {
     background: $portaria-color-bg-soft;
@@ -196,14 +194,13 @@
 /* Ações da linha (atualizar / devolver) */
 .acoes-chave {
   display: flex;
-  align-items: center;
   gap: 6px;
 }
 
 /* Botões de Ação */
 .btn-action {
   background: none;
-  border: none;
+  border: 1px solid #eee;
   color: #555;
   cursor: pointer;
   font-size: 13px;
@@ -294,7 +291,6 @@
 .form-group-port {
   display: flex;
   flex-direction: column;
-  gap: 5px;
 }
 
 // ESTADOS DE CARREGAMENTO / VAZIO
@@ -327,4 +323,30 @@
 
 .loading-state .loader {
   filter: invert(1) opacity(0.6);
+}
+
+// FORM ATUALIZAR EMPRESTIMO
+.chave-info {
+  border: 1px solid #eee;
+  padding: 0.5rem;
+  border-radius: $portaria-radius-xs;
+  background: $portaria-color-bg-soft;
+  font-size: 14px;
+
+  & .label {
+    font-size: 12px;
+    font-weight: 400;
+    color: $portaria-color-text-muted-alt;
+  }
+}
+
+.read-only-input {
+  border: none;
+  background: transparent;
+  user-select: none;
+  caret-color: transparent;
+  padding: 0;
+  margin-top: -4px;
+  color: $portaria-color-text-dark;
+  font-weight: 500;
 }

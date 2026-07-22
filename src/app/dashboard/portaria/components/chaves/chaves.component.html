@@ -114,11 +114,19 @@
                 <td *ngIf="tabAtiva.value === 'EMPRESTADAS'">
                   <!-- Placeholders: ações (atualizar/devolver) chegam num passo futuro -->
                   <div class="acoes-chave">
-                    <button class="btn-action" type="button">
-                      <i class="ft-edit-2"></i> Atualizar
+                    <button
+                      class="btn-action btn-return"
+                      type="button"
+                      (click)="abrirModalAtualizar(chave)"
+                    >
+                      <i class="ft-edit-2"></i>
                     </button>
-                    <button class="btn-action btn-return" type="button">
-                      <i class="ft-corner-down-left"></i> Devolver
+                    <button
+                      class="btn-action"
+                      type="button"
+                      title="Devolver chave"
+                    >
+                      <i class="ft-corner-down-left"></i>
                     </button>
                   </div>
                 </td>
@@ -139,10 +147,10 @@
 
   <!-- MODAL EMPRESTAR CHAVE -->
   <app-base-modal
-    [modalEstaAberto]="modalIsOpen"
+    [modalEstaAberto]="emprestarModalIsOpen"
     titulo="Emprestar chave"
     subtitulo="Selecione a chave e quem a leva"
-    (fechar)="fecharModal()"
+    (fechar)="fecharModalEmprestar()"
   >
     <form
       class="portaria-modal__body"
@@ -217,12 +225,142 @@
     </form>
 
     <ng-container slot="footer">
-      <button class="portaria-btn portaria-btn--ghost" (click)="fecharModal()">
+      <button
+        class="portaria-btn portaria-btn--ghost"
+        (click)="fecharModalEmprestar()"
+      >
         Cancelar
       </button>
       <button type="submit" class="portaria-btn portaria-btn--primary">
         <i class="fas fa-key"></i>
         Emprestar
+      </button>
+    </ng-container>
+  </app-base-modal>
+
+  <!-- MODAL ATUALIZAR CHAVE -->
+  <app-base-modal
+    [modalEstaAberto]="atualizarModalIsOpen"
+    titulo="Atualizar empréstimo"
+    subtitulo="Corrigir os dados do empréstimo"
+    (fechar)="fecharModalAtualizar()"
+  >
+    <form
+      class="portaria-modal__body"
+      [formGroup]="atualizarForm"
+      *ngIf="{
+        disp: chaves$ | async,
+        carregando: carregando$ | async
+      } as vm"
+    >
+      <div class="chave-info" formGroupName="chaveInfo">
+        <div class="form-row-port">
+          <div class="form-group-port">
+            <span class="label"> Edifício </span>
+            <input
+              disabled
+              class="read-only-input"
+              type="text"
+              formControlName="edificio"
+              readonly
+            />
+            <span> </span>
+          </div>
+          <div class="form-group-port">
+            <span class="label"> Código </span>
+            <input
+              disabled
+              class="read-only-input"
+              type="text"
+              formControlName="codigoChave"
+              readonly
+            />
+            <span> </span>
+          </div>
+        </div>
+        <div class="form-row-port">
+          <div class="form-group-port">
+            <span class="label"> Sala / Piso </span>
+            <input
+              disabled
+              class="read-only-input"
+              type="text"
+              formControlName="sala"
+              readonly
+            />
+            <span> </span>
+          </div>
+          <div class="form-group-port">
+            <span class="label"> Hora empréstimo </span>
+            <input
+              disabled
+              class="read-only-input"
+              type="text"
+              formControlName="horaEmprestimo"
+              readonly
+            />
+            <span> </span>
+          </div>
+        </div>
+      </div>
+
+      <p class="form-tipo-title">DADOS DO EMPRÉSTIMO</p>
+
+      <div class="form-row-port" formGroupName="emprestimo">
+        <div class="form-group-port">
+          <!-- EDIFICIO-A CHAVES -->
+          <label class="form-label-port ">Funcionário</label>
+          <input
+            class="filter-select"
+            type="text"
+            formControlName="funcionario"
+            placeholder="Insira o nome de um funcionário"
+          />
+        </div>
+        <div class="form-group-port">
+          <!-- EDIFICIO-B CHAVES -->
+          <label for="chave-selecionada" class="form-label-port"
+            >Chave Selecionada</label
+          >
+          <select
+            id="chave-selecionada"
+            class="filter-select"
+            [attr.disabled]="vm.carregando ? '' : null"
+          >
+            <option value="" formControlName="chaveEscolhida"></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-port full">
+        <div class="form-group-port">
+          <label for="emprestimo-pessoa" class="form-label-port"
+            >Nome da pessoa</label
+          >
+          <div class="search-wrap" formGroupName="devolucao">
+            <i class="icon-user-follow"></i>
+            <input
+              type="text"
+              class="search-input"
+              name="emprestimo-pessoa"
+              id="emprestimo-pessoa"
+              formControlName="devolvidaPor"
+              placeholder="Quem está a levar a chave..."
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <ng-container slot="footer">
+      <button
+        class="portaria-btn portaria-btn--ghost"
+        (click)="fecharModalAtualizar()"
+      >
+        Cancelar
+      </button>
+      <button type="submit" class="portaria-btn portaria-btn--primary">
+        <i class="fas fa-key"></i>
+        Devolver chave
       </button>
     </ng-container>
   </app-base-modal>

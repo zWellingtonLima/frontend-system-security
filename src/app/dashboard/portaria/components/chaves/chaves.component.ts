@@ -1,9 +1,13 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { FormControl, FormGroup } from "@angular/forms";
+import {
+  FormBuilder, FormGroup,
+  Validators
+} from "@angular/forms";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChaveService } from "../../services/api/chave.service";
 import { ChavesTabConfig } from "../../models/enums";
+import { ChaveViewModel } from "../../models/api";
 
 @Component({
   selector: "app-chaves",
@@ -14,8 +18,10 @@ export class ChavesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // MODAL
-  modalIsOpen: boolean = false;
+  emprestarModalIsOpen: boolean = false;
+  atualizarModalIsOpen: boolean = true;
   emprestarForm!: FormGroup;
+  atualizarForm!: FormGroup;
 
   // FILTROS E TABS
   tabs = this.service.tabs;
@@ -28,15 +34,34 @@ export class ChavesComponent implements OnInit, OnDestroy {
   chavesDisponiveis$ = this.service.chavesDisponiveisList$;
   carregandoDisponiveis$ = this.service.estaCarregandoDisponiveis$;
 
-  constructor(private service: ChaveService) {}
+  constructor(
+    private service: ChaveService,
+    private fb: FormBuilder,
+  ) {}
 
   ngOnInit() {
     this.service.inicializar();
 
-    this.emprestarForm = new FormGroup({
-      chaveEdificioA: new FormControl(""),
-      chaveEdificioB: new FormControl(""),
-      pessoa: new FormControl(""),
+    this.emprestarForm = this.fb.group({
+      chaveEdificioA: [""],
+      chaveEdificioB: [""],
+      pessoa: [""],
+    });
+
+    this.atualizarForm = this.fb.group({
+      chaveInfo: this.fb.group({
+        edificio: [""],
+        codigoChave: [""],
+        sala: [""],
+        horaEmprestimo: [""],
+      }),
+      emprestimo: this.fb.group({
+        funcionario: ["", [Validators.required]],
+        chaveEscolhida: [""],
+      }),
+      devolucao: this.fb.group({
+        devolvidaPor: [""],
+      }),
     });
 
     // Só uma chave por empréstimo: ao escolher num edifício, limpa o outro.
@@ -49,7 +74,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
     this.service.setTab(tab);
   }
 
-  // Modal
+  // MODAL EMPRESTAR
   abrirModalEmprestar(): void {
     this.emprestarForm.reset({
       chaveEdificioA: "",
@@ -57,11 +82,40 @@ export class ChavesComponent implements OnInit, OnDestroy {
       pessoa: "",
     });
     this.service.carregarDisponiveis();
-    this.modalIsOpen = true;
+    this.emprestarModalIsOpen = true;
   }
 
-  fecharModal(): void {
-    this.modalIsOpen = false;
+  fecharModalEmprestar(): void {
+    this.emprestarModalIsOpen = false;
+  }
+
+  // MODAL ATUALIZAR
+  abrirModalAtualizar(emprestimo: ChaveViewModel): void {
+    console.log(emprestimo);
+
+    this.atualizarForm.reset({
+      chaveInfo: {
+        edificio: emprestimo.edificioLabel,
+        codigoChave: emprestimo.codigo,
+        sala: `${emprestimo.sala} · ${emprestimo.pisoLabel}`,
+        horaEmprestimo: emprestimo.desde,
+      },
+    });
+    this.atualizarForm.patchValue({
+      devolucao: {
+        devolvidaPor: emprestimo.pessoa,
+      },
+      emprestimo: {
+        funcionario: emprestimo.pessoa,
+        chaveEscolhida: emprestimo.id
+      }
+    });
+
+    this.atualizarModalIsOpen = true;
+  }
+
+  fecharModalAtualizar(): void {
+    this.atualizarModalIsOpen = false;
   }
 
   trackById(_: number, chave: { id: number }) {
