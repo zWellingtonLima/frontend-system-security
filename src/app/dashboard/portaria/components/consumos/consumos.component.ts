@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import {
   ConsumoLeitura,
   EdificiosResponse,
@@ -6,8 +6,6 @@ import {
   UltimaLeitura,
 } from "../../models/consumo.model";
 import { ConsumosService } from "../../services/api/consumos.service";
-import { Subject } from "rxjs";
-import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
@@ -29,8 +27,6 @@ export class ConsumosComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     clearTimeout(this.toastTimeout);
   }
 
@@ -114,10 +110,8 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   // LÓGICA DOS FILTROS DE PESQUISA
   // ─────────────────────────────────────────────
-
-  private destroy$ = new Subject<void>();
-  dataInicio?: Date;
-  dataFim?: Date;
+  dataInicio?: Date | null;
+  dataFim?: Date | null;
   edificioId?: number;
   abaAtiva: any = "AGUA";
 
@@ -143,6 +137,18 @@ export class ConsumosComponent implements OnInit {
   // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
   // ─────────────────────────────────────────────
   novoTipo: TipoConsumoType = "AGUA";
+  @ViewChild("barraEdificio") barraEdificio!: ElementRef<HTMLSelectElement>;
+  @ViewChild("inicio") inicio!: ElementRef<HTMLSelectElement>;
+  @ViewChild("fim") fim!: ElementRef<HTMLSelectElement>;
+
+  apagarFiltros() {
+    this.barraEdificio.nativeElement.value = "";
+    this.inicio.nativeElement.value = "";
+    this.fim.nativeElement.value = "";
+    this.edificioId = undefined;
+    this.dataInicio = null;
+    this.dataFim = null;
+  }
 
   selecionarAba(abaStyle: TipoConsumoType): void {
     console.log(abaStyle);
@@ -151,6 +157,7 @@ export class ConsumosComponent implements OnInit {
     }
     this.abaAtiva = abaStyle;
     this.currentPage = 1;
+    this.apagarFiltros();
     this.carregarConsumos();
   }
 
@@ -316,10 +323,10 @@ export class ConsumosComponent implements OnInit {
   }
 
   submeterEliminar() {
-    console.log(this.edificioId);
     this.consumoService.eliminar(this.edificioId).subscribe(
       () => {
         this.modalExcluirOpen = false;
+        this.edificioId = undefined;
         this.carregarAposAlteracao();
         this.mostrarToast("Leitura excluída com sucesso!");
       },

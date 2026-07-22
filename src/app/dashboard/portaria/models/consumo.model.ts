@@ -40,9 +40,9 @@ export interface CountTabelas {
 
 export interface ConsumoFiltro {
   tipo?: string;
-  dataInicio?: Date;
-  dataFim?: Date;
-  edificioId?: number;
+  dataInicio?: Date | null;
+  dataFim?: Date | null;
+  edificioId?: number | null;
   /** página baseada em 0, tal como o Spring Data Pageable */
   page: number;
   size: number;
