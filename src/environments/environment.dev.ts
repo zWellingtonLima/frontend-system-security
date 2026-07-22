@@ -12,6 +12,9 @@ export const environment = {
   chavesEmprestadasApiURL: "http://localhost:8080/api/chaves/emprestadas",
   chavesDisponiveisApiUrl: "http://localhost:8080/api/chaves/disponiveis",
   chavesHistoricoApiUrl: "http://localhost:8080/api/chaves/historico",
-  //Consumos
+  // Empréstimos: PUT {url}/{idEmprestimo} corrige os dados;
+  // POST {url}/{idEmprestimo}/devolucao regista a devolução
+  chavesEmprestimoApiUrl: "http://localhost:8080/api/chaves/emprestimos",
+  // CONSUMOS
   consumosApiUrl: "http://localhost:8080/api/consumos",
 };

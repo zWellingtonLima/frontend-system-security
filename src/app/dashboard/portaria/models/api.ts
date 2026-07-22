@@ -48,8 +48,38 @@ export interface ChaveDisponivelDTO {
   numeroSala: number | null; // null em caso de molho
 }
 
-// Disponíveis agrupadas por idEdificio (1-> A, 2 -> B) para os selects
-export type ChavesDisponiveisPorEdificio = Record<number, ChaveDisponivelDTO[]>;
+// Forma normalizada usada por todos os selects de chave
+export interface ChaveOpcao {
+  id: number;
+  idEdificio: number;
+  codigo: string;
+  sala: number | null;
+}
+
+// Chaves de um edifício. Alimenta um <select> por edifício no modal de
+// emprestar e um <optgroup> no select único do modal de atualizar.
+export interface GrupoChaves {
+  idEdificio: number;
+  edificioLabel: string;
+  chaves: ChaveOpcao[];
+}
+
+// Regista um novo empréstimo
+export interface EmprestimoCriarDTO {
+  idChave: number;
+  funcionario: string;
+}
+
+// Corrige um empréstimo já registrado (engano do segurança no ato do empréstimo)
+export interface EmprestimoUpdateDTO {
+  idChave: number;
+  funcionario: string;
+}
+
+// Regista a devolução de um empréstimo em aberto
+export interface DevolucaoDTO {
+  devolvidaPor: string;
+}
 
 export interface HistoricoEntregaChave {
   idEntrega: string;

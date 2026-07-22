@@ -6,6 +6,7 @@
     </div>
 
     <button
+      type="button"
       class="portaria-btn portaria-btn--primary"
       (click)="abrirModalEmprestar()"
     >
@@ -14,8 +15,8 @@
     </button>
   </div>
 
-  <!-- FILTRAGEM POR TABS -->
   <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
+    <!-- FILTRAGEM POR TABS -->
     <div class="tabs">
       <div
         class="tab"
@@ -24,31 +25,32 @@
         (click)="onTabChange(tab)"
       >
         {{ tab.label }}
+        <span class="tab-count" *ngIf="tab.value === 'EMPRESTADAS'">
+          {{ totalEmprestadas$ | async }}
+        </span>
       </div>
     </div>
-  </ng-container>
 
-  <!-- FILTROS -->
-  <div class="filter-container flex">
-    <div class="search-wrap flex content-center">
-      <i class="fas fa-search"></i>
-      <input
-        type="text"
-        name="search-input"
-        class="search-input"
-        placeholder="Pesquisar por código, sala ou responsável..."
-      />
+    <!-- FILTROS -->
+    <div class="filter-container flex">
+      <div class="search-wrap flex content-center">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          name="search-input"
+          class="search-input"
+          placeholder="Pesquisar por código, sala ou responsável..."
+        />
+      </div>
+      <select class="filter-select" name="filter-select">
+        <option value="">Pisos</option>
+        <option value="PRIMEIRO">Primeiro</option>
+        <option value="SEGUNDO">Segundo</option>
+        <option value="TERCEIRO">Terceiro</option>
+      </select>
     </div>
-    <select class="filter-select" name="filter-select">
-      <option value="">Pisos</option>
-      <option value="PRIMEIRO">Primeiro</option>
-      <option value="SEGUNDO">Segundo</option>
-      <option value="TERCEIRO">Terceiro</option>
-    </select>
-  </div>
 
-  <!-- LISTAGEM DE CHAVES -->
-  <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
+    <!-- LISTAGEM DE CHAVES -->
     <ng-container *ngIf="carregando$ | async; else listaChaves">
       <div class="loading-state">
         <img class="loader" src="assets/img/oval.svg" alt="" />
@@ -59,26 +61,35 @@
     <ng-template #listaChaves>
       <ng-container *ngIf="chaves$ | async as chaves">
         <div class="tbl-wrap" *ngIf="chaves.length > 0; else estadoVazio">
-          <table class="tbl">
+          <table
+            class="tbl"
+            [ngClass]="
+              tabAtiva.value === 'TODAS' ? 'tbl--todas' : 'tbl--emprestadas'
+            "
+          >
             <thead>
               <tr>
-                <th>Edifício</th>
-                <th>Chave / Código</th>
-                <th>Sala / Piso</th>
-                <th *ngIf="tabAtiva.value === 'TODAS'">Estado</th>
-                <th>Com quem</th>
-                <th>Desde</th>
-                <th *ngIf="tabAtiva.value === 'EMPRESTADAS'">Ações</th>
+                <th class="col-edificio">Edifício</th>
+                <th class="col-codigo">Chave / Código</th>
+                <th class="col-sala">Sala / Piso</th>
+                <th class="col-estado" *ngIf="tabAtiva.value === 'TODAS'">
+                  Estado
+                </th>
+                <th class="col-desde">Desde</th>
+                <th class="col-pessoa">Com quem</th>
+                <th class="col-acoes" *ngIf="tabAtiva.value === 'EMPRESTADAS'">
+                  Ações
+                </th>
               </tr>
             </thead>
 
             <tbody>
               <tr *ngFor="let chave of chaves; trackBy: trackById">
-                <td>{{ chave.edificioLabel }}</td>
-                <td>
+                <td class="col-edificio">{{ chave.edificioLabel }}</td>
+                <td class="col-codigo">
                   <span class="bold-text">{{ chave.codigo }}</span>
                 </td>
-                <td>
+                <td class="col-sala">
                   <ng-container *ngIf="chave.sala != null; else semSala">
                     Sala {{ chave.sala }}
                     <span class="sub-text">{{ chave.pisoLabel }}</span>
@@ -87,13 +98,21 @@
                     <span class="empty-dash">—</span>
                   </ng-template>
                 </td>
-                <td *ngIf="tabAtiva.value === 'TODAS'">
+                <td class="col-estado" *ngIf="tabAtiva.value === 'TODAS'">
                   <span class="badge" [ngClass]="chave.statusConfig.classe">
                     <i [ngClass]="chave.statusConfig.icone"></i>
                     {{ chave.statusConfig.label }}
                   </span>
                 </td>
-                <td>
+                <td class="col-desde">
+                  <ng-container *ngIf="chave.desde; else semDesde">
+                    {{ chave.desde | date: "dd/MM HH:mm" : "Europe/Lisbon" }}
+                  </ng-container>
+                  <ng-template #semDesde>
+                    <span class="empty-dash">—</span>
+                  </ng-template>
+                </td>
+                <td class="col-pessoa">
                   <ng-container *ngIf="chave.pessoa; else semPessoa">
                     <span class="bold-text">
                       {{ chave.pessoa }}
@@ -103,28 +122,25 @@
                     <span class="empty-dash">—</span>
                   </ng-template>
                 </td>
-                <td>
-                  <ng-container *ngIf="chave.desde; else semDesde">
-                    {{ chave.desde | date: "HH:mm" : "Europe/Lisbon" }}
-                  </ng-container>
-                  <ng-template #semDesde>
-                    <span class="empty-dash">—</span>
-                  </ng-template>
-                </td>
-                <td *ngIf="tabAtiva.value === 'EMPRESTADAS'">
-                  <!-- Placeholders: ações (atualizar/devolver) chegam num passo futuro -->
+                <td class="col-acoes" *ngIf="tabAtiva.value === 'EMPRESTADAS'">
                   <div class="acoes-chave">
+                    <!-- Ação primária: permite corrigir dados e escolher quem devolve -->
                     <button
-                      class="btn-action btn-return"
+                      class="portaria-btn portaria-btn--secondary"
                       type="button"
+                      title="Atualizar ou devolver"
+                      [disabled]="salvando$ | async"
                       (click)="abrirModalAtualizar(chave)"
                     >
                       <i class="ft-edit-2"></i>
                     </button>
+                    <!-- Ação secundária: devolve em nome de quem levou -->
                     <button
-                      class="btn-action"
+                      class="portaria-btn portaria-btn--ghost"
                       type="button"
-                      title="Devolver chave"
+                      title="Devolver em nome de {{ chave.pessoa }}"
+                      [disabled]="salvando$ | async"
+                      (click)="devolverRapido(chave)"
                     >
                       <i class="ft-corner-down-left"></i>
                     </button>
@@ -145,68 +161,63 @@
     </ng-template>
   </ng-container>
 
+  <!-- =================================================== -->
   <!-- MODAL EMPRESTAR CHAVE -->
+  <!-- =================================================== -->
   <app-base-modal
     [modalEstaAberto]="emprestarModalIsOpen"
     titulo="Emprestar chave"
     subtitulo="Selecione a chave e quem a leva"
     (fechar)="fecharModalEmprestar()"
   >
-    <form
-      class="portaria-modal__body"
-      [formGroup]="emprestarForm"
-      *ngIf="{
-        disp: chavesDisponiveis$ | async,
-        carregando: carregandoDisponiveis$ | async
-      } as vm"
-    >
+    <form class="portaria-modal__body" [formGroup]="emprestarForm">
       <p class="form-tipo-title">CHAVES DISPONÍVEIS</p>
 
-      <div class="form-row-port">
-        <div class="form-group-port">
-          <!-- EDIFICIO-A CHAVES -->
-          <label for="edificio-a" class="form-label-port">Edifício A</label>
-          <select
-            id="edificio-a"
-            class="filter-select"
-            formControlName="chaveEdificioA"
-            [attr.disabled]="vm.carregando ? '' : null"
-          >
-            <option value="">
-              {{ vm.carregando ? "A carregar..." : "Escolher chave..." }}
-            </option>
-            <option *ngFor="let c of vm.disp && vm.disp[1]" [value]="c.id">
-              {{ c.codigo }}
-              <ng-container *ngIf="c.sala != null">
-                — Sala {{ c.sala }}</ng-container
-              >
-            </option>
-          </select>
+      <!-- Um select por edifício, gerado a partir dos grupos devolvidos pelo
+           service. Todos escrevem no mesmo controlo `idChave`. -->
+      <ng-container
+        *ngIf="chavesDisponiveis$ | async as grupos; else aCarregarDisponiveis"
+      >
+        <div class="form-row-port">
+          <div class="form-group-port" *ngFor="let grupo of grupos">
+            <label class="form-label-port">{{ grupo.edificioLabel }}</label>
+            <select
+              class="filter-select"
+              [value]="valorSelecionadoEm(grupo)"
+              (change)="onEscolherChave($event)"
+            >
+              <option value="">Escolher chave...</option>
+              <option *ngFor="let opcao of grupo.chaves" [value]="opcao.id">
+                {{ opcao.codigo
+                }}<ng-container *ngIf="opcao.sala != null">
+                  — Sala {{ opcao.sala }}</ng-container
+                >
+              </option>
+            </select>
+          </div>
         </div>
-        <div class="form-group-port">
-          <!-- EDIFICIO-B CHAVES -->
-          <label for="edificio-b" class="form-label-port">Edifício B</label>
-          <select
-            id="edificio-b"
-            class="filter-select"
-            formControlName="chaveEdificioB"
-            [attr.disabled]="vm.carregando ? '' : null"
-          >
-            <option value="">
-              {{ vm.carregando ? "A carregar..." : "Escolher chave..." }}
-            </option>
-            <option *ngFor="let c of vm.disp && vm.disp[2]" [value]="c.id">
-              {{ c.codigo
-              }}<ng-container *ngIf="c.sala != null">
-                — Sala {{ c.sala }}</ng-container
-              >
-            </option>
-          </select>
+      </ng-container>
+
+      <ng-template #aCarregarDisponiveis>
+        <div class="form-row-port">
+          <div class="form-group-port">
+            <select class="filter-select" disabled>
+              <option>A carregar chaves...</option>
+            </select>
+          </div>
         </div>
-      </div>
+      </ng-template>
+
+      <span
+        class="form-error"
+        *ngIf="erroDoCampo(emprestarForm, 'idChave') as erro"
+      >
+        {{ erro }}
+      </span>
+
       <div class="form-row-port full">
         <div class="form-group-port">
-          <label for="emprestimo-pessoa" class="form-label-port"
+          <label for="emprestar-pessoa" class="form-label-port"
             >Nome da pessoa</label
           >
           <div class="search-wrap">
@@ -214,153 +225,206 @@
             <input
               type="text"
               class="search-input"
-              name="emprestimo-pessoa"
-              id="emprestimo-pessoa"
+              id="emprestar-pessoa"
               formControlName="pessoa"
               placeholder="Quem está a levar a chave..."
             />
           </div>
+          <span
+            class="form-error"
+            *ngIf="erroDoCampo(emprestarForm, 'pessoa') as erro"
+          >
+            {{ erro }}
+          </span>
         </div>
       </div>
     </form>
 
-    <ng-container slot="footer">
+    <ng-container slot="footer" *ngIf="{ salvando: salvando$ | async } as vm">
       <button
+        type="button"
         class="portaria-btn portaria-btn--ghost"
+        [disabled]="vm.salvando"
         (click)="fecharModalEmprestar()"
       >
         Cancelar
       </button>
-      <button type="submit" class="portaria-btn portaria-btn--primary">
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary"
+        [disabled]="vm.salvando"
+        (click)="onEmprestar()"
+      >
         <i class="fas fa-key"></i>
         Emprestar
       </button>
     </ng-container>
   </app-base-modal>
 
-  <!-- MODAL ATUALIZAR CHAVE -->
+  <!-- =================================================== -->
+  <!-- MODAL ATUALIZAR / DEVOLVER CHAVE -->
+  <!-- =================================================== -->
   <app-base-modal
     [modalEstaAberto]="atualizarModalIsOpen"
     titulo="Atualizar empréstimo"
-    subtitulo="Corrigir os dados do empréstimo"
+    subtitulo="Corrigir os dados do empréstimo ou registar a devolução"
     (fechar)="fecharModalAtualizar()"
   >
     <form
       class="portaria-modal__body"
       [formGroup]="atualizarForm"
-      *ngIf="{
-        disp: chaves$ | async,
-        carregando: carregando$ | async
-      } as vm"
+      *ngIf="chaveEmEdicao as chave"
     >
-      <div class="chave-info" formGroupName="chaveInfo">
+      <!-- CONTEXTO (só leitura — não faz parte do formulário) -->
+      <div class="chave-info">
         <div class="form-row-port">
           <div class="form-group-port">
-            <span class="label"> Edifício </span>
-            <input
-              disabled
-              class="read-only-input"
-              type="text"
-              formControlName="edificio"
-              readonly
-            />
-            <span> </span>
+            <span class="label">Edifício</span>
+            <span class="valor">{{ chave.edificioLabel }}</span>
           </div>
           <div class="form-group-port">
-            <span class="label"> Código </span>
-            <input
-              disabled
-              class="read-only-input"
-              type="text"
-              formControlName="codigoChave"
-              readonly
-            />
-            <span> </span>
+            <span class="label">Código</span>
+            <span class="valor">{{ chave.codigo }}</span>
           </div>
         </div>
         <div class="form-row-port">
           <div class="form-group-port">
-            <span class="label"> Sala / Piso </span>
-            <input
-              disabled
-              class="read-only-input"
-              type="text"
-              formControlName="sala"
-              readonly
-            />
-            <span> </span>
+            <span class="label">Sala / Piso</span>
+            <span class="valor" *ngIf="chave.sala != null; else semSalaCtx">
+              Sala {{ chave.sala }} · {{ chave.pisoLabel }}
+            </span>
+            <ng-template #semSalaCtx>
+              <span class="valor empty-dash">—</span>
+            </ng-template>
           </div>
           <div class="form-group-port">
-            <span class="label"> Hora empréstimo </span>
-            <input
-              disabled
-              class="read-only-input"
-              type="text"
-              formControlName="horaEmprestimo"
-              readonly
-            />
-            <span> </span>
+            <span class="label">Emprestada desde</span>
+            <span class="valor" *ngIf="chave.desde; else semDesdeCtx">
+              {{ chave.desde | date: "dd/MM/yyyy HH:mm" : "Europe/Lisbon" }}
+            </span>
+            <ng-template #semDesdeCtx>
+              <span class="valor empty-dash">—</span>
+            </ng-template>
           </div>
         </div>
       </div>
 
+      <!-- CORREÇÃO DOS DADOS DO EMPRÉSTIMO -->
       <p class="form-tipo-title">DADOS DO EMPRÉSTIMO</p>
 
-      <div class="form-row-port" formGroupName="emprestimo">
+      <div class="form-row-port">
         <div class="form-group-port">
-          <!-- EDIFICIO-A CHAVES -->
-          <label class="form-label-port ">Funcionário</label>
+          <label for="atualizar-funcionario" class="form-label-port"
+            >Funcionário</label
+          >
           <input
+            id="atualizar-funcionario"
             class="filter-select"
             type="text"
             formControlName="funcionario"
             placeholder="Insira o nome de um funcionário"
           />
+          <span
+            class="form-error"
+            *ngIf="erroDoCampo(atualizarForm, 'funcionario') as erro"
+          >
+            {{ erro }}
+          </span>
         </div>
+
         <div class="form-group-port">
-          <!-- EDIFICIO-B CHAVES -->
-          <label for="chave-selecionada" class="form-label-port"
-            >Chave Selecionada</label
+          <label for="atualizar-chave" class="form-label-port"
+            >Chave selecionada</label
           >
-          <select
-            id="chave-selecionada"
-            class="filter-select"
-            [attr.disabled]="vm.carregando ? '' : null"
+          <!-- Disponíveis + a chave atual, agrupadas por edifício -->
+          <ng-container *ngIf="opcoesEdicao$ | async as grupos; else aCarregar">
+            <select
+              id="atualizar-chave"
+              class="filter-select"
+              formControlName="idChave"
+            >
+              <optgroup
+                *ngFor="let grupo of grupos"
+                [label]="grupo.edificioLabel"
+              >
+                <option *ngFor="let opcao of grupo.chaves" [ngValue]="opcao.id">
+                  {{ opcao.codigo
+                  }}<ng-container *ngIf="opcao.sala != null">
+                    — Sala {{ opcao.sala }}</ng-container
+                  >
+                </option>
+              </optgroup>
+            </select>
+          </ng-container>
+          <ng-template #aCarregar>
+            <select class="filter-select" disabled>
+              <option>A carregar chaves...</option>
+            </select>
+          </ng-template>
+          <span
+            class="form-error"
+            *ngIf="erroDoCampo(atualizarForm, 'idChave') as erro"
           >
-            <option value="" formControlName="chaveEscolhida"></option>
-          </select>
+            {{ erro }}
+          </span>
         </div>
       </div>
-      <div class="form-row-port full">
+
+      <!-- DEVOLUÇÃO — ação independente, com botão próprio -->
+      <p class="form-tipo-title">DEVOLUÇÃO</p>
+
+      <div class="devolver-block">
         <div class="form-group-port">
-          <label for="emprestimo-pessoa" class="form-label-port"
-            >Nome da pessoa</label
+          <label for="atualizar-devolvida-por" class="form-label-port"
+            >Devolvida por</label
           >
-          <div class="search-wrap" formGroupName="devolucao">
+          <div class="search-wrap">
             <i class="icon-user-follow"></i>
             <input
               type="text"
               class="search-input"
-              name="emprestimo-pessoa"
-              id="emprestimo-pessoa"
+              id="atualizar-devolvida-por"
               formControlName="devolvidaPor"
-              placeholder="Quem está a levar a chave..."
+              placeholder="Quem está a devolver a chave..."
             />
           </div>
+          <span
+            class="form-error"
+            *ngIf="erroDoCampo(atualizarForm, 'devolvidaPor') as erro"
+          >
+            {{ erro }}
+          </span>
         </div>
+
+        <button
+          type="button"
+          class="portaria-btn portaria-btn--primary btn-devolver"
+          [disabled]="salvando$ | async"
+          (click)="onDevolver()"
+        >
+          <i class="ft-corner-down-left"></i>
+          Devolver chave
+        </button>
       </div>
     </form>
 
-    <ng-container slot="footer">
+    <ng-container slot="footer" *ngIf="{ salvando: salvando$ | async } as vm">
       <button
+        type="button"
         class="portaria-btn portaria-btn--ghost"
+        [disabled]="vm.salvando"
         (click)="fecharModalAtualizar()"
       >
         Cancelar
       </button>
-      <button type="submit" class="portaria-btn portaria-btn--primary">
-        <i class="fas fa-key"></i>
-        Devolver chave
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary"
+        [disabled]="vm.salvando"
+        (click)="onGuardarAlteracoes()"
+      >
+        <i class="ft-edit-2"></i>
+        Guardar alterações
       </button>
     </ng-container>
   </app-base-modal>

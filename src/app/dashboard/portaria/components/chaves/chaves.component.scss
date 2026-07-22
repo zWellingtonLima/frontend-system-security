@@ -46,17 +46,19 @@
   }
 }
 
+// Contador ao lado do rótulo da tab
 .tab .tab-count {
   font-size: 11px;
   font-weight: 600;
-  background: #f1f5f9;
-  color: #6b7280;
+  background: $portaria-color-bg-light;
+  color: $portaria-color-text-muted;
   border-radius: 20px;
   padding: 1px 7px;
 }
+
 .tab.active .tab-count {
-  background: var(--accent-light, #e0f4fb);
-  color: var(--accent);
+  background: $portaria-color-bg-hover;
+  color: $portaria-color-accent-dark;
 }
 
 .filter-container {
@@ -111,7 +113,11 @@
 
 .tbl {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
+  // Necessário para as larguras em % abaixo serem respeitadas à risca:
+  // sem isto o browser trata-as como sugestão e o conteúdo estica a coluna.
+  table-layout: fixed;
 
   thead {
     background: $portaria-color-bg-soft;
@@ -120,22 +126,70 @@
     font-size: 12px;
     font-weight: 500;
     color: #6b7280;
-    padding: 10px 12px;
+    padding: 10px 16px;
     border-bottom: 1px solid #edf0f4;
     border-top: 1px solid #edf0f4;
   }
   td {
     font-size: 12px;
     color: #374151;
-    padding: 10px 12px;
+    padding: 10px 16px;
     border-bottom: 1px solid #f3f5f7;
     vertical-align: middle;
+  }
+
+  .col-desde {
+    white-space: nowrap;
   }
   tbody tr:last-child td {
     border-bottom: none;
   }
   tbody tr:hover td {
     background: #f8fafc;
+  }
+}
+
+// As duas tabs têm colunas diferentes, por isso cada uma distribui os 100%
+// de modo personalizado
+.tbl--emprestadas {
+  .col-edificio {
+    width: 15%;
+  }
+  .col-codigo {
+    width: 15%;
+  }
+  .col-sala {
+    width: 16%;
+  }
+  .col-desde {
+    width: 14%;
+  }
+  .col-pessoa {
+    width: 25%;
+  }
+  .col-acoes {
+    width: 15%;
+  }
+}
+
+.tbl--todas {
+  .col-edificio {
+    width: 16%;
+  }
+  .col-codigo {
+    width: 16%;
+  }
+  .col-sala {
+    width: 17%;
+  }
+  .col-estado {
+    width: 17%;
+  }
+  .col-desde {
+    width: 14%;
+  }
+  .col-pessoa {
+    width: 20%;
   }
 }
 
@@ -191,40 +245,14 @@
   font-weight: 600;
 }
 
-/* Ações da linha (atualizar / devolver) */
+/* Ações da linha (atualizar / devolver).
+   Usa os .portaria-btn globais, como na página de Ocorrências. */
 .acoes-chave {
   display: flex;
-  gap: 6px;
-}
-
-/* Botões de Ação */
-.btn-action {
-  background: none;
-  border: 1px solid #eee;
-  color: #555;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  display: inline-flex;
+  justify-content: flex-start;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.btn-action:hover {
-  background-color: #f0f0f0;
-}
-
-.btn-return {
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
-  background-color: #f0fdf4;
-}
-
-.btn-return:hover {
-  background-color: #dcfce7;
+  gap: $m-xs;
+  font-size: 14px;
 }
 
 .pagination-container {
@@ -286,6 +314,15 @@
   &.full {
     grid-template-columns: 1fr;
   }
+
+  // Um <select> nativo calcula a altura de forma diferente de um <input>,
+  // mesmo com a mesma classe. Altura fixa iguala os dois campos lado a lado.
+  .filter-select,
+  .search-input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 34px;
+  }
 }
 
 .form-group-port {
@@ -340,13 +377,31 @@
   }
 }
 
-.read-only-input {
-  border: none;
-  background: transparent;
-  user-select: none;
-  caret-color: transparent;
-  padding: 0;
-  margin-top: -4px;
+// Substitui os antigos .read-only-input: o contexto da chave passou a ser
+// texto interpolado (permite pipes como o `date`), já não são inputs
+.chave-info .valor {
   color: $portaria-color-text-dark;
   font-weight: 500;
+}
+
+.devolver-block {
+  border: 1px solid #eee;
+  border-radius: $portaria-radius-xs;
+  background: $portaria-color-bg-soft;
+  padding: 0.75rem;
+
+  .btn-devolver {
+    margin-top: 0.75rem;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// Mensagem de validação por campo
+.form-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #dc2626;
 }

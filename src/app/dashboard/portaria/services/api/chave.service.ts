@@ -1,12 +1,16 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { catchError, finalize } from "rxjs/operators";
+import { catchError, finalize, map } from "rxjs/operators";
 import {
   ChaveDisponivelDTO,
-  ChavesDisponiveisPorEdificio,
+  ChaveOpcao,
   ChaveViewModel,
   ChavesResponseDTO,
+  DevolucaoDTO,
+  EmprestimoCriarDTO,
+  EmprestimoUpdateDTO,
+  GrupoChaves,
   HistoricoEntregaChave,
 } from "../../models/api";
 import {
@@ -28,39 +32,62 @@ const TABS: ChavesTabConfig[] = [
 })
 export class ChaveService {
   private chaves$ = new BehaviorSubject<ChaveViewModel[]>([]);
-
   readonly chavesList$ = this.chaves$.asObservable();
 
   tabs = TABS;
-  // Inicia em [0] (EMPRESTADAS), a tab carregada primeiro
-  tabAtiva$ = new BehaviorSubject<ChavesTabConfig>(TABS[0]);
-  estaCarregandoDados$ = new BehaviorSubject<boolean>(false);
 
-  // Chaves disponíveis do modal Emprestar, agrupadas por edifício
-  private chavesDisponiveis$ =
-    new BehaviorSubject<ChavesDisponiveisPorEdificio>({});
-  readonly chavesDisponiveisList$ = this.chavesDisponiveis$.asObservable();
-  estaCarregandoDisponiveis$ = new BehaviorSubject<boolean>(false);
+  // Inicia em [0] (EMPRESTADAS), a tab carregada primeiro
+  private tabAtiva = new BehaviorSubject<ChavesTabConfig>(TABS[0]);
+  readonly tabAtiva$ = this.tabAtiva.asObservable();
+
+  private estaCarregandoDados = new BehaviorSubject<boolean>(false);
+  readonly estaCarregandoDados$ = this.estaCarregandoDados.asObservable();
+
+  // Contador exibido na tab "Emprestadas". Derivado do que já foi carregado
+  private totalEmprestadas = new BehaviorSubject<number>(0);
+  readonly totalEmprestadas$ = this.totalEmprestadas.asObservable();
+
+  // Chaves disponíveis do modal Emprestar, agrupadas por edifício.
+  // `null` = ainda está carregando
+  private chavesDisponiveis = new BehaviorSubject<GrupoChaves[] | null>(null);
+  readonly chavesDisponiveisList$ = this.chavesDisponiveis.asObservable();
+
+  private estaCarregandoDisponiveis = new BehaviorSubject<boolean>(false);
+  readonly estaCarregandoDisponiveis$ =
+    this.estaCarregandoDisponiveis.asObservable();
+
+  // Opções do select do modal Atualizar: disponíveis + a chave atual do
+  // empréstimo, agrupadas por edifício para os <optgroup>. `null` = ainda está carregand
+  private opcoesEdicao = new BehaviorSubject<GrupoChaves[] | null>(null);
+  readonly opcoesEdicao$ = this.opcoesEdicao.asObservable();
+
+  private estaSalvando = new BehaviorSubject<boolean>(false);
+  readonly estaSalvando$ = this.estaSalvando.asObservable();
 
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
+    this.tabAtiva.next(TABS[0]);
     this.carregarChaves(TABS[0]);
-    this.tabAtiva$.next(TABS[0]);
   }
 
   setTab(tab: ChavesTabConfig): void {
-    this.tabAtiva$.next(tab);
+    this.tabAtiva.next(tab);
     this.carregarChaves(tab);
+  }
+
+  // Recarrega a tab atual — usado depois de um PUT/POST bem sucedido
+  recarregar(): void {
+    this.carregarChaves(this.tabAtiva.value);
   }
 
   // =============================================
   // ================= GET =======================
 
   // Emprestadas e Todas partilham o mesmo shape; muda apenas o endpoint.
-  // /emprestadas já vem filtrado pelo backend (status EMPRESTADA).
+  // /emprestadas já vem filtrado pelo backend
   private carregarChaves(tab: ChavesTabConfig): void {
-    this.estaCarregandoDados$.next(true);
+    this.estaCarregandoDados.next(true);
 
     const url =
       tab.value === "EMPRESTADAS"
@@ -74,32 +101,49 @@ export class ChaveService {
           console.error("CHAV-SERV: " + err); // implementar componente de Toast
           return of(null);
         }),
-        finalize(() => this.estaCarregandoDados$.next(false)),
+        finalize(() => this.estaCarregandoDados.next(false)),
       )
       .subscribe((resultado) => {
         if (resultado === null) return;
+
         this.chaves$.next(resultado.map((c) => this.toViewModel(c)));
+        this.totalEmprestadas.next(
+          tab.value === "EMPRESTADAS"
+            ? resultado.length
+            : resultado.filter((c) => c.status === "EMPRESTADA").length,
+        );
       });
   }
 
   // Disponíveis para o modal Emprestar — buscadas ao abrir o modal para
-  // refletir sempre o estado atual. Agrupa por idEdificio no front.
+  // refletir sempre o estado atual. Agrupa por idEdificio
   carregarDisponiveis(): void {
-    this.estaCarregandoDisponiveis$.next(true);
+    this.chavesDisponiveis.next(null);
+    this.estaCarregandoDisponiveis.next(true);
 
-    this.http
-      .get<ChaveDisponivelDTO[]>(environment.chavesDisponiveisApiUrl)
-      .pipe(
-        catchError((err) => {
-          console.error("CHAV-SERV-DISP: " + err);
-          return of(null);
-        }),
-        finalize(() => this.estaCarregandoDisponiveis$.next(false)),
-      )
-      .subscribe((resultado) => {
-        if (resultado === null) return;
-        this.chavesDisponiveis$.next(this.agruparPorEdificio(resultado));
-      });
+    this.buscarDisponiveis().subscribe((resultado) => {
+      this.chavesDisponiveis.next(
+        this.agruparPorEdificio(
+          (resultado || []).map((c) => this.toChaveOpcao(c)),
+        ),
+      );
+    });
+  }
+
+  // Opções do modal Atualizar. A chave atual do empréstimo NÃO vem em
+  // /disponiveis (está EMPRESTADA), por isso é injetada à mão — senão o
+  // select abriria sem a opção que está selecionada.
+  carregarOpcoesEdicao(chaveAtual: ChaveViewModel): void {
+    this.opcoesEdicao.next(null);
+    this.estaCarregandoDisponiveis.next(true);
+
+    this.buscarDisponiveis().subscribe((resultado) => {
+      if (resultado === null) {
+        this.opcoesEdicao.next(this.agruparParaEdicao([], chaveAtual));
+        return;
+      }
+      this.opcoesEdicao.next(this.agruparParaEdicao(resultado, chaveAtual));
+    });
   }
 
   getChavesHistorico(): Observable<HistoricoEntregaChave[]> {
@@ -113,8 +157,111 @@ export class ChaveService {
       );
   }
 
+  // ===========================================
+  // ================= PUT =====================
+
+  // Corrige os dados de um empréstimo em aberto (funcionário e/ou chave).
+  // Não devolve a chave - continua emprestada.
+  atualizarEmprestimo(
+    idEmprestimo: number,
+    data: EmprestimoUpdateDTO,
+  ): Observable<boolean> {
+    this.estaSalvando.next(true);
+
+    const dadosNormalizados: EmprestimoUpdateDTO = {
+      ...data,
+      funcionario: this.normalizarTexto(data.funcionario),
+    };
+
+    return this.http
+      .put<void>(
+        `${environment.chavesEmprestimoApiUrl}/${idEmprestimo}`,
+        dadosNormalizados,
+      )
+      .pipe(
+        map(() => {
+          this.recarregar();
+          return true;
+        }),
+        catchError((err) => {
+          console.error("CHAV-SERV-UPDATE: " + err);
+          return of(false);
+        }),
+        finalize(() => this.estaSalvando.next(false)),
+      );
+  }
+
+  // ===========================================
+  // ================= POST ====================
+
+  // Regista um novo empréstimo de chave.
+  emprestarChave(data: EmprestimoCriarDTO): Observable<boolean> {
+    this.estaSalvando.next(true);
+
+    const dadosNormalizados: EmprestimoCriarDTO = {
+      ...data,
+      funcionario: this.normalizarTexto(data.funcionario),
+    };
+
+    return this.http
+      .post<void>(environment.chavesEmprestimoApiUrl, dadosNormalizados)
+      .pipe(
+        map(() => {
+          this.recarregar();
+          return true;
+        }),
+        catchError((err) => {
+          console.error("CHAV-SERV-EMPRESTIMO: " + err);
+          return of(false);
+        }),
+        finalize(() => this.estaSalvando.next(false)),
+      );
+  }
+
+  // Regista a devolução de um empréstimo em aberto.
+  devolverChave(
+    idEmprestimo: number,
+    devolvidaPor: string,
+  ): Observable<boolean> {
+    this.estaSalvando.next(true);
+
+    const corpo: DevolucaoDTO = {
+      devolvidaPor: this.normalizarTexto(devolvidaPor),
+    };
+
+    return this.http
+      .post<void>(
+        `${environment.chavesEmprestimoApiUrl}/${idEmprestimo}/devolucao`,
+        corpo,
+      )
+      .pipe(
+        map(() => {
+          this.recarregar();
+          return true;
+        }),
+        catchError((err) => {
+          console.error("CHAV-SERV-DEVOLUCAO: " + err);
+          return of(false);
+        }),
+        finalize(() => this.estaSalvando.next(false)),
+      );
+  }
+
   // ================================
   // ========== UTILITARIOS =========
+
+  // GET /disponiveis partilhado pelos dois modais. Devolve null em erro.
+  private buscarDisponiveis(): Observable<ChaveDisponivelDTO[] | null> {
+    return this.http
+      .get<ChaveDisponivelDTO[]>(environment.chavesDisponiveisApiUrl)
+      .pipe(
+        catchError((err) => {
+          console.error("CHAV-SERV-DISP: " + err);
+          return of(null);
+        }),
+        finalize(() => this.estaCarregandoDisponiveis.next(false)),
+      );
+  }
 
   // Insere os rótulos de exibição (status, edifício, piso) na chave retornada
   private toViewModel(chave: ChavesResponseDTO): ChaveViewModel {
@@ -126,13 +273,59 @@ export class ChaveService {
     };
   }
 
-  // Agrupa as chaves disponíveis num Record keyed por idEdificio
-  private agruparPorEdificio(
-    chaves: ChaveDisponivelDTO[],
-  ): ChavesDisponiveisPorEdificio {
-    return chaves.reduce((grupos, chave) => {
-      (grupos[chave.idEdificio] = grupos[chave.idEdificio] || []).push(chave);
-      return grupos;
-    }, {} as ChavesDisponiveisPorEdificio);
+  // Normaliza o DTO de disponível para a forma consumida pelos selects
+  private toChaveOpcao(chave: ChaveDisponivelDTO): ChaveOpcao {
+    return {
+      id: chave.id,
+      idEdificio: chave.idEdificio,
+      codigo: chave.codigo,
+      sala: chave.numeroSala,
+    };
+  }
+
+  // Disponíveis + chave atual, em grupos ordenados por edifício e código
+  private agruparParaEdicao(
+    disponiveis: ChaveDisponivelDTO[],
+    chaveAtual: ChaveViewModel,
+  ): GrupoChaves[] {
+    const opcoes = disponiveis.map((c) => this.toChaveOpcao(c));
+
+    // A chave atual pode já constar da lista se o backend a considerar livre
+    if (!opcoes.some((c) => c.id === chaveAtual.id)) {
+      opcoes.push({
+        id: chaveAtual.id,
+        idEdificio: chaveAtual.idEdificio,
+        codigo: chaveAtual.codigo,
+        sala: chaveAtual.sala,
+      });
+    }
+
+    return this.agruparPorEdificio(opcoes);
+  }
+
+  private agruparPorEdificio(opcoes: ChaveOpcao[]): GrupoChaves[] {
+    const porEdificio = opcoes.reduce(
+      (grupos, chave) => {
+        (grupos[chave.idEdificio] = grupos[chave.idEdificio] || []).push(chave);
+        return grupos;
+      },
+      {} as Record<number, ChaveOpcao[]>,
+    );
+
+    return Object.keys(porEdificio)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .map((idEdificio) => ({
+        idEdificio,
+        edificioLabel: EDIFICIO_LABEL[idEdificio] || `Edifício ${idEdificio}`,
+        chaves: porEdificio[idEdificio].sort((a, b) =>
+          a.codigo.localeCompare(b.codigo),
+        ),
+      }));
+  }
+
+  // Remove múltiplos espaços entre palavras e limpa início/fim
+  private normalizarTexto(texto: string): string {
+    return texto.replace(/\s+/g, " ").trim();
   }
 }
