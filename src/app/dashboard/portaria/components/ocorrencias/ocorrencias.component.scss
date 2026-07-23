@@ -1,4 +1,4 @@
-@import "src/app/app.component.scss";
+@import "src/app/dashboard/portaria/portaria.component.scss";
 
 $tipos: (
   acesso: #ef4444,
@@ -33,12 +33,6 @@ $estados: (
   }
 }
 
-// .ocorrencia-lista {
-//   display: grid;
-//   grid-template-columns: repeat(2, 1fr);
-//   column-gap: 1rem;
-// }
-
 .filter-container {
   margin-block: $m-lg;
   gap: $m-xs;
@@ -52,34 +46,21 @@ $estados: (
       left: 12px;
       color: $portaria-color-text-muted-alt;
     }
-
-    & .search-input {
-      width: 100%;
-      height: 34px;
-      padding: 0 10px 0 32px;
-      font-size: 12px;
-
-      border-radius: $portaria-radius-xs;
-      border: 1px solid $portaria-color-border;
-      background: $portaria-color-bg-soft;
-
-      &:focus {
-        outline: 1px solid $portaria-color-accent;
-      }
-    }
   }
+}
 
-  & .filter-select {
-    border-radius: $portaria-radius-xs;
-    border: 1px solid $portaria-color-border;
-    background: transparent;
-    padding: $p-xs $p-md;
-    color: $portaria-color-text-body;
+.search-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px 0 32px;
+  font-size: 12px;
 
-    &:focus {
-      outline: 1px solid $portaria-color-accent-dark;
-      outline-offset: 4px;
-    }
+  border-radius: $portaria-radius-xs;
+  border: 1px solid $portaria-color-border;
+  background: $portaria-color-bg-soft;
+
+  &:focus {
+    outline: 1px solid $portaria-color-accent;
   }
 }
 
