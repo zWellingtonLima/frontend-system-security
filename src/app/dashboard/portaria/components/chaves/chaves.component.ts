@@ -56,6 +56,8 @@ export class ChavesComponent implements OnInit, OnDestroy {
   // MODAL ATUALIZAR
   opcoesEdicao$ = this.service.opcoesEdicao$;
 
+  paginacao$ = this.service.paginacao$;
+
   constructor(
     private service: ChaveService,
     private fb: FormBuilder,
@@ -78,6 +80,17 @@ export class ChavesComponent implements OnInit, OnDestroy {
 
   onTabChange(tab: ChavesTabConfig): void {
     this.service.setTab(tab);
+  }
+
+  // Setas anterior/seguinte - recebe a página de destino (0-based)
+  onPageChange(pagina: number) {
+    this.service.setPagina(pagina);
+  }
+
+  // Botões numerados - converte a página exibida (1-based) para 0-based
+  irParaPagina(p: number | "...") {
+    if (typeof p !== "number") return;
+    this.service.setPagina(p - 1);
   }
 
   // =========================================

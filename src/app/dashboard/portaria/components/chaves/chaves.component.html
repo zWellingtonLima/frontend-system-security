@@ -157,6 +157,38 @@
             <p>Nenhuma chave encontrada.</p>
           </div>
         </ng-template>
+
+        <!-- PAGINACAÇÃO -->
+        <ng-container *ngIf="paginacao$ | async as pag">
+          <div class="paginacao" *ngIf="pag.visivel">
+            <button
+              [disabled]="!pag.temAnterior"
+              (click)="onPageChange(pag.paginaAtual - 1)"
+            >
+              <i class="ft-arrow-left"></i>
+            </button>
+
+            <ng-container *ngFor="let p of pag.paginas">
+              <button
+                *ngIf="p !== '...'; else reticencia"
+                [class.active]="p === pag.paginaAtual + 1"
+                (click)="irParaPagina(p)"
+              >
+                {{ p }}
+              </button>
+              <ng-template #reticencia>
+                <span class="reticencia">…</span>
+              </ng-template>
+            </ng-container>
+
+            <button
+              [disabled]="!pag.temProximo"
+              (click)="onPageChange(pag.paginaAtual + 1)"
+            >
+              <i class="ft-arrow-right"></i>
+            </button>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-template>
   </ng-container>

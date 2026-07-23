@@ -48,6 +48,13 @@ export interface ChaveDisponivelDTO {
   numeroSala: number | null; // null em caso de molho
 }
 
+export interface ChavesPage {
+  content: ChavesResponseDTO[];
+  number: number; // página atual (0-based)
+  totalPages: number;
+  totalElements: number; // total da query, não o total da página
+}
+
 // Forma normalizada usada por todos os selects de chave
 export interface ChaveOpcao {
   id: number;

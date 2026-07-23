@@ -1,17 +1,19 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { catchError, finalize, map } from "rxjs/operators";
 import {
   ChaveDisponivelDTO,
   ChaveOpcao,
   ChaveViewModel,
+  ChavesPage,
   ChavesResponseDTO,
   DevolucaoDTO,
   EmprestimoCriarDTO,
   EmprestimoUpdateDTO,
   GrupoChaves,
   HistoricoEntregaChave,
+  PaginacaoVM,
 } from "../../models/api";
 import {
   ChavesTabConfig,
@@ -23,8 +25,8 @@ import { environment } from "src/environments/environment.dev";
 
 // A ordem aqui define a ordem que aparece na tela.
 const TABS: ChavesTabConfig[] = [
-  { value: "EMPRESTADAS", label: "Emprestadas", paginada: false },
-  { value: "TODAS", label: "Todas", paginada: false },
+  { value: "EMPRESTADAS", label: "Emprestadas", paginada: true },
+  { value: "TODAS", label: "Todas", paginada: true },
 ];
 
 @Injectable({
@@ -64,16 +66,47 @@ export class ChaveService {
   private estaSalvando = new BehaviorSubject<boolean>(false);
   readonly estaSalvando$ = this.estaSalvando.asObservable();
 
+  // PAGINAÇÃO 
+  paginaAtual$ = new BehaviorSubject<number>(0);
+  totalPaginas$ = new BehaviorSubject<number>(0);
+
+  paginacao$: Observable<PaginacaoVM> = combineLatest(
+    this.paginaAtual$,
+    this.totalPaginas$,
+    this.tabAtiva$,
+  ).pipe(
+    map(([paginaAtual, totalPaginas, tab]) => ({
+      paginaAtual,
+      totalPaginas,
+      paginas: this.calcularPaginasVisiveis(paginaAtual + 1, totalPaginas),
+      temAnterior: paginaAtual > 0,
+      temProximo: paginaAtual < totalPaginas - 1,
+      visivel: tab.paginada && totalPaginas > 1,
+    })),
+  );
+
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
     this.tabAtiva.next(TABS[0]);
+    this.setPagina(0);
     this.carregarChaves(TABS[0]);
   }
 
   setTab(tab: ChavesTabConfig): void {
     this.tabAtiva.next(tab);
     this.carregarChaves(tab);
+  }
+
+  // Recebe a página de destino (0-based, igual ao backend)
+  setPagina(pagina: number): void {
+    const total = this.totalPaginas$.value;
+    const dentroDoLimite = pagina >= 0 && pagina <= total - 1;
+
+    if (!dentroDoLimite || pagina === this.paginaAtual$.value) return;
+
+    this.paginaAtual$.next(pagina);
+    this.carregarChaves(this.tabAtiva.value);
   }
 
   // Recarrega a tab atual — usado depois de um PUT/POST bem sucedido
@@ -94,8 +127,18 @@ export class ChaveService {
         ? environment.chavesEmprestadasApiURL
         : environment.chavesListagemApiUrl;
 
+    // insere cada parâmetro existente
+    let parametros = new HttpParams();
+
+    // INSERIR OSP ARAMETROS
+
+    if (tab.paginada)
+      parametros = parametros
+        .set("page", String(this.paginaAtual$.value))
+        .set("size", "20");
+
     this.http
-      .get<ChavesResponseDTO[]>(url)
+      .get<ChavesPage>(url, { params: parametros })
       .pipe(
         catchError((err) => {
           console.error("CHAV-SERV: " + err); // implementar componente de Toast
@@ -106,12 +149,13 @@ export class ChaveService {
       .subscribe((resultado) => {
         if (resultado === null) return;
 
-        this.chaves$.next(resultado.map((c) => this.toViewModel(c)));
+        this.chaves$.next(resultado.content.map((c) => this.toViewModel(c)));
         this.totalEmprestadas.next(
           tab.value === "EMPRESTADAS"
-            ? resultado.length
-            : resultado.filter((c) => c.status === "EMPRESTADA").length,
+            ? resultado.content.length
+            : resultado.content.filter((c) => c.status === "EMPRESTADA").length,
         );
+        this.totalPaginas$.next(resultado.totalPages);
       });
   }
 
@@ -327,5 +371,27 @@ export class ChaveService {
   // Remove múltiplos espaços entre palavras e limpa início/fim
   private normalizarTexto(texto: string): string {
     return texto.replace(/\s+/g, " ").trim();
+  }
+
+  // PAGINAÇÃO
+  private calcularPaginasVisiveis(
+    atual: number,
+    total: number,
+  ): (number | "...")[] {
+    if (total <= 1) return [];
+
+    const paginasRelevantes = Array.from(
+      new Set([1, atual - 1, atual, atual + 1, total]),
+    )
+      .filter((p) => p >= 1 && p <= total)
+      .sort((a, b) => a - b);
+
+    const resultado: (number | "...")[] = [];
+    paginasRelevantes.forEach((p, i) => {
+      if (i > 0 && p - paginasRelevantes[i - 1] > 1) resultado.push("...");
+      resultado.push(p);
+    });
+
+    return resultado;
   }
 }
