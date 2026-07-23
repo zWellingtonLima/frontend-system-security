@@ -1576,3 +1576,91 @@ $m-xl: 22px;
     }
   }
 }
+
+// TABS NAVEGAÇÃO
+.tabs {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  font-size: 14px;
+
+  border-bottom: 1px solid $portaria-color-border;
+  margin-block: $m-lg;
+
+  & .tab {
+    cursor: pointer;
+    padding: $p-xs $p-md;
+    font-weight: 500;
+    color: $portaria-color-text-muted;
+
+    &.active {
+      color: $portaria-color-accent-dark;
+      box-shadow: 0 3px $portaria-color-accent;
+    }
+
+    // Contador ao lado do rótulo da tab
+    & .tab-count {
+      font-size: 11px;
+      font-weight: 600;
+      background: $portaria-color-bg-light;
+      color: $portaria-color-text-muted;
+      border-radius: 20px;
+      padding: 1px 7px;
+    }
+
+    &.active .tab-count {
+      background: $portaria-color-bg-hover;
+      color: $portaria-color-accent-dark;
+    }
+  }
+}
+
+// PAGINAÇÃO
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid $portaria-color-border;
+    background: $portaria-color-bg-soft;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $portaria-color-border;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      background: $portaria-color-bg-hover;
+    }
+
+    &.active {
+      border-color: $portaria-color-accent;
+      background: $portaria-color-accent;
+      color: #fff;
+      font-weight: 600;
+
+      &:hover {
+        background: $portaria-color-accent-dark;
+      }
+    }
+  }
+
+  .reticencia {
+    width: 32px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: $portaria-color-text-muted;
+    user-select: none;
+  }
+}

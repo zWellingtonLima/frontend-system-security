@@ -15,37 +15,6 @@
   }
 }
 
-.tabs {
-  font-size: 14px;
-  white-space: nowrap;
-  cursor: pointer;
-  display: flex;
-  justify-content: start;
-  align-items: center;
-
-  transition:
-    color 0.13s,
-    border-color 0.13s;
-
-  border-bottom: 1px solid $portaria-color-border;
-  margin-block: $m-lg;
-
-  & .tab {
-    cursor: pointer;
-    padding: $p-xs $p-md;
-    font-weight: 500;
-    color: $portaria-color-text-muted;
-    transition:
-      color 0.13s,
-      border-color 0.13s;
-
-    &.active {
-      color: $portaria-color-accent-dark;
-      box-shadow: 0 3px $portaria-color-accent;
-    }
-  }
-}
-
 // Contador ao lado do rótulo da tab
 .tab .tab-count {
   font-size: 11px;
