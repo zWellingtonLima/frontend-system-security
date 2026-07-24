@@ -135,7 +135,7 @@ export class ChaveService {
 
   // Recarrega a tab atual — usado depois de um PUT/POST bem sucedido
   recarregar(): void {
-    this.carregarChavesInventario(this.tabAtiva.value);
+    this.carregarEmprestadas();
   }
 
   // =============================================
