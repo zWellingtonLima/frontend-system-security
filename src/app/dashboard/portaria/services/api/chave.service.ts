@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { catchError, finalize, map } from "rxjs/operators";
+import { catchError, finalize, map, switchMap } from "rxjs/operators";
 import {
   ChaveDisponivelDTO,
   ChaveOpcao,
@@ -17,6 +17,7 @@ import {
 } from "../../models/api";
 import {
   ChavesTabConfig,
+  ColunaChave,
   EDIFICIO_LABEL,
   PISO_LABEL,
   STATUS_CHAVE_CONFIG,
@@ -25,22 +26,40 @@ import { environment } from "src/environments/environment.dev";
 
 // A ordem aqui define a ordem que aparece na tela.
 const TABS: ChavesTabConfig[] = [
-  { value: "EMPRESTADAS", label: "Emprestadas", paginada: true },
-  { value: "TODAS", label: "Todas", paginada: true },
+  { value: "EMPRESTADAS", label: "Emprestadas", paginada: false },
+  { value: "INVENTARIO", label: "Inventário", paginada: true },
 ];
 
 @Injectable({
   providedIn: "root",
 })
 export class ChaveService {
-  private chaves$ = new BehaviorSubject<ChaveViewModel[]>([]);
-  readonly chavesList$ = this.chaves$.asObservable();
-
-  tabs = TABS;
+  private chaves = new BehaviorSubject<ChaveViewModel[]>([]);
+  readonly chavesInventario$ = this.chaves.asObservable();
+  private emprestadas = new BehaviorSubject<ChaveViewModel[]>([]);
+  readonly emprestadas$ = this.emprestadas.asObservable();
 
   // Inicia em [0] (EMPRESTADAS), a tab carregada primeiro
   private tabAtiva = new BehaviorSubject<ChavesTabConfig>(TABS[0]);
   readonly tabAtiva$ = this.tabAtiva.asObservable();
+
+  tabs = TABS;
+
+  COLUNAS_POR_TAB: Record<string, ColunaChave[]> = {
+    EMPRESTADAS: ["edificio", "codigo", "sala", "desde", "pessoa", "acoes"],
+    INVENTARIO: ["edificio", "codigo", "sala", "estado", "desde", "pessoa"],
+  };
+
+  // DEVOLVE OS DADOS PARA A VIEW DE ACORDO COM O ENDPOINT CHAMADO (EMPRESTADAS || TODAS)
+  readonly linhas$: Observable<ChaveViewModel[]> = this.tabAtiva$.pipe(
+    switchMap((tab) =>
+      tab.value === "INVENTARIO" ? this.chavesInventario$ : this.emprestadas$,
+    ),
+  );
+
+  readonly colunas$: Observable<ColunaChave[]> = this.tabAtiva$.pipe(
+    map((tab) => this.COLUNAS_POR_TAB[tab.value] || []),
+  );
 
   private estaCarregandoDados = new BehaviorSubject<boolean>(false);
   readonly estaCarregandoDados$ = this.estaCarregandoDados.asObservable();
@@ -66,7 +85,7 @@ export class ChaveService {
   private estaSalvando = new BehaviorSubject<boolean>(false);
   readonly estaSalvando$ = this.estaSalvando.asObservable();
 
-  // PAGINAÇÃO 
+  // PAGINAÇÃO
   paginaAtual$ = new BehaviorSubject<number>(0);
   totalPaginas$ = new BehaviorSubject<number>(0);
 
@@ -90,12 +109,17 @@ export class ChaveService {
   inicializar(): void {
     this.tabAtiva.next(TABS[0]);
     this.setPagina(0);
-    this.carregarChaves(TABS[0]);
+    this.carregarChavesInventario(TABS[0]);
   }
 
   setTab(tab: ChavesTabConfig): void {
     this.tabAtiva.next(tab);
-    this.carregarChaves(tab);
+
+    if (tab.value === "INVENTARIO") {
+      this.carregarChavesInventario(tab);
+    } else {
+      this.carregarEmprestadas();
+    }
   }
 
   // Recebe a página de destino (0-based, igual ao backend)
@@ -106,42 +130,33 @@ export class ChaveService {
     if (!dentroDoLimite || pagina === this.paginaAtual$.value) return;
 
     this.paginaAtual$.next(pagina);
-    this.carregarChaves(this.tabAtiva.value);
+    this.carregarChavesInventario(this.tabAtiva.value);
   }
 
   // Recarrega a tab atual — usado depois de um PUT/POST bem sucedido
   recarregar(): void {
-    this.carregarChaves(this.tabAtiva.value);
+    this.carregarChavesInventario(this.tabAtiva.value);
   }
 
   // =============================================
   // ================= GET =======================
 
-  // Emprestadas e Todas partilham o mesmo shape; muda apenas o endpoint.
-  // /emprestadas já vem filtrado pelo backend
-  private carregarChaves(tab: ChavesTabConfig): void {
+  private carregarChavesInventario(tab: ChavesTabConfig): void {
     this.estaCarregandoDados.next(true);
 
-    const url =
-      tab.value === "EMPRESTADAS"
-        ? environment.chavesEmprestadasApiURL
-        : environment.chavesListagemApiUrl;
-
-    // insere cada parâmetro existente
     let parametros = new HttpParams();
-
-    // INSERIR OSP ARAMETROS
-
     if (tab.paginada)
       parametros = parametros
         .set("page", String(this.paginaAtual$.value))
         .set("size", "20");
 
     this.http
-      .get<ChavesPage>(url, { params: parametros })
+      .get<ChavesPage>(environment.chavesListagemApiUrl, {
+        params: parametros,
+      })
       .pipe(
         catchError((err) => {
-          console.error("CHAV-SERV: " + err); // implementar componente de Toast
+          console.error("CHAV-SERV-INV: " + err); // implementar componente de Toast
           return of(null);
         }),
         finalize(() => this.estaCarregandoDados.next(false)),
@@ -149,13 +164,34 @@ export class ChaveService {
       .subscribe((resultado) => {
         if (resultado === null) return;
 
-        this.chaves$.next(resultado.content.map((c) => this.toViewModel(c)));
-        this.totalEmprestadas.next(
-          tab.value === "EMPRESTADAS"
-            ? resultado.content.length
-            : resultado.content.filter((c) => c.status === "EMPRESTADA").length,
-        );
+        this.chaves.next(resultado.content.map((c) => this.toViewModel(c)));
+
+        // TODO: fazer serviço dedicado
+        // this.totalEmprestadas.next(
+        //   tab.value === "EMPRESTADAS"
+        //     ? resultado.content.length
+        //     : resultado.content.filter((c) => c.status === "EMPRESTADA").length,
+        // );
         this.totalPaginas$.next(resultado.totalPages);
+      });
+  }
+
+  carregarEmprestadas(): void {
+    this.estaCarregandoDados.next(true);
+
+    this.http
+      .get<ChavesResponseDTO[]>(environment.chavesEmprestadasApiURL)
+      .pipe(
+        catchError((err) => {
+          console.error("CHAV-SERV-EMP: " + err);
+          return of(null);
+        }),
+        finalize(() => this.estaCarregandoDados.next(false)),
+      )
+      .subscribe((resultado) => {
+        if (resultado === null) return;
+
+        this.emprestadas.next(resultado.map((c) => this.toViewModel(c)));
       });
   }
 

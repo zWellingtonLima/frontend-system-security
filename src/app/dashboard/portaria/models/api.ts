@@ -30,6 +30,7 @@ export interface ChavesResponseDTO {
   status: StatusChaveEnumType;
   pessoa: string | null;
   desde: ISOTimestamp | null;
+  devolucao: ISOTimestamp | null;
 }
 
 // Enriquecida no service com os rótulos prontos para o template

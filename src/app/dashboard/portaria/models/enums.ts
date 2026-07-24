@@ -104,7 +104,7 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 // CHAVES
 // ============================================================
-export type TabsChave = "EMPRESTADAS" | "TODAS";
+export type TabsChave = "EMPRESTADAS" | "INVENTARIO";
 
 export type ChavesTabConfig = TabConfig<TabsChave>;
 
@@ -136,4 +136,23 @@ export const PISO_LABEL: Record<string, string> = {
   "1": "Piso 1",
   "2": "Piso 2",
   "3": "Piso 3",
+};
+
+export type ColunaChave =
+  | "edificio"
+  | "codigo"
+  | "sala"
+  | "estado"
+  | "desde"
+  | "pessoa"
+  | "acoes";
+
+export const COLUNA_TITULO: Record<ColunaChave, string> = {
+  edificio: "Edifício",
+  codigo: "Chave / Código",
+  sala: "Sala / Piso",
+  estado: "Estado",
+  desde: "Desde",
+  pessoa: "Com quem",
+  acoes: "Ações",
 };

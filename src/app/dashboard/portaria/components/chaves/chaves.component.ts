@@ -8,7 +8,7 @@ import {
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChaveService } from "../../services/api/chave.service";
-import { ChavesTabConfig } from "../../models/enums";
+import { ChavesTabConfig, COLUNA_TITULO } from "../../models/enums";
 import { ChaveViewModel, GrupoChaves } from "../../models/api";
 
 // Mensagens de `required` por campo. O texto genérico serve de fallback.
@@ -40,12 +40,18 @@ export class ChavesComponent implements OnInit, OnDestroy {
   // (edifício, código, sala, desde) são só leitura e vêm daqui
   chaveEmEdicao: ChaveViewModel | null = null;
 
+  // Renderização condicional da tabela
+  titulos = COLUNA_TITULO;
+  colunas$ = this.service.colunas$;
+  linhas$ = this.service.linhas$;
+
   // FILTROS E TABS
   tabs = this.service.tabs;
   tabAtiva$ = this.service.tabAtiva$;
   totalEmprestadas$ = this.service.totalEmprestadas$;
 
-  chaves$ = this.service.chavesList$;
+  chaves$ = this.service.chavesInventario$;
+  emprestadas$ = this.service.emprestadas$;
   carregando$ = this.service.estaCarregandoDados$; // Loader GET
   salvando$ = this.service.estaSalvando$; // Loader PUT/POST
 
