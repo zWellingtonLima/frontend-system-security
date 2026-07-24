@@ -144,7 +144,7 @@ export type ColunaChave =
   | "sala"
   | "estado"
   | "desde"
-  | "pessoa"
+  | "nomeFuncionario"
   | "acoes";
 
 export const COLUNA_TITULO: Record<ColunaChave, string> = {
@@ -153,6 +153,6 @@ export const COLUNA_TITULO: Record<ColunaChave, string> = {
   sala: "Sala / Piso",
   estado: "Estado",
   desde: "Desde",
-  pessoa: "Com quem",
+  nomeFuncionario: "Com quem",
   acoes: "Ações",
 };

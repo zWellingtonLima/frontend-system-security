@@ -76,13 +76,13 @@ export interface GrupoChaves {
 // Regista um novo empréstimo
 export interface EmprestimoCriarDTO {
   idChave: number;
-  funcionario: string;
+  devolvidaPorIdRH: number;
 }
 
 // Corrige um empréstimo já registrado (engano do segurança no ato do empréstimo)
 export interface EmprestimoUpdateDTO {
   idChave: number;
-  funcionario: string;
+  devolvidaPorIdRH: number;
 }
 
 // Regista a devolução de um empréstimo em aberto

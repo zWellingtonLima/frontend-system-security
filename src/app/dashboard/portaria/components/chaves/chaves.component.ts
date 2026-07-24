@@ -136,7 +136,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
     const { idChave, pessoa } = this.emprestarForm.value;
 
     this.service
-      .emprestarChave({ idChave, funcionario: pessoa })
+      .emprestarChave({ idChave, devolvidaPorIdRH: pessoa })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
         if (sucesso) this.fecharModalEmprestar();
@@ -175,7 +175,10 @@ export class ChavesComponent implements OnInit, OnDestroy {
     const { idChave, funcionario } = this.atualizarForm.value;
 
     this.service
-      .atualizarEmprestimo(idEmprestimo, { idChave, funcionario })
+      .atualizarEmprestimo(idEmprestimo, {
+        idChave,
+        devolvidaPorIdRH: funcionario,
+      })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
         if (sucesso) this.fecharModalAtualizar();

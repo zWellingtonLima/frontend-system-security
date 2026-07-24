@@ -46,8 +46,8 @@ export class ChaveService {
   tabs = TABS;
 
   COLUNAS_POR_TAB: Record<string, ColunaChave[]> = {
-    EMPRESTADAS: ["edificio", "codigo", "sala", "desde", "pessoa", "acoes"],
-    INVENTARIO: ["edificio", "codigo", "sala", "estado", "desde", "pessoa"],
+    EMPRESTADAS: ["edificio", "codigo", "sala", "desde", "nomeFuncionario", "acoes"],
+    INVENTARIO: ["edificio", "codigo", "sala", "estado", "desde", "nomeFuncionario"],
   };
 
   // DEVOLVE OS DADOS PARA A VIEW DE ACORDO COM O ENDPOINT CHAMADO (EMPRESTADAS || TODAS)
@@ -243,15 +243,10 @@ export class ChaveService {
   ): Observable<boolean> {
     this.estaSalvando.next(true);
 
-    const dadosNormalizados: EmprestimoUpdateDTO = {
-      ...data,
-      funcionario: this.normalizarTexto(data.funcionario),
-    };
-
     return this.http
-      .put<void>(
+      .patch<void>(
         `${environment.chavesEmprestimoApiUrl}/${idEmprestimo}`,
-        dadosNormalizados,
+        data,
       )
       .pipe(
         map(() => {
@@ -273,24 +268,17 @@ export class ChaveService {
   emprestarChave(data: EmprestimoCriarDTO): Observable<boolean> {
     this.estaSalvando.next(true);
 
-    const dadosNormalizados: EmprestimoCriarDTO = {
-      ...data,
-      funcionario: this.normalizarTexto(data.funcionario),
-    };
-
-    return this.http
-      .post<void>(environment.chavesEmprestimoApiUrl, dadosNormalizados)
-      .pipe(
-        map(() => {
-          this.recarregar();
-          return true;
-        }),
-        catchError((err) => {
-          console.error("CHAV-SERV-EMPRESTIMO: " + err);
-          return of(false);
-        }),
-        finalize(() => this.estaSalvando.next(false)),
-      );
+    return this.http.post<void>(environment.chavesEmprestimoApiUrl, data).pipe(
+      map(() => {
+        this.recarregar();
+        return true;
+      }),
+      catchError((err) => {
+        console.error("CHAV-SERV-EMPRESTIMO: " + err);
+        return of(false);
+      }),
+      finalize(() => this.estaSalvando.next(false)),
+    );
   }
 
   // Regista a devolução de um empréstimo em aberto.
