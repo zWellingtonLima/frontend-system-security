@@ -109,7 +109,7 @@ export class ChaveService {
   inicializar(): void {
     this.tabAtiva.next(TABS[0]);
     this.setPagina(0);
-    this.carregarChavesInventario(TABS[0]);
+    this.carregarEmprestadas();
   }
 
   setTab(tab: ChavesTabConfig): void {
