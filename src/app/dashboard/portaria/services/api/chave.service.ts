@@ -166,17 +166,11 @@ export class ChaveService {
 
         this.chaves.next(resultado.content.map((c) => this.toViewModel(c)));
 
-        // TODO: fazer serviço dedicado
-        // this.totalEmprestadas.next(
-        //   tab.value === "EMPRESTADAS"
-        //     ? resultado.content.length
-        //     : resultado.content.filter((c) => c.status === "EMPRESTADA").length,
-        // );
         this.totalPaginas$.next(resultado.totalPages);
       });
   }
 
-  carregarEmprestadas(): void {
+  private carregarEmprestadas(): void {
     this.estaCarregandoDados.next(true);
 
     this.http
@@ -192,6 +186,7 @@ export class ChaveService {
         if (resultado === null) return;
 
         this.emprestadas.next(resultado.map((c) => this.toViewModel(c)));
+        this.totalEmprestadas.next(resultado.length);
       });
   }
 
