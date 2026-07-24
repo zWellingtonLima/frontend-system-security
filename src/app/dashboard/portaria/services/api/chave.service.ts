@@ -294,20 +294,31 @@ export class ChaveService {
   }
 
   // Regista a devolução de um empréstimo em aberto.
-  devolverChave(
-    idEmprestimo: number,
-    devolvidaPor: string,
-  ): Observable<boolean> {
+  devolverChave(idEmprestimo: number, data: DevolucaoDTO): Observable<boolean> {
     this.estaSalvando.next(true);
 
-    const corpo: DevolucaoDTO = {
-      devolvidaPor: this.normalizarTexto(devolvidaPor),
-    };
+    return this.http
+      .post<void>(`${environment.chavesEmprestimoApiUrl}/${idEmprestimo}`, data)
+      .pipe(
+        map(() => {
+          this.recarregar();
+          return true;
+        }),
+        catchError((err) => {
+          console.error("CHAV-SERV-DEVOLUCAO: " + err);
+          return of(false);
+        }),
+        finalize(() => this.estaSalvando.next(false)),
+      );
+  }
+
+  devolverRapidoChave(idEmprestimo: number): Observable<boolean> {
+    this.estaSalvando.next(true);
 
     return this.http
       .post<void>(
-        `${environment.chavesEmprestimoApiUrl}/${idEmprestimo}/devolucao`,
-        corpo,
+        `${environment.chavesEmprestimoApiUrl}/${idEmprestimo}/rapida`,
+        null,
       )
       .pipe(
         map(() => {
@@ -399,6 +410,7 @@ export class ChaveService {
       }));
   }
 
+  // TODO: Tornar isso uma Directive ou algo reaproveitável
   // Remove múltiplos espaços entre palavras e limpa início/fim
   private normalizarTexto(texto: string): string {
     return texto.replace(/\s+/g, " ").trim();
