@@ -28,7 +28,8 @@ export interface ChavesResponseDTO {
   sala: number | null;
   piso: string;
   status: StatusChaveEnumType;
-  pessoa: string | null;
+  nomeFuncionario: string | null;
+  idRH: number | null;
   desde: ISOTimestamp | null;
   devolucao: ISOTimestamp | null;
 }
@@ -85,8 +86,13 @@ export interface EmprestimoUpdateDTO {
 }
 
 // Regista a devolução de um empréstimo em aberto
-export interface DevolucaoDTO {
+export interface DevolucaoRapidaDTO {
   devolvidaPor: string;
+}
+
+export interface DevolucaoDTO {
+  idChave: number;
+  devolvidaPorIdRH: number;
 }
 
 export interface HistoricoEntregaChave {

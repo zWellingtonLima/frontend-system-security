@@ -151,8 +151,8 @@ export class ChavesComponent implements OnInit, OnDestroy {
 
     this.atualizarForm.reset({
       idChave: chave.id,
-      funcionario: chave.pessoa || "",
-      devolvidaPor: chave.pessoa || "",
+      funcionario: chave.nomeFuncionario || "",
+      devolvidaPor: chave.nomeFuncionario || "",
     });
     this.limparTentativas(this.atualizarForm);
 
@@ -190,18 +190,34 @@ export class ChavesComponent implements OnInit, OnDestroy {
     if (!this.validarCampos(this.atualizarForm, ["devolvidaPor"])) return;
 
     this.service
-      .devolverChave(idEmprestimo, this.atualizarForm.value.devolvidaPor)
+      .devolverChave(idEmprestimo, {
+        devolvidaPorIdRH: this.atualizarForm.value.devolvidaPor,
+        idChave: this.atualizarForm.value.idChave,
+      })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
         if (sucesso) this.fecharModalAtualizar();
       });
   }
 
-  devolverRapido(chave: ChaveViewModel): void {
-    if (chave.idEmprestimo === null || !chave.pessoa) return;
+  devolverChaveNormal(chave: ChaveViewModel): void {
+    if (chave.idEmprestimo === null || !chave.nomeFuncionario || !chave.idRH)
+      return; // TODO: organizar as informações e idRH
 
     this.service
-      .devolverChave(chave.idEmprestimo, chave.pessoa)
+      .devolverChave(chave.idEmprestimo, {
+        devolvidaPorIdRH: chave.idRH, // «««««««««« ALTERAR PARA IDRH
+        idChave: chave.id,
+      })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
+  }
+
+  devolverRapido(chave: ChaveViewModel): void {
+    if (chave.idEmprestimo === null || !chave.nomeFuncionario) return;
+
+    this.service
+      .devolverRapidoChave(chave.idEmprestimo)
       .pipe(takeUntil(this.destroy$))
       .subscribe();
   }
