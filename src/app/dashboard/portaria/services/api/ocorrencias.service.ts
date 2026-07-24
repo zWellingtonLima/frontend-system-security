@@ -72,6 +72,8 @@ export class OcorrenciasService {
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
+    this.paginaAtual$.next(0);
+    this.totalPaginas$.next(0);
     this.carregarOcorrencias(TABS[0]);
     this.carregarTotalPendentes();
     this.tabAtiva$.next(TABS[0]);
