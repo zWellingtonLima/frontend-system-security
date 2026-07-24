@@ -1,19 +1,11 @@
 <app-portaria-shell>
   <!-- Titulo e Registar leitura  -->
-  <div class="titulo-dashboard-buttons">
-    <div class="titulo-dashboard">
-      <h3>Consumos</h3>
-      <p>Registo de leituras de água, eletricidade e gás</p>
-    </div>
-
+  <div class="page-header-row">
     <div>
-      <button
-        class="portaria-btn portaria-btn--primary"
-        (click)="alternarVisibilidadeModal()"
-      >
-        <i class="ft-plus"></i>
-        Registar Leitura
-      </button>
+      <h1 class="portaria-section-title">Consumos</h1>
+      <p class="portaria-section-copy">
+        Registo de leituras de água, eletricidade e gás
+      </p>
     </div>
   </div>
 
@@ -35,7 +27,7 @@
         </app-card-leituras>
       </div>
     </div>
-      
+
     <div class="leitura-card lc-eletricidade">
       <div class="lc-header">
         <div class="lc-tipo elet">Elet.</div>
@@ -54,7 +46,7 @@
         </app-card-leituras>
       </div>
     </div>
-      
+
     <div class="leitura-card lc-gas">
       <div class="lc-header">
         <div class="lc-tipo gas">Gás</div>
@@ -104,7 +96,7 @@
   <div class="barra-pesquisa-container">
     <select
       #barraEdificio
-      class="barra-pesquisa-select"
+      class="filter-select"
       (change)="filtroEdificio(barraEdificio.value)"
     >
       <option value="">Todos os edificios</option>
@@ -118,15 +110,25 @@
         #inicio
         (change)="filtroInicio(inicio.value)"
         type="date"
-        class="barra-pesquisa-select"
+        class="filter-select"
       />
       <span> até: </span>
       <input
         #fim
         (change)="filtroFim(fim.value)"
         type="date"
-        class="barra-pesquisa-select"
+        class="filter-select"
       />
+    </div>
+
+    <div class="m-left">
+      <button
+        class="portaria-btn portaria-btn--primary"
+        (click)="alternarVisibilidadeModal()"
+      >
+        <i class="ft-plus"></i>
+        Registar Leitura
+      </button>
     </div>
   </div>
 
