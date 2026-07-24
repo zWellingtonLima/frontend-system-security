@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { debounceTime, take, takeUntil } from "rxjs/operators";
+import { take, takeUntil } from "rxjs/operators";
 import { OcorrenciasService } from "../../services/api/ocorrencias.service";
 import {
   EstadoOcorrenciaEnumType,
@@ -64,13 +64,6 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
     });
 
     this.filtrosForm
-      .get("search")!
-      .valueChanges.pipe(debounceTime(400), takeUntil(this.destroy$))
-      .subscribe((search) => {
-        this.ocorrenciasService.setFiltro({ search });
-      });
-
-    this.filtrosForm
       .get("tipo")!
       .valueChanges.pipe(takeUntil(this.destroy$))
       .subscribe((tipo) => {
@@ -84,6 +77,10 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
     // remover o emitEvent causa duplo fetch
     this.filtrosForm.reset({ search: "", tipo: "" }, { emitEvent: false });
     this.ocorrenciasService.setTab(tab);
+  }
+
+  onSearch(search: string): void {
+    this.ocorrenciasService.setFiltro({ search });
   }
 
   // Setas anterior/seguinte - recebe a página de destino (0-based)

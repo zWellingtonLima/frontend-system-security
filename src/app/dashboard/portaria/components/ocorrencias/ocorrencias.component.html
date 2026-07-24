@@ -35,11 +35,12 @@
     <div class="search-wrap flex content-center">
       <i class="fas fa-search"></i>
       <input
+        #search
         type="text"
         name="search-input"
         class="search-input"
         placeholder="Pesquisar por descrição da ocorrência..."
-        formControlName="search"
+        (keyup.enter)="onSearch(search.value)"
       />
     </div>
     <select class="filter-select" name="filter-select" formControlName="tipo">
