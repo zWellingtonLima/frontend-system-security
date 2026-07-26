@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { LoginResponse, TokenResponse } from "src/app/dashboard/portaria/models/api";
 // import { UserInfo } from "src/app/shared/models/api";
-import { environment } from "src/environments/environment.dev";
+import { environment } from "src/environments/environment";
 
 const TOKEN_KEY = "accessToken";
 const USER_KEY = "seguranca";

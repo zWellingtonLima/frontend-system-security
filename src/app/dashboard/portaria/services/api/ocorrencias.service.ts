@@ -17,7 +17,7 @@ import {
   PaginacaoVM,
 } from "../../models/api";
 import { catchError, finalize, map } from "rxjs/operators";
-import { environment } from "src/environments/environment.dev";
+import { environment } from "src/environments/environment";
 
 // A ordem aqui define a ordem que aparece na tela
 const TABS: OcorrenciaTabConfig[] = [

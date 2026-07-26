@@ -1,7 +1,7 @@
-const api = "/api";
+const api = "http://localhost:8080/api";
 
 export const environment = {
-  production: true,
+  production: false,
   loginApiUrl: `${api}/auth/login`,
   registerApiUrl: `${api}/auth/register`,
   refreshApiUrl: `${api}/auth/refresh`,
