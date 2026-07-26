@@ -24,10 +24,21 @@ import {
 } from "../../models/enums";
 import { environment } from "src/environments/environment";
 
-// A ordem aqui define a ordem que aparece na tela.
+// A ordem aqui define a ordem que aparece na tela, tanto das tabs quanto
+// das colunas de cada uma.
 const TABS: ChavesTabConfig[] = [
-  { value: "EMPRESTADAS", label: "Emprestadas", paginada: false },
-  { value: "INVENTARIO", label: "Inventário", paginada: true },
+  {
+    value: "EMPRESTADAS",
+    label: "Emprestadas",
+    paginada: false,
+    colunas: ["edificio", "codigo", "sala", "desde", "nomeFuncionario", "acoes"],
+  },
+  {
+    value: "INVENTARIO",
+    label: "Inventário",
+    paginada: true,
+    colunas: ["edificio", "codigo", "sala", "estado", "desde", "nomeFuncionario"],
+  },
 ];
 
 @Injectable({
@@ -45,11 +56,6 @@ export class ChaveService {
 
   tabs = TABS;
 
-  COLUNAS_POR_TAB: Record<string, ColunaChave[]> = {
-    EMPRESTADAS: ["edificio", "codigo", "sala", "desde", "nomeFuncionario", "acoes"],
-    INVENTARIO: ["edificio", "codigo", "sala", "estado", "desde", "nomeFuncionario"],
-  };
-
   // DEVOLVE OS DADOS PARA A VIEW DE ACORDO COM O ENDPOINT CHAMADO (EMPRESTADAS || TODAS)
   readonly linhas$: Observable<ChaveViewModel[]> = this.tabAtiva$.pipe(
     switchMap((tab) =>
@@ -58,7 +64,7 @@ export class ChaveService {
   );
 
   readonly colunas$: Observable<ColunaChave[]> = this.tabAtiva$.pipe(
-    map((tab) => this.COLUNAS_POR_TAB[tab.value] || []),
+    map((tab) => tab.colunas),
   );
 
   private estaCarregandoDados = new BehaviorSubject<boolean>(false);
