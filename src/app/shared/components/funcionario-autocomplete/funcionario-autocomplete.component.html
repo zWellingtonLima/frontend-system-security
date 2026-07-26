@@ -1,0 +1,63 @@
+<div class="autocomplete">
+  <div class="search-wrap">
+    <i class="icon-user-follow"></i>
+    <input
+      #campo
+      type="text"
+      class="search-input"
+      [id]="id"
+      [value]="texto"
+      [placeholder]="placeholder"
+      [disabled]="desativado"
+      [class.input-erro]="temErro"
+      autocomplete="off"
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (keydown)="onKeydown($event)"
+    />
+  </div>
+
+  <!-- O `mousedown` com preventDefault impede o blur de disparar antes do
+       click e fechar a lista sem registar a escolha. -->
+  <div class="autocomplete__lista" *ngIf="aberto" [ngStyle]="estiloLista">
+    <p class="autocomplete__estado" *ngIf="carregando">
+      A carregar funcionários...
+    </p>
+
+    <p
+      class="autocomplete__estado autocomplete__estado--erro"
+      *ngIf="erroAoCarregar"
+    >
+      Não foi possível carregar a lista.
+      <button
+        type="button"
+        class="autocomplete__retry"
+        (mousedown)="$event.preventDefault()"
+        (click)="tentarNovamente()"
+      >
+        Tentar novamente
+      </button>
+    </p>
+
+    <ng-container *ngIf="!carregando && !erroAoCarregar">
+      <p class="autocomplete__estado" *ngIf="!resultados.length">
+        Nenhum funcionário encontrado.
+      </p>
+
+      <button
+        type="button"
+        class="autocomplete__item"
+        *ngFor="let funcionario of resultados; let i = index"
+        [class.ativo]="i === indiceAtivo"
+        (mousedown)="$event.preventDefault()"
+        (click)="selecionar(funcionario)"
+      >
+        <span class="autocomplete__nome">{{ nomeDe(funcionario) }}</span>
+        <span class="autocomplete__ligacao" *ngIf="funcionario.ligacao">
+          Ext. {{ funcionario.ligacao }}
+        </span>
+      </button>
+    </ng-container>
+  </div>
+</div>
