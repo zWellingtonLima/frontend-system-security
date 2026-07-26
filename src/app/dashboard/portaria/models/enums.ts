@@ -106,7 +106,31 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 export type TabsChave = "EMPRESTADAS" | "INVENTARIO";
 
-export type ChavesTabConfig = TabConfig<TabsChave>;
+// Quais são todas as colunas que existem nessa página
+export type ColunaChave =
+  | "edificio"
+  | "codigo"
+  | "sala"
+  | "estado"
+  | "desde"
+  | "nomeFuncionario"
+  | "acoes";
+
+// Como cada coluna se chama na tela
+export const COLUNA_TITULO: Record<ColunaChave, string> = {
+  edificio: "Edifício",
+  codigo: "Chave / Código",
+  sala: "Sala / Piso",
+  estado: "Estado",
+  desde: "Desde",
+  nomeFuncionario: "Com quem",
+  acoes: "Ações",
+};
+
+// Cada tab decide quais colunas mostra e em que ordem
+export type ChavesTabConfig = TabConfig<TabsChave> & {
+  colunas: ColunaChave[];
+};
 
 export type StatusChaveEnumType = "EMPRESTADA" | "DISPONIVEL";
 
@@ -136,23 +160,4 @@ export const PISO_LABEL: Record<string, string> = {
   "1": "Piso 1",
   "2": "Piso 2",
   "3": "Piso 3",
-};
-
-export type ColunaChave =
-  | "edificio"
-  | "codigo"
-  | "sala"
-  | "estado"
-  | "desde"
-  | "nomeFuncionario"
-  | "acoes";
-
-export const COLUNA_TITULO: Record<ColunaChave, string> = {
-  edificio: "Edifício",
-  codigo: "Chave / Código",
-  sala: "Sala / Piso",
-  estado: "Estado",
-  desde: "Desde",
-  nomeFuncionario: "Com quem",
-  acoes: "Ações",
 };
