@@ -142,7 +142,7 @@
                     <button
                       class="portaria-btn portaria-btn--ghost"
                       type="button"
-                      title="Devolver em nome de {{ chave.pessoa }}"
+                      title="Devolver em nome de {{ chave.nomeFuncionario }}"
                       [disabled]="salvando$ | async"
                       (click)="devolverRapido(chave)"
                     >
@@ -259,19 +259,15 @@
           <label for="emprestar-pessoa" class="form-label-port"
             >Nome da pessoa</label
           >
-          <div class="search-wrap">
-            <i class="icon-user-follow"></i>
-            <input
-              type="text"
-              class="search-input"
-              id="emprestar-pessoa"
-              formControlName="pessoa"
-              placeholder="Quem está a levar a chave..."
-            />
-          </div>
+          <app-funcionario-autocomplete
+            id="emprestar-pessoa"
+            formControlName="idFuncionario"
+            placeholder="Quem está a levar a chave..."
+            [temErro]="!!erroDoCampo(emprestarForm, 'idFuncionario')"
+          ></app-funcionario-autocomplete>
           <span
             class="form-error"
-            *ngIf="erroDoCampo(emprestarForm, 'pessoa') as erro"
+            *ngIf="erroDoCampo(emprestarForm, 'idFuncionario') as erro"
           >
             {{ erro }}
           </span>
@@ -356,16 +352,15 @@
           <label for="atualizar-funcionario" class="form-label-port"
             >Funcionário</label
           >
-          <input
+          <app-funcionario-autocomplete
             id="atualizar-funcionario"
-            class="filter-select"
-            type="text"
-            formControlName="funcionario"
-            placeholder="Insira o nome de um funcionário"
-          />
+            formControlName="idFuncionarioEmprestimo"
+            placeholder="Quem levou a chave..."
+            [temErro]="!!erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo')"
+          ></app-funcionario-autocomplete>
           <span
             class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'funcionario') as erro"
+            *ngIf="erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro"
           >
             {{ erro }}
           </span>
@@ -417,20 +412,15 @@
           <label for="atualizar-devolvida-por" class="form-label-port"
             >Devolvida por</label
           >
-          <div class="search-wrap">
-            <i class="icon-user-follow"></i>
-            <!-- ALTERAR PARA SELECT OU EXIBIR UM CAMPO PARA AUTOCOMPLETE -->
-            <input
-              type="text"
-              class="search-input"
-              id="atualizar-devolvida-por"
-              formControlName="devolvidaPor"
-              placeholder="Quem está a devolver a chave..."
-            />
-          </div>
+          <app-funcionario-autocomplete
+            id="atualizar-devolvida-por"
+            formControlName="idDevolvidaPor"
+            placeholder="Quem está a devolver a chave..."
+            [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
+          ></app-funcionario-autocomplete>
           <span
             class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'devolvidaPor') as erro"
+            *ngIf="erroDoCampo(atualizarForm, 'idDevolvidaPor') as erro"
           >
             {{ erro }}
           </span>

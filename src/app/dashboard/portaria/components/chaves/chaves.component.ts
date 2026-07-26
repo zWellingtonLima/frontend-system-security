@@ -13,9 +13,9 @@ import { ChaveViewModel, GrupoChaves } from "../../models/api";
 
 // Mensagens de `required` por campo. O texto genérico serve de fallback.
 const MENSAGENS_OBRIGATORIO: Record<string, string> = {
-  pessoa: "Indique quem está a levar a chave.",
-  funcionario: "Indique o funcionário responsável pelo empréstimo.",
-  devolvidaPor: "Indique quem está a devolver a chave.",
+  idFuncionario: "Selecione na lista quem está a levar a chave.",
+  idFuncionarioEmprestimo: "Selecione na lista o funcionário do empréstimo.",
+  idDevolvidaPor: "Selecione na lista quem está a devolver a chave.",
   idChave: "Selecione a chave do empréstimo.",
 };
 
@@ -72,15 +72,19 @@ export class ChavesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.service.inicializar();
 
+    // Os campos de pessoa guardam o idRH escolhido no autocomplete, não o
+    // nome escrito — por isso `required` basta, sem minLength de texto.
     this.emprestarForm = this.fb.group({
       idChave: [null, [Validators.required]],
-      pessoa: ["", [Validators.required, Validators.minLength(3)]],
+      idFuncionario: [null, [Validators.required]],
     });
 
     this.atualizarForm = this.fb.group({
       idChave: [null, [Validators.required]],
-      funcionario: ["", [Validators.required, Validators.minLength(3)]],
-      devolvidaPor: ["", [Validators.required, Validators.minLength(3)]],
+      // Quem levou a chave — corrigível aqui em caso de engano do segurança
+      idFuncionarioEmprestimo: [null, [Validators.required]],
+      // Quem devolve, que pode ser outra pessoa
+      idDevolvidaPor: [null, [Validators.required]],
     });
   }
 
@@ -103,7 +107,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
   // ========== MODAL EMPRESTAR ==============
 
   abrirModalEmprestar(): void {
-    this.emprestarForm.reset({ idChave: null, pessoa: "" });
+    this.emprestarForm.reset({ idChave: null, idFuncionario: null });
     this.limparTentativas(this.emprestarForm);
     this.service.carregarDisponiveis();
     this.emprestarModalIsOpen = true;
@@ -131,12 +135,13 @@ export class ChavesComponent implements OnInit, OnDestroy {
   }
 
   onEmprestar(): void {
-    if (!this.validarCampos(this.emprestarForm, ["idChave", "pessoa"])) return;
+    if (!this.validarCampos(this.emprestarForm, ["idChave", "idFuncionario"]))
+      return;
 
-    const { idChave, pessoa } = this.emprestarForm.value;
+    const { idChave, idFuncionario } = this.emprestarForm.value;
 
     this.service
-      .emprestarChave({ idChave, devolvidaPorIdRH: pessoa })
+      .emprestarChave({ idChave, devolvidaPorIdRH: idFuncionario })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
         if (sucesso) this.fecharModalEmprestar();
@@ -149,10 +154,12 @@ export class ChavesComponent implements OnInit, OnDestroy {
   abrirModalAtualizar(chave: ChaveViewModel): void {
     this.chaveEmEdicao = chave;
 
+    // Por defeito assume-se que devolve quem levou; o segurança altera o
+    // campo se for outra pessoa a entregar.
     this.atualizarForm.reset({
       idChave: chave.id,
-      funcionario: chave.nomeFuncionario || "",
-      devolvidaPor: chave.nomeFuncionario || "",
+      idFuncionarioEmprestimo: chave.idRH,
+      idDevolvidaPor: chave.idRH,
     });
     this.limparTentativas(this.atualizarForm);
 
@@ -169,15 +176,22 @@ export class ChavesComponent implements OnInit, OnDestroy {
     const idEmprestimo = this.chaveEmEdicao && this.chaveEmEdicao.idEmprestimo;
     if (idEmprestimo === null || idEmprestimo === undefined) return;
 
-    if (!this.validarCampos(this.atualizarForm, ["idChave", "funcionario"]))
+    if (
+      !this.validarCampos(this.atualizarForm, [
+        "idChave",
+        "idFuncionarioEmprestimo",
+      ])
+    )
       return;
 
-    const { idChave, funcionario } = this.atualizarForm.value;
+    // Corrigir o empréstimo é corrigir a quem a chave foi entregue, por isso
+    // o que segue é o funcionário do empréstimo, não quem devolve.
+    const { idChave, idFuncionarioEmprestimo } = this.atualizarForm.value;
 
     this.service
       .atualizarEmprestimo(idEmprestimo, {
         idChave,
-        devolvidaPorIdRH: funcionario,
+        devolvidaPorIdRH: idFuncionarioEmprestimo,
       })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
@@ -185,16 +199,16 @@ export class ChavesComponent implements OnInit, OnDestroy {
       });
   }
 
-  // Regista a devolução da chave em nome de quem está no campo `devolvidaPor`.
+  // Regista a devolução da chave em nome de quem está no campo `idDevolvidaPor`.
   onDevolver(): void {
     const idEmprestimo = this.chaveEmEdicao && this.chaveEmEdicao.idEmprestimo;
     if (idEmprestimo === null || idEmprestimo === undefined) return;
 
-    if (!this.validarCampos(this.atualizarForm, ["devolvidaPor"])) return;
+    if (!this.validarCampos(this.atualizarForm, ["idDevolvidaPor"])) return;
 
     this.service
       .devolverChave(idEmprestimo, {
-        devolvidaPorIdRH: this.atualizarForm.value.devolvidaPor,
+        devolvidaPorIdRH: this.atualizarForm.value.idDevolvidaPor,
         idChave: this.atualizarForm.value.idChave,
       })
       .pipe(takeUntil(this.destroy$))
