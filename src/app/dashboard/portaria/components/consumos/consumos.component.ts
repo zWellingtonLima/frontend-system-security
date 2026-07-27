@@ -1,7 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import {
   ConsumoLeitura,
   EdificiosResponse,
+  TipoConsumoEnum,
   TipoConsumoType,
   UltimaLeitura,
 } from "../../models/consumo.model";
@@ -13,7 +20,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   templateUrl: "./consumos.component.html",
   styleUrls: ["./consumos.component.scss"],
 })
-export class ConsumosComponent implements OnInit {
+export class ConsumosComponent implements OnInit, OnDestroy {
   constructor(
     private consumoService: ConsumosService,
     private fb: FormBuilder,
@@ -81,25 +88,26 @@ export class ConsumosComponent implements OnInit {
         },
       );
   }
+
   // ─────────────────────────────────────────────
   // CARREGA AS ULTIMAS LEITURAS PARA POR NOS CARDS onInit
   // ─────────────────────────────────────────────
   carregarUltimas(): void {
     this.consumoService.ultimas().subscribe(
       (res) => {
-        for (let i = 0; i < res.length; i++) {
-          switch (i) {
-            case 0:
-              this.leiturasAgua = res[i].lista;
+        res.forEach((item) => {
+          switch (item.tipoConsumo) {
+            case this.tipoConsumo.AGUA:
+              this.leiturasAgua = item.lista;
               break;
-            case 1:
-              this.leiturasEletricidade = res[i].lista;
+            case this.tipoConsumo.ELETRICIDADE:
+              this.leiturasEletricidade = item.lista;
               break;
-            case 2:
-              this.leiturasGas = res[i].lista;
+            case this.tipoConsumo.GAS:
+              this.leiturasGas = item.lista;
               break;
           }
-        }
+        });
       },
       () => {
         this.mostrarToast("Erro ao carregar as leituras.");
@@ -113,7 +121,7 @@ export class ConsumosComponent implements OnInit {
   dataInicio?: Date | null;
   dataFim?: Date | null;
   edificioId?: number;
-  abaAtiva: any = "AGUA";
+  abaAtiva: TipoConsumoType = "AGUA";
 
   readonly pageSize = 20;
   filtroInicio(dataInicio: Date) {
@@ -137,6 +145,8 @@ export class ConsumosComponent implements OnInit {
   // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
   // ─────────────────────────────────────────────
   novoTipo: TipoConsumoType = "AGUA";
+  readonly tipoConsumo = TipoConsumoEnum;
+
   @ViewChild("barraEdificio") barraEdificio!: ElementRef<HTMLSelectElement>;
   @ViewChild("inicio") inicio!: ElementRef<HTMLSelectElement>;
   @ViewChild("fim") fim!: ElementRef<HTMLSelectElement>;
@@ -151,7 +161,6 @@ export class ConsumosComponent implements OnInit {
   }
 
   selecionarAba(abaStyle: TipoConsumoType): void {
-    console.log(abaStyle);
     if (this.abaAtiva === abaStyle) {
       return;
     }
@@ -273,18 +282,15 @@ export class ConsumosComponent implements OnInit {
 
   registarLeitura() {
     if (this.registarLeituraForm.valid) {
-      console.log(this.registarLeituraForm.value);
       this.consumoService
         .criar({
           valorLeitura: this.registarLeituraForm.value.leituraAtual,
           notas: this.registarLeituraForm.value.observacao,
           edificioId: this.registarLeituraForm.value.edificioId,
           tipoConsumo: this.registarLeituraForm.value.tipoConsumo,
-          dataRegisto: "",
         })
         .subscribe(
           (res) => {
-            console.log(res);
             this.alternarVisibilidadeModal();
             this.carregarAposAlteracao();
             this.mostrarToast("Leitura registada com sucesso!");
@@ -305,11 +311,9 @@ export class ConsumosComponent implements OnInit {
           notas: this.registarLeituraForm.value.observacao,
           edificioId: this.registarLeituraForm.value.edificioId,
           tipoConsumo: this.registarLeituraForm.value.tipoConsumo,
-          dataRegisto: "",
         })
         .subscribe(
           (res) => {
-            console.log(res);
             this.carregarAposAlteracao();
             this.alternarVisibilidadeModal();
             this.mostrarToast("Leitura atualizada com sucesso!");
@@ -323,10 +327,10 @@ export class ConsumosComponent implements OnInit {
   }
 
   submeterEliminar() {
-    this.consumoService.eliminar(this.edificioId).subscribe(
+    this.consumoService.eliminar(this.leituraIdParaExcluir).subscribe(
       () => {
         this.modalExcluirOpen = false;
-        this.edificioId = undefined;
+        this.leituraIdParaExcluir = undefined;
         this.carregarAposAlteracao();
         this.mostrarToast("Leitura excluída com sucesso!");
       },
@@ -374,7 +378,6 @@ export class ConsumosComponent implements OnInit {
       edificio.value != null &&
       edificio.value !== ""
     ) {
-      console.log(this.leituras[1].leituraAtual);
       this.consumoService
         .ultimaLeituraForm(tipo.value, edificio.value)
         .subscribe((res) => {
@@ -386,12 +389,14 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   // FUNÇÕES DOS BOTOES DAS TABELAS PARA EDITAR/ EXLUIR
   // ─────────────────────────────────────────────
-  abrirExcluir(item: any) {
-    this.modalExcluirOpen = !this.modalExcluirOpen;
-    this.edificioId = item.id;
+  leituraIdParaExcluir?: number;
+
+  abrirExcluir(item: ConsumoLeitura) {
+    this.modalExcluirOpen = true;
+    this.leituraIdParaExcluir = item.id;
   }
 
-  abrirEditar(item: any) {
+  abrirEditar(item: ConsumoLeitura) {
     this.registarLeituraForm.reset();
     this.modoEdicao = true;
     this.modalIsOpen = true;

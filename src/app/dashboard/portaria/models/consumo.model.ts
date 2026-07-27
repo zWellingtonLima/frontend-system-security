@@ -29,6 +29,7 @@ export interface UltimaLeitura {
   consumo: number | null;
 }
 export interface ListaUltimasCard {
+  tipoConsumo: TipoConsumoType;
   lista: UltimaLeitura[];
 }
 
