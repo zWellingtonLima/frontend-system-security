@@ -71,22 +71,22 @@
   <div class="filtros-pesquisa">
     <div
       class="tab"
-      [class.active]="abaAtiva === 'AGUA'"
-      (click)="selecionarAba('AGUA')"
+      [class.active]="abaAtiva === tipoConsumo.AGUA"
+      (click)="selecionarAba(tipoConsumo.AGUA)"
     >
       Água
     </div>
     <div
       class="tab"
-      [class.active]="abaAtiva === 'ELETRICIDADE'"
-      (click)="selecionarAba('ELETRICIDADE')"
+      [class.active]="abaAtiva === tipoConsumo.ELETRICIDADE"
+      (click)="selecionarAba(tipoConsumo.ELETRICIDADE)"
     >
       Eletricidade
     </div>
     <div
       class="tab"
-      [class.active]="abaAtiva === 'GAS'"
-      (click)="selecionarAba('GAS')"
+      [class.active]="abaAtiva === tipoConsumo.GAS"
+      (click)="selecionarAba(tipoConsumo.GAS)"
     >
       Gás
     </div>
