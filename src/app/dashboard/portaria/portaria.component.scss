@@ -129,6 +129,11 @@ $m-xl: 22px;
   margin-bottom: 8px;
 }
 
+.page-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
 .page-title {
   margin: 0;
   font-weight: 700;
