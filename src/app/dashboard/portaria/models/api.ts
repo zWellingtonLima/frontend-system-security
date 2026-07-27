@@ -106,6 +106,13 @@ export interface HistoricoEntregaChave {
   observacoes: string;
 }
 
+export interface ChavesEmprestimosFiltros {
+  dataInicio: ISOTimestamp;
+  dataFim: ISOTimestamp;
+  idEdificio: number;
+  texto: string;
+}
+
 // ============================================================
 // OCORRÊNCIAS
 // ============================================================
@@ -133,7 +140,7 @@ export interface OcorrenciasPage {
   totalElements: number; // total da query, não o total da página
 }
 
-export interface Filtros {
+export interface FiltrosOcorrencias {
   tipo: TipoOcorrenciaEnumType | "";
   search: string;
 }

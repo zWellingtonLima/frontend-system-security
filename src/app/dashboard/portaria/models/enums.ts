@@ -161,3 +161,27 @@ export const PISO_LABEL: Record<string, string> = {
   "2": "Piso 2",
   "3": "Piso 3",
 };
+
+// EMPRESTIMOS COLUNAS
+export type ColunaEmprestimoChave =
+  | "edificio"
+  | "codigo"
+  | "sala"
+  | "nomeFuncionario"
+  | "desde"
+  | "devolucao";
+
+export const COLUNA_EMPRESTIMO_TITULO: Record<ColunaEmprestimoChave, string> = {
+  edificio: "Edifício",
+  codigo: "Chave / Código",
+  sala: "Sala / Piso",
+  nomeFuncionario: "Com quem",
+  desde: "Hora empréstimo",
+  devolucao: "Hora devolução",
+};
+
+export type TabEmprestimoChave = "HISTORICO";
+
+export type ChavesEmprestimoTabConfig = TabConfig<TabEmprestimoChave> & {
+  colunas: ColunaEmprestimoChave[];
+};
