@@ -4,6 +4,7 @@ import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ChavesComponent } from "./components/chaves/chaves.component";
+import { EmprestimosHistoricoComponent } from "./components/chaves/historico/historico.component";
 
 const routes: Routes = [
   {
@@ -23,6 +24,10 @@ const routes: Routes = [
     component: ChavesComponent,
   },
   {
+    path: "chaves/historico",
+    component: EmprestimosHistoricoComponent,
+  },
+  {
     path: "",
     redirectTo: "/dashboard",
     pathMatch: "full",
@@ -30,11 +35,6 @@ const routes: Routes = [
   {
     path: "**",
     redirectTo: "ocorrencias",
-  },
-  {
-    path: "chaves",
-    redirectTo: "/chaves",
-    pathMatch: "full",
   },
 ];
 

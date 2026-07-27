@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { PortariaRoutingModule } from "./portaria-routing.module";
 import { PortariaComponent } from "./portaria.component";
@@ -8,8 +9,8 @@ import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
 import { ChavesComponent } from "./components/chaves/chaves.component";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { CardLeiturasComponent } from "./components/consumos/card-leituras/card-leituras.component";
+import { EmprestimosHistoricoComponent } from "./components/chaves/historico/historico.component";
 
 @NgModule({
   imports: [
@@ -26,6 +27,7 @@ import { CardLeiturasComponent } from "./components/consumos/card-leituras/card-
     OcorrenciasComponent,
     ChavesComponent,
     CardLeiturasComponent,
+    EmprestimosHistoricoComponent,
   ],
   exports: [PortariaComponent],
 })

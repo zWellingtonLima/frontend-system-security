@@ -8,7 +8,7 @@ import {
   TIPO_OCORRENCIA_CONFIG,
 } from "../../models/enums";
 import {
-  Filtros,
+  FiltrosOcorrencias,
   OcorrenciasCriarDTO,
   OcorrenciasPage,
   OcorrenciasResponseDTO,
@@ -32,7 +32,7 @@ const TABS: OcorrenciaTabConfig[] = [
 })
 export class OcorrenciasService {
   private ocorrencias$ = new BehaviorSubject<OcorrenciaViewModel[]>([]);
-  private filtros$ = new BehaviorSubject<Filtros>({
+  private filtros$ = new BehaviorSubject<FiltrosOcorrencias>({
     tipo: "",
     search: "",
   });
@@ -94,7 +94,7 @@ export class OcorrenciasService {
   }
 
   // Recebe o valor atual e compara com o estado que existe no service
-  setFiltro(parcial: Partial<Filtros>): void {
+  setFiltro(parcial: Partial<FiltrosOcorrencias>): void {
     const atual = this.filtros$.value;
     const proximo = { ...atual, ...parcial };
 

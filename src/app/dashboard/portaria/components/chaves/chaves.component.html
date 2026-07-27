@@ -5,14 +5,22 @@
       <p class="portaria-section-copy">Gestão e empréstimos de chaves</p>
     </div>
 
-    <button
-      type="button"
-      class="portaria-btn portaria-btn--primary"
-      (click)="abrirModalEmprestar()"
-    >
-      <i class="fas fa-plus"></i>
-      <span>Emprestar Chave</span>
-    </button>
+    <div class="page-header-actions">
+      <a
+        class="portaria-btn portaria-btn--ghost"
+        [routerLink]="['/chaves/historico']"
+        >Histórico Empréstimos</a
+      >
+
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary ml-auto"
+        (click)="abrirModalEmprestar()"
+      >
+        <i class="fas fa-plus"></i>
+        <span>Emprestar Chave</span>
+      </button>
+    </div>
   </div>
 
   <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
@@ -121,7 +129,10 @@
 
                   <!-- COM QUEM -->
                   <ng-container *ngSwitchCase="'nomeFuncionario'">
-                    <span class="bold-text" *ngIf="chave.nomeFuncionario; else vazio">
+                    <span
+                      class="bold-text"
+                      *ngIf="chave.nomeFuncionario; else vazio"
+                    >
                       {{ chave.nomeFuncionario }}
                     </span>
                   </ng-container>
@@ -360,7 +371,9 @@
           ></app-funcionario-autocomplete>
           <span
             class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro"
+            *ngIf="
+              erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro
+            "
           >
             {{ erro }}
           </span>

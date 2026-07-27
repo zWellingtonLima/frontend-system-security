@@ -16,6 +16,7 @@ export const environment = {
   // Empréstimos: PUT {url}/{idEmprestimo} corrige os dados;
   // POST {url}/{idEmprestimo}/devolucao regista a devolução
   chavesEmprestimoApiUrl: `${api}/chaves/emprestimos`,
+  chavesEmprestimoHistoricoApiUrl: `${api}/chaves/emprestimos/historico`,
   // CONSUMOS
   consumosApiUrl: `${api}/consumos`,
   // FUNCIONARIOS (lista completa, usada nos autocompletes)
