@@ -1,23 +1,19 @@
 import {
   Component,
   ElementRef,
-  forwardRef,
   HostListener,
   Input,
   OnDestroy,
   ViewChild,
 } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
 import { Funcionario } from "../../models/funcionario";
 import { FuncionarioService } from "../../services/funcionario.service";
 
 const MAX_RESULTADOS = 8;
-
-// Tem de bater certo com o max-height do .autocomplete__lista no SCSS: é o
-// valor usado para decidir se a lista ainda cabe por baixo do campo.
-const ALTURA_MAX_LISTA = 240;
+// Folga entre o campo e a lista, e entre a lista e o limite do ecrã.
+const MARGEM = 2;
+const ALTURA_MINIMA_UTIL = 120;
 
 @Component({
   selector: "app-funcionario-autocomplete",
@@ -26,7 +22,7 @@ const ALTURA_MAX_LISTA = 240;
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => FuncionarioAutocompleteComponent),
+      useExisting: FuncionarioAutocompleteComponent,
       multi: true,
     },
   ],
@@ -44,8 +40,6 @@ export class FuncionarioAutocompleteComponent
 
   estiloLista: { [propriedade: string]: string } = {};
 
-  private destroy$ = new Subject<void>();
-
   texto: string = "";
   aberto: boolean = false;
   desativado: boolean = false;
@@ -56,9 +50,8 @@ export class FuncionarioAutocompleteComponent
   indiceAtivo: number = -1;
 
   private funcionarios: Funcionario[] = [];
-  private selecionado: Funcionario | null = null;
 
-  private idPendente: number | null = null;
+  private valor: number | null = null;
 
   private onChange: (valor: number | null) => void = () => {};
   private onTouched: () => void = () => {};
@@ -71,31 +64,16 @@ export class FuncionarioAutocompleteComponent
 
   ngOnDestroy(): void {
     this.fechar();
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   // ===============================================
-  // ========ControlValueAccessor ===============
+  // ======== ControlValueAccessor ===============
 
   writeValue(valor: number | null): void {
-    if (valor == null) {
-      this.selecionado = null;
-      this.idPendente = null;
-      this.texto = "";
-      return;
-    }
+    this.valor = valor;
+    this.sincronizarTexto();
 
-    const achado = this.acharPorIdRH(valor);
-
-    if (achado) {
-      this.definirSelecionado(achado);
-      return;
-    }
-
-    this.idPendente = valor;
-    this.texto = "";
-    this.carregarLista();
+    if (valor != null) this.carregarLista();
   }
 
   registerOnChange(fn: (valor: number | null) => void): void {
@@ -127,8 +105,8 @@ export class FuncionarioAutocompleteComponent
 
     // Escrever invalida a escolha anterior: enquanto não houver alguém
     // selecionado da lista, o formulário fica a null e o `required` acusa.
-    if (this.selecionado) {
-      this.selecionado = null;
+    if (this.valor != null) {
+      this.valor = null;
       this.onChange(null);
     }
 
@@ -141,7 +119,7 @@ export class FuncionarioAutocompleteComponent
 
     // Texto solto não vale: ou volta ao nome de quem está selecionado, ou
     // limpa. Senão ficaria um nome escrito sem idRH nenhum por trás.
-    this.texto = this.selecionado ? this.nomeDe(this.selecionado) : "";
+    this.sincronizarTexto();
   }
 
   onKeydown(evento: KeyboardEvent): void {
@@ -166,7 +144,8 @@ export class FuncionarioAutocompleteComponent
   }
 
   selecionar(funcionario: Funcionario): void {
-    this.definirSelecionado(funcionario);
+    this.valor = funcionario.idRH;
+    this.texto = this.nomeDe(funcionario);
     this.onChange(funcionario.idRH);
     this.fechar();
     this.indiceAtivo = -1;
@@ -206,16 +185,19 @@ export class FuncionarioAutocompleteComponent
     if (!this.campo) return;
 
     const campo = this.campo.nativeElement.getBoundingClientRect();
-    const espacoAbaixo = window.innerHeight - campo.bottom;
+
+    const espacoAbaixo = window.innerHeight - campo.bottom - MARGEM * 2;
+    const espacoAcima = campo.top - MARGEM * 2;
     const abrirParaCima =
-      espacoAbaixo < ALTURA_MAX_LISTA && campo.top > espacoAbaixo;
+      espacoAbaixo < ALTURA_MINIMA_UTIL && espacoAcima > espacoAbaixo;
 
     this.estiloLista = {
       left: `${campo.left}px`,
       width: `${campo.width}px`,
+      maxHeight: `${abrirParaCima ? espacoAcima : espacoAbaixo}px`,
       ...(abrirParaCima
-        ? { bottom: `${window.innerHeight - campo.top + 2}px` }
-        : { top: `${campo.bottom + 2}px` }),
+        ? { bottom: `${window.innerHeight - campo.top + MARGEM}px` }
+        : { top: `${campo.bottom + MARGEM}px` }),
     };
   }
 
@@ -225,36 +207,29 @@ export class FuncionarioAutocompleteComponent
 
     this.carregando = true;
 
-    this.service
-      .listar()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (lista) => {
-          this.funcionarios = lista;
-          this.carregando = false;
-          this.resolverPendente();
-          this.filtrar();
-        },
-        error: () => {
-          this.carregando = false;
-          this.erroAoCarregar = true;
-        },
-      });
+    this.service.listar().subscribe({
+      next: (lista) => {
+        this.funcionarios = lista;
+        this.carregando = false;
+
+        // Só resolve o nome se já houver um idRH à espera. Sem isso, apagava o
+        // que o utilizador tivesse escrito enquanto a lista não chegava.
+        if (this.valor != null) this.sincronizarTexto();
+
+        this.filtrar();
+      },
+      error: () => {
+        this.carregando = false;
+        this.erroAoCarregar = true;
+      },
+    });
   }
 
-  private resolverPendente(): void {
-    if (this.idPendente == null) return;
-
-    const achado = this.acharPorIdRH(this.idPendente);
-    if (achado) this.definirSelecionado(achado);
-
-    this.idPendente = null;
-  }
-
-  private definirSelecionado(funcionario: Funcionario): void {
-    this.selecionado = funcionario;
-    this.texto = this.nomeDe(funcionario);
-    this.idPendente = null;
+  // Põe o campo a mostrar o nome de quem está escolhido. Com o campo a vazio,
+  // ou com um idRH que a lista ainda não trouxe, fica em branco.
+  private sincronizarTexto(): void {
+    const escolhido = this.valor == null ? null : this.acharPorIdRH(this.valor);
+    this.texto = escolhido ? this.nomeDe(escolhido) : "";
   }
 
   private acharPorIdRH(idRH: number): Funcionario | null {

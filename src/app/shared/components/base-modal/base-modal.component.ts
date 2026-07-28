@@ -62,20 +62,19 @@ export class BaseModalComponent implements OnChanges, OnDestroy {
       document.body.style.overflow = changes["modalEstaAberto"].currentValue
         ? "hidden"
         : "";
-
-      if (this.modalEstaAberto) {
-        // Empurra a funcao para o final da callstack para permitir que as refs estejam inicializads antes de tentar acessa-las
-        setTimeout(() => {
-          const content = this.contentRef && this.contentRef.nativeElement;
-          if (!content) return;
-
-          const primeiroElemento = content.querySelector<HTMLElement>(
-            this.focusableSelectors,
-          );
-          if (primeiroElemento) primeiroElemento.focus();
-        }, 0);
-      }
     }
+  }
+
+  aoTerminarAbertura(): void {
+    if (!this.modalEstaAberto) return;
+
+    const content = this.contentRef && this.contentRef.nativeElement;
+    if (!content) return;
+
+    const primeiroElemento = content.querySelector<HTMLElement>(
+      this.focusableSelectors,
+    );
+    if (primeiroElemento) primeiroElemento.focus();
   }
 
   // Remove o estilo sempre que o componente é destruído
