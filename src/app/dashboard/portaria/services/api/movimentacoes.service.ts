@@ -27,4 +27,8 @@ export class MovimentacoesService {
   carregarTipoVisita(): Observable<TiposVisitas[]> {
     return this.http.get<TiposVisitas[]>(`${this.apiUrl}/tipos`);
   }
+
+  marcarSaidaRapida(id: number) {
+    return this.http.put(`${this.apiUrl}/${id}`, {});
+  }
 }

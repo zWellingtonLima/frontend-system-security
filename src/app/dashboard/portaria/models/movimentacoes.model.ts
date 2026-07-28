@@ -5,7 +5,7 @@ export interface Movimentacoes {
   horaSaida: Date;
   funcionarioResponsavel: string;
   setorDestino: string;
-  tipoVisita: string;
+  idTipoVisita: string;
   notas: string;
 }
 
@@ -14,7 +14,7 @@ export interface novaVisita {
   idRHFuncionarioResponsavel: string;
   setorDestino: string;
   notas: string;
-  idTipoVisita: string;
+  idTipoVisita: number;
 }
 
 export interface TiposVisitas {

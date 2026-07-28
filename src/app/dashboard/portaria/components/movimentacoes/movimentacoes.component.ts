@@ -54,8 +54,8 @@ export class MovimentacoesComponent implements OnInit {
       id: [null],
       nomeVisitante: ["", Validators.required],
       setorDestino: ["", Validators.required],
-      idTipoVisita: ["", Validators.required],
-      nomeFuncionario: [null],
+      idTipoVisita: [null, Validators.required],
+      funcionarioResponsavel: [null],
       notas: ["", [Validators.maxLength(255)]],
     });
   }
@@ -74,11 +74,11 @@ export class MovimentacoesComponent implements OnInit {
           () => {
             this.alternarVisibilidadeModal();
             this.carregarAposAlteracao();
-            this.mostrarToast("Leitura registada com sucesso!");
+            this.mostrarToast("Visita registada com sucesso!");
           },
           () => {
             this.alternarVisibilidadeModal();
-            this.mostrarToast("Erro ao registar a leitura.");
+            this.mostrarToast("Erro ao registar a visita.");
           },
         );
     }
@@ -90,15 +90,24 @@ export class MovimentacoesComponent implements OnInit {
     this.leituraIdParaExcluir = item.id;
   }
   marcarSaidaRapido(item: Movimentacoes) {
-    console.log(item);
+    this.movimentacoesService.marcarSaidaRapida(item.id).subscribe(
+      () => {
+        this.carregarAposAlteracao();
+        this.mostrarToast("Saída registada com sucesso!");
+      },
+      () => {
+        this.mostrarToast("Erro ao marcar saida.");
+      },
+    );
   }
 
   abrirEditar(item: Movimentacoes) {
-    this.formularioRegistarVisita.reset();
+    console.log(item);
+    this.formularioRegistarVisita.patchValue(item);
+    console.log(this.formularioRegistarVisita.value);
     this.modoEdicao = true;
     this.modalIsOpen = true;
     this.botaoEnvio = "Atualizar";
-    this.formularioRegistarVisita.patchValue(item);
   }
 
   alternarVisibilidadeModal() {

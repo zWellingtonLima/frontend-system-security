@@ -38,7 +38,7 @@
           </tr>
         </thead>
 
-        <tbody #corpo>
+        <tbody>
           <!-- Estado: a carregar -->
           <tr *ngIf="carregando">
             <td colspan="6" class="tbl-status">
@@ -64,7 +64,7 @@
                 <span> {{ item.horaEntrada | date: "dd/MM/ HH:mm" }}</span>
               </td>
               <td>
-                {{ item.tipoVisita }}
+                {{ item.idTipoVisita }}
               </td>
               <td>
                 {{ item.setorDestino ? item.setorDestino : "_" }}
@@ -112,7 +112,7 @@
     <!-- MODAL REGISTAR VISITA -->
     <app-base-modal
       [modalEstaAberto]="modalIsOpen"
-      [titulo]="modoEdicao ? 'Editar Leitura' : 'Registar Movimantação'"
+      [titulo]="modoEdicao ? 'Editar Leitura' : 'Registar Entrada'"
       [subtitulo]="
         modoEdicao
           ? 'Altere os dados do visita'
@@ -121,64 +121,71 @@
       (fechar)="alternarVisibilidadeModal()"
     >
       <form [formGroup]="formularioRegistarVisita" class="form-leitura">
-        <!-- NOME DO VISITANTE-->
-        <div class="form-row">
-          <div class="form-group">
-            <label for="nomeVisitante">
-              nome visitante <span class="required">*</span>
-            </label>
-            <input
-              id="nomeVisitante"
-              type="text"
-              step="0.01"
-              placeholder=""
-              formControlName="nomeVisitante"
-            />
-          </div>
-          <div class="form-group">
-            <label for="unidade">Setor destino</label>
-            <input id="unidade" type="text" formControlName="setorDestino" />
-          </div>
-        </div>
-        <!-- Tipo de visita -->
         <div class="form-group">
-          <label for="tipoVisita"
-            >Tipo de Visita <span class="required">*</span></label
-          >
-          <select formControlName="idTipoVisita">
+          <label for="nomeVisitante">
+            Nome visitante <span class="required">*</span>
+          </label>
+          <input
+            id="nomeVisitante"
+            type="text"
+            placeholder=""
+            formControlName="nomeVisitante"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="idTipoVisita">
+            Tipo de visita <span class="required">*</span>
+          </label>
+          <select id="idTipoVisita" formControlName="idTipoVisita">
             <option [ngValue]="null" disabled>Selecione um tipo</option>
-            <option *ngFor="let item of tipoVisita" [ngValue]="item.id">
-              {{ item.tipo }}
+            <option *ngFor="let tipo of tipoVisita" [ngValue]="tipo.id">
+              {{ tipo.tipo }}
             </option>
           </select>
         </div>
 
-        <!-- NOME DO FUNCIONÁRIO -->
+        <!-- ── Destino ── -->
         <div class="form-row">
           <div class="form-group">
-            <label for="leituraAtual">
-              Nome Funcionário <span class="required"></span>
-            </label>
+            <label for="nomeFuncionario">Nome funcionário</label>
             <input
+              id="nomeFuncionario"
               type="text"
-              step="0.01"
-              placeholder=""
+              placeholder="Buscar funcionário"
               formControlName="nomeFuncionario"
             />
           </div>
           <div class="form-group">
-            <label for="unidade">Setor</label>
-            <input id="unidade" type="text" disabled />
+            <label for="setorFuncionario"> Setor do funcionário </label>
+            <input
+              id="setorFuncionario"
+              type="text"
+              formControlName="setorFuncionario"
+              disabled
+            />
           </div>
         </div>
 
-        <!-- Observação -->
+        <div class="form-group">
+          <label for="setorDestino">Setor de destino</label>
+          <input
+            id="setorDestino"
+            type="text"
+            placeholder="Setor para onde o visitante se dirige"
+            formControlName="setorDestino"
+          />
+        </div>
+
+        <!-- ── Observação ── -->
+        <p class="form-section-titulo">Observação</p>
+
         <div class="form-group">
           <label for="observacao">Observação</label>
           <textarea
             id="observacao"
             formControlName="notas"
-            placeholder="Notas sobre esta leitura (opcional)..."
+            placeholder="Notas sobre esta visita (opcional)..."
           ></textarea>
         </div>
       </form>
@@ -201,7 +208,6 @@
       </ng-container>
     </app-base-modal>
   </ng-container>
-
   <div class="toast" [class.show]="toastVisivel">
     <i class="ft-check-circle"></i>
     <span>{{ toastMensagem }}</span>
