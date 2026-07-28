@@ -60,12 +60,31 @@ export class MovimentacoesComponent implements OnInit {
     });
   }
 
-  abrirModalEmprestar() {
-    this.botaoEnvio = "Registar";
-    this.modalIsOpen = !this.modalIsOpen;
+  atualizarVisita() {
+    if (this.formularioRegistarVisita.valid) {
+      this.movimentacoesService
+        .atualizarVisita(this.formularioRegistarVisita.value.id, {
+          nomeVisitante: this.formularioRegistarVisita.value.nomeVisitante,
+          idRHFuncionarioResponsavel:
+            this.formularioRegistarVisita.value.funcionarioResponsavel,
+          setorDestino: this.formularioRegistarVisita.value.setorDestino,
+          notas: this.formularioRegistarVisita.value.notas,
+          idTipoVisita: this.formularioRegistarVisita.value.idTipoVisita,
+        })
+        .subscribe(
+          () => {
+            this.alternarVisibilidadeModal();
+            this.carregarAposAlteracao();
+            this.mostrarToast("Visita registada com sucesso!");
+          },
+          () => {
+            this.alternarVisibilidadeModal();
+            this.mostrarToast("Erro ao registar a visita.");
+          },
+        );
+    }
   }
 
-  atualizarVisita() {}
   registarFormuluarioVisita() {
     if (this.formularioRegistarVisita.valid) {
       this.movimentacoesService
@@ -101,13 +120,17 @@ export class MovimentacoesComponent implements OnInit {
     );
   }
 
+  abrirModalEmprestar() {
+    this.botaoEnvio = "Registar";
+    this.modalIsOpen = !this.modalIsOpen;
+  }
+
   abrirEditar(item: Movimentacoes) {
-    console.log(item);
     this.formularioRegistarVisita.patchValue(item);
-    console.log(this.formularioRegistarVisita.value);
     this.modoEdicao = true;
     this.modalIsOpen = true;
     this.botaoEnvio = "Atualizar";
+    console.log(this.formularioRegistarVisita.value);
   }
 
   alternarVisibilidadeModal() {
@@ -118,7 +141,6 @@ export class MovimentacoesComponent implements OnInit {
       this.botaoEnvio = "Registar";
     }
     this.formularioRegistarVisita.reset();
-    this.modoEdicao = false;
   }
 
   // ── Toast ──

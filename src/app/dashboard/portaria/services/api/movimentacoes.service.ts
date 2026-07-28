@@ -16,7 +16,6 @@ export class MovimentacoesService {
   constructor(private http: HttpClient) {}
 
   registoVisita(body: novaVisita) {
-    console.log(body);
     return this.http.post(this.apiUrl, body);
   }
 
@@ -30,5 +29,9 @@ export class MovimentacoesService {
 
   marcarSaidaRapida(id: number) {
     return this.http.put(`${this.apiUrl}/${id}`, {});
+  }
+
+  atualizarVisita(id: number, body: novaVisita) {
+    return this.http.patch(`${this.apiUrl}/${id}`, body);
   }
 }

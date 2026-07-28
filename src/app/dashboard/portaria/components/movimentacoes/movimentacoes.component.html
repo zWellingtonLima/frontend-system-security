@@ -64,7 +64,7 @@
                 <span> {{ item.horaEntrada | date: "dd/MM/ HH:mm" }}</span>
               </td>
               <td>
-                {{ item.idTipoVisita }}
+                {{ item.tipoVisita }}
               </td>
               <td>
                 {{ item.setorDestino ? item.setorDestino : "_" }}
@@ -148,22 +148,17 @@
         <!-- ── Destino ── -->
         <div class="form-row">
           <div class="form-group">
-            <label for="nomeFuncionario">Nome funcionário</label>
+            <label for="funcionarioResponsavel">Nome funcionário</label>
             <input
-              id="nomeFuncionario"
+              id="funcionarioResponsavel"
               type="text"
               placeholder="Buscar funcionário"
-              formControlName="nomeFuncionario"
+              formControlName="funcionarioResponsavel"
             />
           </div>
           <div class="form-group">
             <label for="setorFuncionario"> Setor do funcionário </label>
-            <input
-              id="setorFuncionario"
-              type="text"
-              formControlName="setorFuncionario"
-              disabled
-            />
+            <input id="setorFuncionario" type="text" disabled />
           </div>
         </div>
 
@@ -208,8 +203,9 @@
       </ng-container>
     </app-base-modal>
   </ng-container>
-  <div class="toast" [class.show]="toastVisivel">
-    <i class="ft-check-circle"></i>
-    <span>{{ toastMensagem }}</span>
-  </div>
 </app-portaria-shell>
+
+<div class="toast" [class.show]="toastVisivel">
+  <i class="ft-check-circle"></i>
+  <span>{{ toastMensagem }}</span>
+</div>

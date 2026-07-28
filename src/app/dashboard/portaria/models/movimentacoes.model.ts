@@ -5,7 +5,8 @@ export interface Movimentacoes {
   horaSaida: Date;
   funcionarioResponsavel: string;
   setorDestino: string;
-  idTipoVisita: string;
+  tipoVisita: string;
+  idTipoVisita: number;
   notas: string;
 }
 
