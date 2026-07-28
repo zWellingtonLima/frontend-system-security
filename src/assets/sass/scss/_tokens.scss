@@ -1,0 +1,75 @@
+// ============================================================
+// TOKENS
+// ============================================================
+// Variáveis partilhadas por toda a aplicação. Só definições —
+// não tem nenhuma regra CSS aqui dentro.
+
+// Cores de marca
+$portaria-color-accent: #22a7bd;
+$portaria-color-accent-dark: #188ea1;
+$portaria-color-text-dark: #243746;
+$portaria-color-text-muted: #5f7382;
+$portaria-color-text-muted-alt: #6b7a88;
+$portaria-color-text-body: #4e5d6c;
+
+$portaria-color-accent-pale: #d8e4ec;
+
+// Cores de superfície / borda
+$portaria-color-bg-light: #d8e4ec;
+$portaria-color-bg-soft: #f9fcfe;
+$portaria-color-bg-hover: #eef8fb;
+$portaria-color-border: #e2e8f0;
+$portaria-color-border-soft: #e3edf5;
+$portaria-color-border-faint: #edf3f7;
+
+// Cores de estado
+$portaria-color-success: #1f7a49;
+$portaria-color-success-bg: rgba(31, 122, 73, 0.08);
+$portaria-color-success-border: rgba(31, 122, 73, 0.18);
+$portaria-color-success-solid: #16a34a;
+$portaria-color-success-solid-hover: #15803d;
+
+$portaria-color-warning: #92400e;
+$portaria-color-warning-bg: #a66f00;
+$portaria-color-warning-border: rgba(214, 158, 46, 0.18);
+
+$portaria-color-danger: #b83f3f;
+$portaria-color-danger-bg: rgba(184, 63, 63, 0.08);
+$portaria-color-danger-border: rgba(184, 63, 63, 0.18);
+$portaria-color-danger-solid: #dc2626;
+$portaria-color-danger-solid-hover: #b91c1c;
+
+// Geometria
+$portaria-radius-xs: 8px;
+$portaria-radius-sm: 12px;
+$portaria-radius-md: 14px;
+$portaria-radius-lg: 18px;
+$portaria-radius-xl: 22px;
+$portaria-radius-pill: 999px;
+
+// Sombra
+$portaria-shadow-accent: 0 10px 24px rgba(34, 167, 189, 0.25);
+$portaria-shadow-accent-hover: 0 14px 28px rgba(34, 167, 189, 0.32);
+
+// ============================================================
+// PADDING / MARGINS
+// ============================================================
+
+$p-small: 8px;
+$p-medium: 16px;
+$p-large: 24px;
+
+$p-xxs: 4px;
+$p-xs: 8px;
+$p-sm: 12px;
+$p-md: 14px;
+$p-lg: 18px;
+$p-xl: 22px;
+
+// Margins
+$m-xxs: 4px;
+$m-xs: 8px;
+$m-sm: 12px;
+$m-md: 14px;
+$m-lg: 18px;
+$m-xl: 22px;
