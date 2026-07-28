@@ -39,29 +39,9 @@
       </div>
     </div>
 
-    <!-- FILTROS -->
-    <div class="filter-container flex">
-      <div class="search-wrap flex content-center">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          name="search-input"
-          class="search-input"
-          placeholder="Pesquisar por código, sala ou responsável..."
-        />
-      </div>
-      <select class="filter-select" name="filter-select">
-        <option value="">Edifício</option>
-        <option value="1">Edifício A</option>
-        <option value="2">Edifício B</option>
-      </select>
-      <select class="filter-select" name="filter-select">
-        <option value="">Piso</option>
-        <option value="PRIMEIRO">Primeiro</option>
-        <option value="SEGUNDO">Segundo</option>
-        <option value="TERCEIRO">Terceiro</option>
-      </select>
-    </div>
+    <!-- A barra de filtros que estava aqui era um mockup sem ligação nenhuma.
+         Saiu porque a lib desenha a sua própria linha de filtros no cabeçalho
+         da tabela — manter as duas dava duas UIs de filtro na mesma página. -->
 
     <!-- LISTAGEM DE CHAVES -->
     <ng-container *ngIf="carregando$ | async; else listaChaves">
@@ -73,108 +53,16 @@
     </ng-container>
 
     <ng-template #listaChaves>
-      <ng-container
-        *ngIf="{ colunas: colunas$ | async, linhas: linhas$ | async } as vm"
-      >
-        <div class="tbl-wrap" *ngIf="vm.linhas?.length > 0; else estadoVazio">
-          <table class="tbl" [ngClass]="'tbl--' + tabAtiva.value.toLowerCase()">
-            <thead>
-              <tr>
-                <th *ngFor="let col of vm.colunas" [ngClass]="'col-' + col">
-                  {{ titulos[col] }}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr *ngFor="let chave of vm.linhas; trackBy: trackById">
-                <td
-                  *ngFor="let col of vm.colunas"
-                  [ngClass]="'col-' + col"
-                  [ngSwitch]="col"
-                >
-                  <!-- EDIFÍCIO -->
-                  <ng-container *ngSwitchCase="'edificio'">
-                    {{ chave.edificioLabel }}
-                  </ng-container>
-
-                  <!-- CÓDIGO -->
-                  <span *ngSwitchCase="'codigo'" class="bold-text">
-                    {{ chave.codigo }}
-                  </span>
-
-                  <!-- SALA / PISO -->
-                  <ng-container *ngSwitchCase="'sala'">
-                    <ng-container *ngIf="chave.sala != null; else vazio">
-                      Sala {{ chave.sala }}
-                      <span class="sub-text">{{ chave.pisoLabel }}</span>
-                    </ng-container>
-                  </ng-container>
-
-                  <!-- ESTADO -->
-                  <span
-                    *ngSwitchCase="'estado'"
-                    class="badge"
-                    [ngClass]="chave.statusConfig.classe"
-                  >
-                    <i [ngClass]="chave.statusConfig.icone"></i>
-                    {{ chave.statusConfig.label }}
-                  </span>
-
-                  <!-- DESDE -->
-                  <ng-container *ngSwitchCase="'desde'">
-                    <ng-container *ngIf="chave.desde; else vazio">
-                      {{ chave.desde | date: "dd/MM HH:mm" : "Europe/Lisbon" }}
-                    </ng-container>
-                  </ng-container>
-
-                  <!-- COM QUEM -->
-                  <ng-container *ngSwitchCase="'nomeFuncionario'">
-                    <span
-                      class="bold-text"
-                      *ngIf="chave.nomeFuncionario; else vazio"
-                    >
-                      {{ chave.nomeFuncionario }}
-                    </span>
-                  </ng-container>
-
-                  <!-- AÇÕES -->
-                  <div *ngSwitchCase="'acoes'" class="acoes-chave">
-                    <!-- Ação primária: permite corrigir dados e escolher quem devolve -->
-                    <button
-                      class="portaria-btn portaria-btn--secondary"
-                      type="button"
-                      title="Atualizar ou devolver"
-                      [disabled]="salvando$ | async"
-                      (click)="abrirModalAtualizar(chave)"
-                    >
-                      <i class="ft-edit-2"></i>
-                    </button>
-                    <!-- Ação secundária: devolve em nome de quem levou -->
-                    <button
-                      class="portaria-btn portaria-btn--ghost"
-                      type="button"
-                      title="Devolver em nome de {{ chave.nomeFuncionario }}"
-                      [disabled]="salvando$ | async"
-                      (click)="devolverRapido(chave)"
-                    >
-                      <i class="ft-corner-down-left"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <ng-container>
+        <!-- A tabela inteira — cabeçalho, filtros, células e estado vazio —
+             passa a ser responsabilidade da lib. O que era ~85 linhas de
+             template explícito vive agora no `settings` do componente. -->
+        <div class="tbl-wrap tbl-ng2">
+          <ng2-smart-table [settings]="settings" [source]="source">
+          </ng2-smart-table>
         </div>
 
-        <ng-template #estadoVazio>
-          <div class="empty-state">
-            <i class="ft-x-circle"></i>
-            <p>Não existem empréstimos no momento.</p>
-          </div>
-        </ng-template>
-
-        <!-- PAGINAÇÃO -->
+        <!-- PAGINAÇÃO (do backend, só INVENTARIO — o pager da lib está off) -->
         <ng-container *ngIf="paginacao$ | async as pag">
           <div class="paginacao" *ngIf="pag.visivel">
             <button
@@ -209,7 +97,6 @@
     </ng-template>
 
     <!-- Placeholder partilhado por todas as células -->
-    <ng-template #vazio><span class="empty-dash">—</span></ng-template>
   </ng-container>
 
   <!-- =================================================== -->

@@ -39,6 +39,15 @@ export interface ChaveViewModel extends ChavesResponseDTO {
   statusConfig: ConfigBase;
   edificioLabel: string;
   pisoLabel: string;
+
+  // Campos achatados só para o ng2-smart-table conseguir filtrar.
+  //
+  // O filtro local da lib compara contra o valor CRU de `linha[campo]` e o
+  // `filterFunction` recebe apenas `(valor, procura)` — nunca a linha. Um
+  // valor composto (sala + piso) ou formatado (data) não tem como ser
+  // filtrado a não ser existindo como campo próprio nos dados.
+  salaLabel: string;
+  desdeLabel: string;
 }
 
 // Interface para preencher as combobox do modal de emprestar cahve

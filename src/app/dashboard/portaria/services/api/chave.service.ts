@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { DatePipe } from "@angular/common";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
 import { catchError, finalize, map, switchMap } from "rxjs/operators";
 import {
@@ -23,6 +24,9 @@ import {
   STATUS_CHAVE_CONFIG,
 } from "../../models/enums";
 import { environment } from "src/environments/environment";
+
+// Formato da coluna "Desde", achatado no ViewModel (ver `desdeLabel`)
+const FORMATO_DESDE = "dd/MM HH:mm";
 
 // A ordem aqui define a ordem que aparece na tela, tanto das tabs quanto
 // das colunas de cada uma.
@@ -110,7 +114,10 @@ export class ChaveService {
     })),
   );
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private datePipe: DatePipe,
+  ) {}
 
   inicializar(): void {
     this.tabAtiva.next(TABS[0]);
@@ -345,11 +352,17 @@ export class ChaveService {
 
   // Insere os rótulos de exibição (status, edifício, piso) na chave retornada
   private toViewModel(chave: ChavesResponseDTO): ChaveViewModel {
+    const pisoLabel = PISO_LABEL[chave.piso] || "-";
+
     return {
       ...chave,
       statusConfig: STATUS_CHAVE_CONFIG[chave.status],
       edificioLabel: EDIFICIO_LABEL[chave.idEdificio] || "-",
-      pisoLabel: PISO_LABEL[chave.piso] || "-",
+      pisoLabel,
+      salaLabel: chave.sala != null ? `Sala ${chave.sala} · ${pisoLabel}` : "",
+      desdeLabel:
+        this.datePipe.transform(chave.desde, FORMATO_DESDE, "Europe/Lisbon") ||
+        "",
     };
   }
 

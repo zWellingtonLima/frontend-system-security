@@ -11,6 +11,9 @@ import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.compo
 import { ChavesComponent } from "./components/chaves/chaves.component";
 import { CardLeiturasComponent } from "./components/consumos/card-leituras/card-leituras.component";
 import { EmprestimosHistoricoComponent } from "./components/chaves/historico/historico.component";
+import { Ng2SmartTableModule } from "ng2-smart-table";
+import { EstadoCellComponent } from "./components/chaves/celulas/estado-cell.component";
+import { AcoesCellComponent } from "./components/chaves/celulas/acoes-cell.component";
 
 @NgModule({
   imports: [
@@ -19,6 +22,7 @@ import { EmprestimosHistoricoComponent } from "./components/chaves/historico/his
     SharedModule,
     FormsModule,
     ReactiveFormsModule,
+    Ng2SmartTableModule,
   ],
   declarations: [
     PortariaComponent,
@@ -28,7 +32,13 @@ import { EmprestimosHistoricoComponent } from "./components/chaves/historico/his
     ChavesComponent,
     CardLeiturasComponent,
     EmprestimosHistoricoComponent,
+    EstadoCellComponent,
+    AcoesCellComponent,
   ],
+  // Obrigatório no Angular 6 (sem Ivy): a lib instancia estas células por
+  // factory em runtime, não há referência a elas em template nenhum. Sem
+  // isto o build passa e a tabela rebenta ao renderizar.
+  entryComponents: [EstadoCellComponent, AcoesCellComponent],
   exports: [PortariaComponent],
 })
 export class PortariaModule {}

@@ -1,0 +1,11 @@
+// O `.portaria-btn` vem daqui porque o encapsulamento por componente não o
+// herda da página de Chaves — mesma razão da duplicação em `estado-cell`.
+@import "src/app/dashboard/portaria/portaria.component.scss";
+
+.acoes-chave {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: $m-xs;
+  font-size: 14px;
+}

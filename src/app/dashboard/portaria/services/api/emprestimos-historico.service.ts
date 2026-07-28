@@ -143,11 +143,18 @@ export class EmprestimosHistoricoService {
   // ========== UTILITARIOS =========
   // Insere os rótulos de exibição (status, edifício, piso) na chave retornada
   private toViewModel(chave: ChavesResponseDTO): ChaveViewModel {
+    const pisoLabel = PISO_LABEL[chave.piso] || "-";
+
     return {
       ...chave,
       statusConfig: STATUS_CHAVE_CONFIG[chave.status],
       edificioLabel: EDIFICIO_LABEL[chave.idEdificio] || "-",
-      pisoLabel: PISO_LABEL[chave.piso] || "-",
+      pisoLabel,
+      // Este service não usa ng2-smart-table, mas o ViewModel passou a exigir
+      // os campos achatados que a lib obriga a existir na página de Chaves.
+      // O custo da lib atravessou a fronteira e chegou aqui.
+      salaLabel: chave.sala != null ? `Sala ${chave.sala} · ${pisoLabel}` : "",
+      desdeLabel: "",
     };
   }
 

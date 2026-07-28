@@ -7,9 +7,55 @@ import {
 } from "@angular/forms";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { LocalDataSource } from "ng2-smart-table";
 import { ChaveService } from "../../services/api/chave.service";
-import { ChavesTabConfig, COLUNA_TITULO } from "../../models/enums";
+import {
+  ChavesTabConfig,
+  COLUNA_TITULO,
+  ColunaChave,
+  STATUS_CHAVE_CONFIG,
+  StatusChaveEnumType,
+} from "../../models/enums";
 import { ChaveViewModel, GrupoChaves } from "../../models/api";
+import { EstadoCellComponent } from "./celulas/estado-cell.component";
+import {
+  AcoesCellComponent,
+  PedidoAcaoChave,
+} from "./celulas/acoes-cell.component";
+
+// Forma do `settings` do ng2-smart-table, na medida do que esta página usa.
+// Reconstruída à mão porque a lib não exporta tipo nenhum para isto.
+interface ConfiguracaoColuna {
+  title: string;
+  type?: string;
+  // A lib espera a classe do componente; não há tipo melhor que `Function`
+  // sem depender de APIs internas dela.
+  renderComponent?: Function;
+  onComponentInitFunction?: (instance: any) => void;
+  filter?: boolean | { type: string; config?: object };
+  sort?: boolean;
+}
+
+interface ConfiguracaoTabela {
+  columns: Record<string, ConfiguracaoColuna>;
+  actions?: boolean;
+  hideSubHeader?: boolean;
+  pager?: { display: boolean; perPage?: number };
+  noDataMessage?: string;
+}
+
+// A lib lê `linha[chave]` para obter o valor da célula, por isso a coluna
+// lógica tem de ser traduzida no campo real do ViewModel.
+const CAMPO_POR_COLUNA: Record<ColunaChave, string> = {
+  edificio: "edificioLabel",
+  codigo: "codigo",
+  sala: "salaLabel",
+  estado: "status",
+  desde: "desdeLabel",
+  nomeFuncionario: "nomeFuncionario",
+  // Não corresponde a campo nenhum: existe só para a lib desenhar a coluna
+  acoes: "acoes",
+};
 
 // Mensagens de `required` por campo. O texto genérico serve de fallback.
 const MENSAGENS_OBRIGATORIO: Record<string, string> = {
@@ -40,10 +86,12 @@ export class ChavesComponent implements OnInit, OnDestroy {
   // (edifício, código, sala, desde) são só leitura e vêm daqui
   chaveEmEdicao: ChaveViewModel | null = null;
 
-  // Renderização condicional da tabela
-  titulos = COLUNA_TITULO;
-  colunas$ = this.service.colunas$;
-  linhas$ = this.service.linhas$;
+  // TABELA (ng2-smart-table)
+  // O `settings` não tem tipo exportado pela lib — o @Input dela é `Object`.
+  // A interface abaixo é escrita à mão e NÃO é validada contra a lib: um
+  // erro de nome de propriedade só aparece em runtime, sem aviso.
+  source = new LocalDataSource();
+  settings: ConfiguracaoTabela = { columns: {} };
 
   // FILTROS E TABS
   tabs = this.service.tabs;
@@ -86,10 +134,90 @@ export class ChavesComponent implements OnInit, OnDestroy {
       // Quem devolve, que pode ser outra pessoa
       idDevolvidaPor: [null, [Validators.required]],
     });
+
+    // A lib não aceita um Observable: é preciso empurrar os dados para o
+    // LocalDataSource a cada emissão.
+    this.service.linhas$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((linhas) => this.source.load(linhas));
+
+    // As colunas mudam entre tabs e a lib só relê o `settings` quando a
+    // REFERÊNCIA do objeto muda — mutar `settings.columns` não faz nada.
+    this.service.tabAtiva$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((tab) => (this.settings = this.construirSettings(tab)));
   }
 
   onTabChange(tab: ChavesTabConfig): void {
     this.service.setTab(tab);
+  }
+
+  // =========================================
+  // ============ TABELA =====================
+
+  private construirSettings(tab: ChavesTabConfig): ConfiguracaoTabela {
+    const columns: Record<string, ConfiguracaoColuna> = {};
+    tab.colunas.forEach((coluna) => {
+      columns[CAMPO_POR_COLUNA[coluna]] = this.configurarColuna(coluna);
+    });
+
+    return {
+      columns,
+      // A coluna de ações da lib não permite `[disabled]`, por isso está
+      // desligada e as ações vivem numa célula custom.
+      actions: false,
+      // Os filtros da lib são client-side: em INVENTARIO só veriam a página
+      // atual devolvida pelo backend, por isso ficam escondidos nessa tab.
+      hideSubHeader: tab.value !== "EMPRESTADAS",
+      // A paginação de INVENTARIO continua a ser a do backend, feita à mão
+      // no template. O pager da lib pagina por cima e duplicaria o controlo.
+      pager: { display: false },
+      noDataMessage: "Não existem empréstimos no momento.",
+    };
+  }
+
+  private configurarColuna(coluna: ColunaChave): ConfiguracaoColuna {
+    const title = COLUNA_TITULO[coluna];
+
+    if (coluna === "acoes")
+      return {
+        title,
+        type: "custom",
+        renderComponent: AcoesCellComponent,
+        // Único ponto de ligação de volta ao componente-pai que a lib oferece
+        onComponentInitFunction: (instance: AcoesCellComponent) =>
+          instance.acao.subscribe((pedido: PedidoAcaoChave) =>
+            this.onAcaoLinha(pedido),
+          ),
+        filter: false,
+        sort: false,
+      };
+
+    if (coluna === "estado")
+      return {
+        title,
+        type: "custom",
+        renderComponent: EstadoCellComponent,
+        // Filtro de lista sai de graça na lib. Compara contra o valor cru
+        // (`status`), por isso os `value` são os do enum e não os rótulos.
+        filter: {
+          type: "list",
+          config: {
+            selectText: "Todos",
+            list: Object.keys(STATUS_CHAVE_CONFIG).map((estado) => ({
+              value: estado,
+              title: STATUS_CHAVE_CONFIG[estado as StatusChaveEnumType].label,
+            })),
+          },
+        },
+      };
+
+    return { title };
+  }
+
+  private onAcaoLinha(pedido: PedidoAcaoChave): void {
+    if (pedido.acao === "atualizar") this.abrirModalAtualizar(pedido.chave);
+    else this.devolverRapido(pedido.chave);
   }
 
   // Setas anterior/seguinte - recebe a página de destino (0-based)
@@ -253,10 +381,6 @@ export class ChavesComponent implements OnInit, OnDestroy {
       return `Mínimo de ${campo.errors["minlength"].requiredLength} caracteres.`;
 
     return "Valor inválido.";
-  }
-
-  trackById(_: number, chave: { id: number }) {
-    return chave.id;
   }
 
   private validarCampos(form: FormGroup, nomes: string[]): boolean {

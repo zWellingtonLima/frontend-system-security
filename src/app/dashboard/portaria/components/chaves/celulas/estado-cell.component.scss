@@ -1,0 +1,31 @@
+// DUPLICAÇÃO: estas regras já existem em `chaves.component.scss`.
+//
+// O encapsulamento de estilos do Angular é por componente, e a lib instancia
+// esta célula como um componente à parte — o CSS da página de Chaves não a
+// alcança. Ou se duplica aqui, ou se promovem os badges a estilo global.
+// É um custo direto de a tabela deixar de ser dona das suas próprias células.
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-disponivel {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.badge-emprestada {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-atrasada {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
