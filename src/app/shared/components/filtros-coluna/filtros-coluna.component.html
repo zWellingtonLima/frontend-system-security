@@ -1,0 +1,34 @@
+<!-- Sem <tr> aqui: o <tr> é o host (selector de atributo). Incluí-lo
+     aninharia uma linha dentro de outra e desmontava a tabela. -->
+<th
+  *ngFor="let coluna of colunas"
+  [ngClass]="'col-' + coluna"
+  [ngSwitch]="tipoDe(coluna)"
+  class="filtro-th"
+>
+  <input
+    *ngSwitchCase="'texto'"
+    type="text"
+    class="filtro-controlo"
+    autocomplete="off"
+    [value]="valorDe(coluna)"
+    [attr.aria-label]="'Filtrar por ' + rotuloDe(coluna)"
+    [placeholder]="rotuloDe(coluna)"
+    (input)="onEscrever(coluna, $event)"
+  />
+
+  <select
+    *ngSwitchCase="'select'"
+    class="filtro-controlo"
+    [value]="valorDe(coluna)"
+    [attr.aria-label]="'Filtrar por ' + rotuloDe(coluna)"
+    (change)="onEscolher(coluna, $event)"
+  >
+    <option value="">Todos</option>
+    <option *ngFor="let opcao of opcoesDe(coluna)" [value]="opcao">
+      {{ opcao }}
+    </option>
+  </select>
+
+  <!-- Colunas não filtráveis (ex: ações) ficam com a célula vazia -->
+</th>

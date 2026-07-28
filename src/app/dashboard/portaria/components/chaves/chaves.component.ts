@@ -8,7 +8,7 @@ import {
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ChaveService } from "../../services/api/chave.service";
-import { ChavesTabConfig, COLUNA_TITULO } from "../../models/enums";
+import { ChavesTabConfig, COLUNA_TITULO, ColunaChave } from "../../models/enums";
 import { ChaveViewModel, GrupoChaves } from "../../models/api";
 
 // Mensagens de `required` por campo. O texto genérico serve de fallback.
@@ -44,6 +44,12 @@ export class ChavesComponent implements OnInit, OnDestroy {
   titulos = COLUNA_TITULO;
   colunas$ = this.service.colunas$;
   linhas$ = this.service.linhas$;
+
+  // FILTROS POR COLUNA (só na tab EMPRESTADAS)
+  filtros$ = this.service.filtros$;
+  opcoesFiltro$ = this.service.opcoesFiltro$;
+  temFiltrosAtivos$ = this.service.temFiltrosAtivos$;
+  tiposFiltro = this.service.tiposFiltro;
 
   // FILTROS E TABS
   tabs = this.service.tabs;
@@ -90,6 +96,19 @@ export class ChavesComponent implements OnInit, OnDestroy {
 
   onTabChange(tab: ChavesTabConfig): void {
     this.service.setTab(tab);
+  }
+
+  // =========================================
+  // ============== FILTROS ==================
+  // Delegação fina ao service. A repetição rasa é aceitável — tentar
+  // eliminá-la com herança custaria mais do que resolve.
+
+  onFiltroColuna(mudanca: { coluna: string; valor: string }): void {
+    this.service.setFiltroColuna(mudanca.coluna as ColunaChave, mudanca.valor);
+  }
+
+  limparFiltros(): void {
+    this.service.limparFiltros();
   }
 
   // Setas anterior/seguinte - recebe a página de destino (0-based)

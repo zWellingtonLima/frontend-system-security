@@ -7,6 +7,7 @@ import { FormsModule } from "@angular/forms";
 import { PortariaShellComponent } from "./components/portaria-shell/portaria-shell.component";
 import { BaseModalComponent } from "./components/base-modal/base-modal.component";
 import { FuncionarioAutocompleteComponent } from "./components/funcionario-autocomplete/funcionario-autocomplete.component";
+import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-coluna.component";
 
 @NgModule({
   imports: [CommonModule, RouterModule, FormsModule, BrowserAnimationsModule],
@@ -15,12 +16,14 @@ import { FuncionarioAutocompleteComponent } from "./components/funcionario-autoc
     PortariaShellComponent,
     BaseModalComponent,
     FuncionarioAutocompleteComponent,
+    FiltrosColunaComponent,
   ],
   exports: [
     NavbarComponent,
     PortariaShellComponent,
     BaseModalComponent,
     FuncionarioAutocompleteComponent,
+    FiltrosColunaComponent,
   ],
 })
 export class SharedModule {}
