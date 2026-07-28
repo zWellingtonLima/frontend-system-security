@@ -1,0 +1,54 @@
+@import "tokens";
+
+// ============================================================
+// CAMPOS DE FILTRO E PESQUISA
+// ===========================================================
+// Altura compartilhada pelos campos, para ficarem alinhados lado a lado.
+$field-height: 32px;
+
+.filter-select {
+  box-sizing: border-box;
+  height: $field-height;
+  font-size: 12px;
+  border-radius: $portaria-radius-xs;
+  border: 1px solid $portaria-color-border;
+  background: transparent;
+  padding: 0 $p-md;
+  color: $portaria-color-text-body;
+
+  &:focus {
+    outline: 1px solid $portaria-color-accent-dark;
+    outline-offset: 4px;
+  }
+}
+
+// Envolve o input de pesquisa e posiciona a lupa por cima dele
+.search-wrap {
+  position: relative;
+  flex: 1;
+
+  & i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $portaria-color-text-muted-alt;
+    pointer-events: none;
+  }
+}
+
+.search-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: $field-height;
+  // Espaço à esquerda para o ícone de lupa dentro do campo
+  padding: 0 10px 0 32px;
+  font-size: 12px;
+  border-radius: $portaria-radius-xs;
+  border: 1px solid $portaria-color-border;
+  background: $portaria-color-bg-soft;
+
+  &:focus {
+    outline: 1px solid $portaria-color-accent;
+  }
+}

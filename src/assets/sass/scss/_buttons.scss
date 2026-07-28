@@ -1,0 +1,177 @@
+@import "tokens";
+
+.portaria-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // min-height: 44px;
+  gap: $p-xs;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: $portaria-radius-xs;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  &--primary {
+    background: linear-gradient(
+      135deg,
+      $portaria-color-accent 0%,
+      $portaria-color-accent-dark 100%
+    );
+    box-shadow: $portaria-shadow-accent;
+    color: #ffffff;
+
+    &:hover:not(:disabled) {
+      box-shadow: $portaria-shadow-accent-hover;
+      filter: saturate(1.05);
+      transform: translateY(-2px);
+    }
+
+    &:focus-within {
+      outline: 2px solid $portaria-color-accent;
+      outline-offset: 4px;
+    }
+  }
+
+  &--secondary {
+    background: rgba(34, 167, 189, 0.08);
+    border-color: #d7ecf1;
+    color: $portaria-color-accent-dark;
+
+    &:hover:not(:disabled) {
+      border-color: $portaria-color-accent;
+      background: $portaria-color-bg-hover;
+    }
+
+    &:focus-within {
+      outline: 1px solid $portaria-color-accent-dark;
+      outline-offset: 4px;
+    }
+  }
+
+  &--ghost {
+    background: #ffffff;
+    font-size: 12px;
+    border-color: $portaria-color-bg-light;
+    color: $portaria-color-accent-dark;
+
+    &:hover:not(:disabled) {
+      border-color: $portaria-color-accent;
+      background: $portaria-color-bg-soft;
+    }
+
+    &:focus-within {
+      outline: 1px solid $portaria-color-accent-dark;
+      outline-offset: 4px;
+    }
+  }
+
+  &--danger {
+    background: #fff1f2;
+    border-color: #fda4ae66;
+    color: #be123c;
+
+    &:hover:not(:disabled) {
+      background: #ffe4e6;
+      border-color: #fb7185;
+    }
+
+    &:focus-within {
+      outline: 1px solid $portaria-color-danger;
+      outline-offset: 4px;
+    }
+  }
+
+  &--success {
+    background-color: $portaria-color-success-solid;
+    border-color: $portaria-color-success-solid;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: $portaria-color-success-solid-hover;
+      border-color: $portaria-color-success-solid-hover;
+    }
+  }
+
+  &--danger-solid {
+    background-color: $portaria-color-danger-solid;
+    border-color: $portaria-color-danger-solid;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: $portaria-color-danger-solid-hover;
+      border-color: $portaria-color-danger-solid-hover;
+    }
+  }
+
+  &--small {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: $portaria-radius-sm;
+    font-size: 13px;
+  }
+
+  &:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+  }
+}
+
+// ============================================================
+// ADD BUTTON
+// ============================================================
+
+.portaria-add-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 140px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: $portaria-radius-sm;
+  background: linear-gradient(
+    135deg,
+    $portaria-color-accent 0%,
+    $portaria-color-accent-dark 100%
+  );
+  box-shadow: $portaria-shadow-accent;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+
+  &:hover {
+    box-shadow: $portaria-shadow-accent-hover;
+    filter: saturate(1.05);
+    transform: translateY(-2px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow:
+      $portaria-shadow-accent-hover,
+      0 0 0 4px rgba(34, 167, 189, 0.18);
+  }
+}
