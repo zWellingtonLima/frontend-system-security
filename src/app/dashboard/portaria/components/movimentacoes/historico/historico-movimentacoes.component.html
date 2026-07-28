@@ -63,7 +63,7 @@
         </tr>
 
         <!-- Estado: sem dados / erro -->
-        <tr *ngIf="!carregando">
+        <tr *ngIf="!carregando && listaMovimentacoes.length === 0">
           <td colspan="6" class="tbl-status">
             <i class="ft-alert-circle"></i>
             Nenhum dado encontrado.
@@ -73,18 +73,24 @@
         <!-- Estado: com dados -->
         <ng-container *ngIf="!carregando">
           <tr *ngFor="let visita of listaMovimentacoes">
-            <td>{{ visita.nomeVisitante }}</td>
-            <td>{{ visita.horaEntrada }}</td>
+            <td class="bold-text">{{ visita.nomeVisitante }}</td>
+            <td>{{ visita.horaEntrada | date: "dd/MM/yyyy HH:mm" }}</td>
             <td>
               <span class="data">{{
                 visita.horaSaida | date: "dd/MM/yyyy HH:mm"
               }}</span>
             </td>
             <td>{{ visita.tipoVisita }}</td>
-            <td>{{ visita.setorDestino }}</td>
-            <td>{{ visita.funcionarioResponsavel }}</td>
+            <td>{{ visita.setorDestino ? visita.setorDestino : "_" }}</td>
+            <td>
+              {{
+                visita.funcionarioResponsavel
+                  ? visita.funcionarioResponsavel
+                  : "_"
+              }}
+            </td>
             <td [title]="visita.notas">
-              {{ visita.notas }}
+              {{ visita.notas ? visita.notas : "_" }}
             </td>
           </tr>
         </ng-container>

@@ -10,9 +10,9 @@ import {
   CountTabelas,
   EdificiosResponse,
   ListaUltimasCard,
+  PageResponse,
   UltimaLeitura,
 } from "../../models/consumo.model";
-import { PageResponse } from "../../models/movimentacoes.model";
 
 @Injectable({
   providedIn: "root",

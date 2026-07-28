@@ -9,6 +9,7 @@ import {
 } from "../../models/movimentacoes.model";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
+import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -51,9 +52,14 @@ export class MovimentacoesService {
     if (filtro.dataFim) {
       params = params.set("dataFim", String(filtro.dataFim));
     }
-
-    return this.http.get<PageResponse<Movimentacoes>>(this.apiUrl, {
-      params,
-    });
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
+      map((res) => ({
+        movimentacoes: res.content,
+        totalElements: res.totalElements,
+        totalPages: res.totalPages,
+        page: res.number,
+        size: res.size,
+      })),
+    );
   }
 }

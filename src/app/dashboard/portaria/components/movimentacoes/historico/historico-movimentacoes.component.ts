@@ -25,6 +25,7 @@ export class HistoricoMovimentacoesComponent implements OnInit {
       })
       .subscribe(
         (res) => {
+          console.log(res.movimentacoes);
           this.listaMovimentacoes = res.movimentacoes;
           this.totalElements = res.totalElements;
           this.totalPages = res.totalPages;

@@ -63,14 +63,10 @@ export class MovimentacoesComponent implements OnInit {
   atualizarVisita() {
     if (this.formularioRegistarVisita.valid) {
       this.movimentacoesService
-        .atualizarVisita(this.formularioRegistarVisita.value.id, {
-          nomeVisitante: this.formularioRegistarVisita.value.nomeVisitante,
-          idRHFuncionarioResponsavel:
-            this.formularioRegistarVisita.value.funcionarioResponsavel,
-          setorDestino: this.formularioRegistarVisita.value.setorDestino,
-          notas: this.formularioRegistarVisita.value.notas,
-          idTipoVisita: this.formularioRegistarVisita.value.idTipoVisita,
-        })
+        .atualizarVisita(
+          this.formularioRegistarVisita.value.id,
+          this.formularioRegistarVisita.value,
+        )
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();

@@ -32,8 +32,8 @@ export interface movimentacoesFiltro {
   size: number;
 }
 
-export interface PageResponse<T> {
-  movimentacoes: T[];
+export interface PageResponse<Movimentacoes> {
+  movimentacoes: Movimentacoes[];
   totalElements: number;
   totalPages: number;
   page: number;
