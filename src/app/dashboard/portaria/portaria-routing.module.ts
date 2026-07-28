@@ -5,6 +5,7 @@ import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.compo
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ChavesComponent } from "./components/chaves/chaves.component";
 import { MovimentacoesComponent } from "./components/movimentacoes/movimentacoes.component";
+import { HistoricoMovimentacoesComponent } from "./components/movimentacoes/historico/historico-movimentacoes.component";
 
 const routes: Routes = [
   {
@@ -28,6 +29,11 @@ const routes: Routes = [
     component: ChavesComponent,
   },
   {
+    path: "historico/movimentacoes",
+    component: HistoricoMovimentacoesComponent,
+  },
+
+  {
     path: "",
     redirectTo: "/dashboard",
     pathMatch: "full",
@@ -44,6 +50,11 @@ const routes: Routes = [
   {
     path: "movimentacoes",
     redirectTo: "/movimentacoes",
+    pathMatch: "full",
+  },
+  {
+    path: "historico/movimentacoes",
+    redirectTo: "historico/movimentacoes",
     pathMatch: "full",
   },
 ];

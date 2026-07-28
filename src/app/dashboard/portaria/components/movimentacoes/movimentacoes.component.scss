@@ -1,6 +1,7 @@
 @import "src/app/dashboard/portaria/portaria.component.scss";
 
 @import "src/app/dashboard/portaria/components/consumos/scss/_consumos-modal.scss";
+
 .page-header-row {
   margin-bottom: 16px;
 }
@@ -17,6 +18,11 @@
     color: #9ca3af;
     pointer-events: none;
   }
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 1rem;
 }
 
 .filter-container {

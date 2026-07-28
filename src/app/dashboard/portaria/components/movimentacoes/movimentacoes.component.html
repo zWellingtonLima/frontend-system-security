@@ -4,15 +4,22 @@
       <h1 class="portaria-section-title">Movimentações</h1>
       <p class="portaria-section-copy">Entrada e saídas do edifício hoje</p>
     </div>
+    <div class="page-header-actions">
+      <a
+        class="portaria-btn portaria-btn--ghost"
+        [routerLink]="['/historico/movimentacoes']"
+        >Histórico Movimentações</a
+      >
 
-    <button
-      type="button"
-      class="portaria-btn portaria-btn--primary"
-      (click)="abrirModalEmprestar()"
-    >
-      <i class="fas fa-plus"></i>
-      <span>Registar Entrada</span>
-    </button>
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary"
+        (click)="abrirModalEmprestar()"
+      >
+        <i class="fas fa-plus"></i>
+        <span>Registar Entrada</span>
+      </button>
+    </div>
   </div>
 
   <!-- LISTAGEM DE CHAVES -->
