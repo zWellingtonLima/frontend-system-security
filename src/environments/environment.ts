@@ -20,4 +20,6 @@ export const environment = {
   consumosApiUrl: `${api}/consumos`,
   // FUNCIONARIOS (lista completa, usada nos autocompletes)
   funcionariosApiUrl: `${api}/funcionarios`,
+  //MOVINTENTACOES
+  movimentacoesApiUrl: `${api}/movimentacoes`,
 };

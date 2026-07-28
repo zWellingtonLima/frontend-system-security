@@ -121,7 +121,10 @@
 
                   <!-- COM QUEM -->
                   <ng-container *ngSwitchCase="'nomeFuncionario'">
-                    <span class="bold-text" *ngIf="chave.nomeFuncionario; else vazio">
+                    <span
+                      class="bold-text"
+                      *ngIf="chave.nomeFuncionario; else vazio"
+                    >
                       {{ chave.nomeFuncionario }}
                     </span>
                   </ng-container>
@@ -360,7 +363,9 @@
           ></app-funcionario-autocomplete>
           <span
             class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro"
+            *ngIf="
+              erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro
+            "
           >
             {{ erro }}
           </span>
