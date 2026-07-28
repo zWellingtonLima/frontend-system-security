@@ -2,10 +2,12 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import {
   Movimentacoes,
+  movimentacoesFiltro,
   novaVisita,
+  PageResponse,
   TiposVisitas,
 } from "../../models/movimentacoes.model";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
 
 @Injectable({
@@ -33,5 +35,25 @@ export class MovimentacoesService {
 
   atualizarVisita(id: number, body: novaVisita) {
     return this.http.patch(`${this.apiUrl}/${id}`, body);
+  }
+
+  listar(filtro: movimentacoesFiltro): Observable<PageResponse<Movimentacoes>> {
+    let params = new HttpParams()
+      .set("page", String(filtro.page))
+      .set("size", String(filtro.size));
+
+    if (filtro.tipo) {
+      params = params.set("tipo", filtro.tipo);
+    }
+    if (filtro.dataInicio) {
+      params = params.set("dataInicio", String(filtro.dataInicio));
+    }
+    if (filtro.dataFim) {
+      params = params.set("dataFim", String(filtro.dataFim));
+    }
+
+    return this.http.get<PageResponse<Movimentacoes>>(this.apiUrl, {
+      params,
+    });
   }
 }

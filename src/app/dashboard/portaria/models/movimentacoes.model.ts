@@ -22,3 +22,20 @@ export interface TiposVisitas {
   id: number;
   tipo: string;
 }
+
+export interface movimentacoesFiltro {
+  tipo?: string;
+  dataInicio?: Date | null;
+  dataFim?: Date | null;
+  /** página baseada em 0, tal como o Spring Data Pageable */
+  page: number;
+  size: number;
+}
+
+export interface PageResponse<T> {
+  movimentacoes: T[];
+  totalElements: number;
+  totalPages: number;
+  page: number;
+  size: number;
+}
