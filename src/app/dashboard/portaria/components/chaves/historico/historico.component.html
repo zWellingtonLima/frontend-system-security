@@ -55,8 +55,8 @@
     <!-- LISTAGEM DE CHAVES -->
     <ng-container *ngIf="carregando$ | async; else emprestimoHistorico">
       <div class="loading-state">
-        <img class="loader" src="assets/img/oval.svg" alt="" />
-        <p>A carregar histórico...</p>
+        <div class="spinner-inline"></div>
+        <p>A carregar histórico de empréstimos...</p>
       </div>
     </ng-container>
 

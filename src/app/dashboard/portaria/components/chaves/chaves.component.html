@@ -65,8 +65,9 @@
 
     <!-- LISTAGEM DE CHAVES -->
     <ng-container *ngIf="carregando$ | async; else listaChaves">
+      <!-- Estado: a carregar -->
       <div class="loading-state">
-        <img class="loader" src="assets/img/oval.svg" alt="" />
+        <div class="spinner-inline"></div>
         <p>Carregando chaves...</p>
       </div>
     </ng-container>
