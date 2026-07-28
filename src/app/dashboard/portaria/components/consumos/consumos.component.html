@@ -139,8 +139,8 @@
           <th>Leitura actual</th>
           <th>Consumo</th>
           <th>Data / hora</th>
-          <th>Observação</th>
           <th>Edifício</th>
+          <th>Observação</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -150,6 +150,7 @@
         <tr *ngIf="carregando">
           <td colspan="6" class="tbl-status">
             <div class="spinner-inline"></div>
+            <span>A carregar leituras...</span>
           </td>
         </tr>
 
@@ -170,7 +171,7 @@
               }}</span>
               {{ Unidades[item.tipoConsumo] }}
             </td>
-            <td>
+            <td class="align-right">
               <span
                 class="bold-text"
                 [ngClass]="
@@ -190,18 +191,24 @@
                 item.dataRegisto | date: "dd/MM/yyyy HH:mm"
               }}</span>
             </td>
-            <td [title]="item.observacao">
-              {{ item.observacao ? (item.observacao | slice: 0 : 30) : "_" }}
-              {{ item.observacao ? "..." : "" }}
-            </td>
             <td>
               {{ item.edificioName }}
             </td>
-            <td>
-              <button class="action-btn edit" (click)="abrirEditar(item)">
-                <i class="icon-pencil"></i>
+            <td [title]="item.observacao">
+              {{ item.observacao ? (item.observacao | slice: 0 : 50) : "_" }}
+              {{ item.observacao ? "..." : "" }}
+            </td>
+            <td class="tbl-acoes">
+              <button
+                class="portaria-btn portaria-btn--ghost"
+                (click)="abrirEditar(item)"
+              >
+                <i class="ft-edit-2"></i>
               </button>
-              <button class="action-btn del" (click)="abrirExcluir(item)">
+              <button
+                class="portaria-btn portaria-btn--danger"
+                (click)="abrirExcluir(item)"
+              >
                 <i class="ft-trash-2"></i>
               </button>
             </td>
@@ -408,7 +415,7 @@
           [disabled]="registarLeituraForm.invalid"
           (click)="modoEdicao ? registarAtualizar() : registarLeitura()"
         >
-          <i class="ft-file-plus"></i>
+          <i [class]="modoEdicao ? 'ft-edit-2' : 'ft-file-plus'"></i>
           {{ botaoEnvio }}
         </button>
       </ng-container>
@@ -447,7 +454,7 @@
           class="portaria-btn portaria-btn--danger"
           (click)="submeterEliminar()"
         >
-          <i class="ft-file-plus"></i>
+          <i class="ft-trash-2"></i>
           Excluir
         </button>
       </ng-container>
