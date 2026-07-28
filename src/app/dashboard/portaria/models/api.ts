@@ -76,13 +76,13 @@ export interface GrupoChaves {
 // Regista um novo empréstimo
 export interface EmprestimoCriarDTO {
   idChave: number;
-  devolvidaPorIdRH: number;
+  idRH: number;
 }
 
 // Corrige um empréstimo já registrado (engano do segurança no ato do empréstimo)
 export interface EmprestimoUpdateDTO {
   idChave: number;
-  devolvidaPorIdRH: number;
+  idRH: number;
 }
 
 // Regista a devolução de um empréstimo em aberto
@@ -92,7 +92,7 @@ export interface DevolucaoRapidaDTO {
 
 export interface DevolucaoDTO {
   idChave: number;
-  devolvidaPorIdRH: number;
+  idRH: number;
 }
 
 export interface HistoricoEntregaChave {

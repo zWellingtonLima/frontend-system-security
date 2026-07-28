@@ -141,7 +141,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
     const { idChave, idFuncionario } = this.emprestarForm.value;
 
     this.service
-      .emprestarChave({ idChave, devolvidaPorIdRH: idFuncionario })
+      .emprestarChave({ idChave, idRH: idFuncionario })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
         if (sucesso) this.fecharModalEmprestar();
@@ -191,7 +191,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
     this.service
       .atualizarEmprestimo(idEmprestimo, {
         idChave,
-        devolvidaPorIdRH: idFuncionarioEmprestimo,
+        idRH: idFuncionarioEmprestimo,
       })
       .pipe(takeUntil(this.destroy$))
       .subscribe((sucesso) => {
@@ -208,7 +208,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
 
     this.service
       .devolverChave(idEmprestimo, {
-        devolvidaPorIdRH: this.atualizarForm.value.idDevolvidaPor,
+        idRH: this.atualizarForm.value.idDevolvidaPor,
         idChave: this.atualizarForm.value.idChave,
       })
       .pipe(takeUntil(this.destroy$))
@@ -223,7 +223,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
 
     this.service
       .devolverChave(chave.idEmprestimo, {
-        devolvidaPorIdRH: chave.idRH, // «««««««««« ALTERAR PARA IDRH
+        idRH: chave.idRH, // «««««««««« ALTERAR PARA IDRH
         idChave: chave.id,
       })
       .pipe(takeUntil(this.destroy$))
