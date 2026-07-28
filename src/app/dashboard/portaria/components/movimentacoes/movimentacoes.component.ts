@@ -89,6 +89,9 @@ export class MovimentacoesComponent implements OnInit {
   abrirExcluir(item: Movimentacoes) {
     this.leituraIdParaExcluir = item.id;
   }
+  marcarSaidaRapido(item: Movimentacoes) {
+    console.log(item);
+  }
 
   abrirEditar(item: Movimentacoes) {
     this.formularioRegistarVisita.reset();

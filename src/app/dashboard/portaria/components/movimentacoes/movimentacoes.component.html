@@ -38,7 +38,7 @@
           </tr>
         </thead>
 
-        <tbody>
+        <tbody #corpo>
           <!-- Estado: a carregar -->
           <tr *ngIf="carregando">
             <td colspan="6" class="tbl-status">
@@ -57,7 +57,7 @@
           <!-- Estado: com dados -->
           <ng-container *ngIf="!carregando">
             <tr *ngFor="let item of movimentacoes">
-              <td>
+              <td style="align-items: right">
                 <span class="bold-text">{{ item.nomeVisitante }}</span>
               </td>
               <td>
@@ -80,12 +80,26 @@
                 <span class="data">{{ item.notas ? item.notas : "_" }}</span>
               </td>
               <td>
-                <button class="action-btn edit" (click)="abrirEditar(item)">
-                  <i class="icon-pencil"></i>
-                </button>
-                <button class="action-btn del" (click)="abrirExcluir(item)">
-                  <i class="ft-trash-2"></i>
-                </button>
+                <div class="acoes-chave">
+                  <!-- ATUALIZAR DADOS DA VISITA -->
+                  <button
+                    class="portaria-btn portaria-btn--secondary"
+                    type="button"
+                    title="Atualizar visita"
+                    (click)="abrirEditar(item)"
+                  >
+                    <i class="ft-edit-2"></i>
+                  </button>
+                  <!-- Ação secundária: devolve em nome de quem levou -->
+                  <button
+                    class="portaria-btn portaria-btn--ghost"
+                    type="button"
+                    title="Marcar saída"
+                    (click)="marcarSaidaRapido(item)"
+                  >
+                    <i class="ft-corner-down-left"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </ng-container>
