@@ -175,9 +175,9 @@ export const COLUNA_EMPRESTIMO_TITULO: Record<ColunaEmprestimoChave, string> = {
   edificio: "Edifício",
   codigo: "Chave / Código",
   sala: "Sala / Piso",
-  nomeFuncionario: "Com quem",
-  desde: "Hora empréstimo",
-  devolucao: "Hora devolução",
+  nomeFuncionario: "Responsável",
+  desde: "Data / Hora empréstimo",
+  devolucao: "Data / Hora devolução",
 };
 
 export type TabEmprestimoChave = "HISTORICO";
