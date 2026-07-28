@@ -153,6 +153,11 @@ export const EDIFICIO_LABEL: Record<number, string> = {
   2: "Edifício B",
 };
 
+// Mesma fonte, em forma iterável para os <select> de edifício
+export const EDIFICIO_OPCOES: { id: number; label: string }[] = Object.keys(
+  EDIFICIO_LABEL,
+).map((id) => ({ id: Number(id), label: EDIFICIO_LABEL[Number(id)] }));
+
 // Posso depois alterar para o padrão Português usando Cave, Rés-do-chão etc
 export const PISO_LABEL: Record<string, string> = {
   "-1": "Piso -1",
@@ -180,8 +185,12 @@ export const COLUNA_EMPRESTIMO_TITULO: Record<ColunaEmprestimoChave, string> = {
   devolucao: "Data / Hora devolução",
 };
 
-export type TabEmprestimoChave = "HISTORICO";
-
-export type ChavesEmprestimoTabConfig = TabConfig<TabEmprestimoChave> & {
-  colunas: ColunaEmprestimoChave[];
-};
+// A ordem aqui define a ordem das colunas na tabela do histórico
+export const COLUNAS_HISTORICO_EMPRESTIMO: ColunaEmprestimoChave[] = [
+  "edificio",
+  "codigo",
+  "sala",
+  "nomeFuncionario",
+  "desde",
+  "devolucao",
+];

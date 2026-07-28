@@ -1,6 +1,12 @@
 import { Component, OnInit } from "@angular/core";
-import { EmprestimosHistoricoService } from "../../../services/api/emprestimos-historico.service";
-import { COLUNA_EMPRESTIMO_TITULO } from "../../../models/enums";
+import {
+  EmprestimosHistoricoService,
+  FILTROS_VAZIOS,
+} from "../../../services/api/emprestimos-historico.service";
+import {
+  COLUNA_EMPRESTIMO_TITULO,
+  EDIFICIO_OPCOES,
+} from "../../../models/enums";
 import { FormBuilder, FormGroup } from "@angular/forms";
 
 @Component({
@@ -10,13 +16,14 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 })
 export class EmprestimosHistoricoComponent implements OnInit {
   historico$ = this.service.chavesEmprestimoHistorico$;
-  colunas$ = this.service.colunas$;
-  titulos = COLUNA_EMPRESTIMO_TITULO;
-
-  tabAtiva$ = this.service.tabAtiva$;
   paginacao$ = this.service.paginacao$;
   carregando$ = this.service.estaCarregandoDados$;
 
+  colunas = this.service.colunas;
+  titulos = COLUNA_EMPRESTIMO_TITULO;
+  edificios = EDIFICIO_OPCOES;
+
+  // Rascunho: só chega ao service quando o utilizador confirma
   filtrosForm!: FormGroup;
 
   constructor(
@@ -26,22 +33,17 @@ export class EmprestimosHistoricoComponent implements OnInit {
 
   ngOnInit() {
     this.service.inicializar();
-
-    this.filtrosForm = this.fb.group({
-      dataInicio: [""],
-      dataFim: [""],
-      idEdificio: [""],
-    });
-
-    this.filtrosForm.valueChanges.subscribe(() => {
-      this.service.carregarEmprestimoHistorico({
-        ...this.filtrosForm.value,
-      });
-    });
+    this.filtrosForm = this.fb.group(FILTROS_VAZIOS);
   }
 
-  onSearch(q: string): void {
-    this.service.carregarEmprestimoHistorico({ texto: q });
+  // Botão Procurar e Enter no campo de pesquisa
+  aplicarFiltros(): void {
+    this.service.aplicarFiltros(this.filtrosForm.value);
+  }
+
+  limparFiltros(): void {
+    this.filtrosForm.reset(FILTROS_VAZIOS);
+    this.service.limparFiltros();
   }
 
   // Setas anterior/seguinte - recebe a página de destino (0-based)
@@ -50,9 +52,9 @@ export class EmprestimosHistoricoComponent implements OnInit {
   }
 
   // Botões numerados - converte a página exibida (1-based) para 0-based
-  irParaPagina(p: number | "...") {
-    if (typeof p !== "number") return;
-    this.service.setPagina(p - 1);
+  irParaPagina(pagina: number | "...") {
+    if (typeof pagina !== "number") return;
+    this.service.setPagina(pagina - 1);
   }
 
   trackById(_: number, chave: { id: number }) {

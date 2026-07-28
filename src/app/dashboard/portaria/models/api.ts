@@ -107,10 +107,10 @@ export interface HistoricoEntregaChave {
 }
 
 export interface ChavesEmprestimosFiltros {
-  dataInicio: ISOTimestamp;
-  dataFim: ISOTimestamp;
-  idEdificio: number;
-  texto: string;
+  dataInicio: string; // yyyy-MM-dd
+  dataFim: string;
+  idEdificio: number | ""; // "" = todos os edifícios
+  textoBusca: string;
 }
 
 // ============================================================

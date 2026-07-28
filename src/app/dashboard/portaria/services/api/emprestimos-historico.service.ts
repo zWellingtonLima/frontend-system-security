@@ -8,8 +8,7 @@ import {
   PaginacaoVM,
 } from "../../models/api";
 import {
-  ChavesEmprestimoTabConfig,
-  ColunaEmprestimoChave,
+  COLUNAS_HISTORICO_EMPRESTIMO,
   EDIFICIO_LABEL,
   PISO_LABEL,
   STATUS_CHAVE_CONFIG,
@@ -18,21 +17,14 @@ import { catchError, finalize, map } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
 
-const TAB: ChavesEmprestimoTabConfig[] = [
-  {
-    value: "HISTORICO",
-    label: "Histórico de Empréstimos",
-    paginada: true,
-    colunas: [
-      "edificio",
-      "codigo",
-      "sala",
-      "nomeFuncionario",
-      "desde",
-      "devolucao",
-    ],
-  },
-];
+const TAMANHO_PAGINA = "20";
+const PARAM_TEXTO_BUSCA = "nome";
+export const FILTROS_VAZIOS: ChavesEmprestimosFiltros = {
+  dataInicio: "",
+  dataFim: "",
+  idEdificio: "",
+  textoBusca: "",
+};
 
 @Injectable({
   providedIn: "root",
@@ -44,80 +36,83 @@ export class EmprestimosHistoricoService {
   private estaCarregandoDados = new BehaviorSubject<boolean>(false);
   readonly estaCarregandoDados$ = this.estaCarregandoDados.asObservable();
 
-  private tabAtiva = new BehaviorSubject<ChavesEmprestimoTabConfig>(TAB[0]);
-  readonly tabAtiva$ = this.tabAtiva.asObservable();
-
-  readonly colunas$: Observable<ColunaEmprestimoChave[]> = this.tabAtiva$.pipe(
-    map((tab) => tab.colunas),
+  private filtros = new BehaviorSubject<ChavesEmprestimosFiltros>(
+    FILTROS_VAZIOS,
   );
 
-  filtroDataInicio = new BehaviorSubject<Date | null>(null);
-  filtroDataFim = new BehaviorSubject<Date | null>(null);
-
-  tab = TAB;
+  readonly colunas = COLUNAS_HISTORICO_EMPRESTIMO;
 
   // PAGINAÇÃO
-  paginaAtual$ = new BehaviorSubject<number>(0);
-  totalPaginas$ = new BehaviorSubject<number>(0);
+  private paginaAtual = new BehaviorSubject<number>(0);
+  private totalPaginas = new BehaviorSubject<number>(0);
 
-  paginacao$: Observable<PaginacaoVM> = combineLatest(
-    this.paginaAtual$,
-    this.totalPaginas$,
-    this.tabAtiva$,
+  readonly paginacao$: Observable<PaginacaoVM> = combineLatest(
+    this.paginaAtual,
+    this.totalPaginas,
   ).pipe(
-    map(([paginaAtual, totalPaginas, tab]) => ({
+    map(([paginaAtual, totalPaginas]) => ({
       paginaAtual,
       totalPaginas,
       paginas: this.calcularPaginasVisiveis(paginaAtual + 1, totalPaginas),
       temAnterior: paginaAtual > 0,
       temProximo: paginaAtual < totalPaginas - 1,
-      visivel: tab.paginada && totalPaginas > 1,
+      visivel: totalPaginas > 1,
     })),
   );
 
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
-    this.setPagina(0);
-    this.carregarEmprestimoHistorico();
+    this.filtros.next(FILTROS_VAZIOS);
+    this.paginaAtual.next(0);
+    this.totalPaginas.next(0);
+    this.carregar();
+  }
+
+  aplicarFiltros(filtros: ChavesEmprestimosFiltros): void {
+    this.filtros.next({
+      ...filtros,
+      textoBusca: this.normalizarTexto(filtros.textoBusca),
+    });
+    this.paginaAtual.next(0);
+    this.carregar();
+  }
+
+  limparFiltros(): void {
+    this.filtros.next(FILTROS_VAZIOS);
+    this.paginaAtual.next(0);
+    this.carregar();
   }
 
   // Recebe a página de destino (0-based, igual ao backend)
   setPagina(pagina: number): void {
-    const total = this.totalPaginas$.value;
+    const total = this.totalPaginas.value;
     const dentroDoLimite = pagina >= 0 && pagina <= total - 1;
 
-    if (!dentroDoLimite || pagina === this.paginaAtual$.value) return;
+    if (!dentroDoLimite || pagina === this.paginaAtual.value) return;
 
-    this.paginaAtual$.next(pagina);
-    this.carregarEmprestimoHistorico();
+    this.paginaAtual.next(pagina);
+    this.carregar();
   }
 
   // =============================================
   // ================= GET =======================
 
-  carregarEmprestimoHistorico(
-    partials?: Partial<ChavesEmprestimosFiltros>,
-  ): void {
+  private carregar(): void {
     this.estaCarregandoDados.next(true);
-    console.log(partials);
 
-    let parametros = new HttpParams();
-    parametros = parametros
-      .set("page", String(this.paginaAtual$.value))
-      .set("size", "20");
+    const filtros = this.filtros.value;
+    let parametros = new HttpParams()
+      .set("page", String(this.paginaAtual.value))
+      .set("size", TAMANHO_PAGINA);
 
-    // reinicia página para a primeira
-    if (partials) this.paginaAtual$.next(0);
-
-    if (partials && partials.dataFim)
-      parametros = parametros.set("fim", partials.dataFim);
-    if (partials && partials.dataInicio)
-      parametros = parametros.set("inicio", partials.dataInicio);
-    if (partials && partials.idEdificio)
-      parametros = parametros.set("idEdificio", String(partials.idEdificio));
-    if (partials && partials.texto)
-      parametros = parametros.set("nome", partials.texto);
+    if (filtros.dataInicio)
+      parametros = parametros.set("inicio", filtros.dataInicio);
+    if (filtros.dataFim) parametros = parametros.set("fim", filtros.dataFim);
+    if (filtros.idEdificio !== "")
+      parametros = parametros.set("idEdificio", String(filtros.idEdificio));
+    if (filtros.textoBusca)
+      parametros = parametros.set(PARAM_TEXTO_BUSCA, filtros.textoBusca);
 
     this.http
       .get<ChavesPage>(environment.chavesEmprestimoHistoricoApiUrl, {
@@ -134,8 +129,7 @@ export class EmprestimosHistoricoService {
         if (resultado === null) return;
 
         this.chaves.next(resultado.content.map((c) => this.toViewModel(c)));
-
-        this.totalPaginas$.next(resultado.totalPages);
+        this.totalPaginas.next(resultado.totalPages);
       });
   }
 
