@@ -1,31 +1,101 @@
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
-import { debounceTime, map, startWith } from "rxjs/operators";
 import {
-  EstadoFiltros,
-  MapaColunas,
-  OpcoesFiltro,
-} from "../models/filtro-tabela";
+  debounceTime,
+  map,
+  publishReplay,
+  refCount,
+  startWith,
+  tap,
+} from "rxjs/operators";
+import { ColunaVM, LinhaTabela, MapaColunas } from "../models/filtro-tabela";
+
+// Referência estável para colunas sem opções
+const SEM_OPCOES: string[] = [];
+
+// Valor escrito/escolhido em cada coluna. Coluna ausente = sem filtro ativo.
+interface EstadoFiltros {
+  [coluna: string]: string;
+}
+
+interface OpcoesFiltro {
+  [coluna: string]: string[];
+}
 
 // Filtragem client-side de uma tabela, por coluna, com lógica AND: uma linha
 // só passa se satisfizer TODOS os filtros ativos.
 //
-// Não depende de Angular — a tabela dá as linhas, esta classe devolve as
-// linhas que passam. Reutilizável em qualquer página que já tenha os dados
-// todos em memória.
+// Não depende de Angular. Recebe as colunas visíveis e as linhas cruas,
+// devolve as linhas decoradas e filtradas (`linhas$`) e a descrição das
+// colunas para o template (`colunas$`).
 //
 // Uso:
-//   const filtro = new FiltroTabela<ChaveViewModel, ColunaChave>({ ... });
-//   const linhasVisiveis$ = filtro.aplicar(this.linhas$);
+//   filtro = new FiltroTabela(COLUNAS, this.colunasVisiveis$, this.dados$);
+//   linhas$ = this.filtro.linhas$;
 export class FiltroTabela<T, C extends string> {
   private filtros = new BehaviorSubject<EstadoFiltros>({});
-  readonly filtros$ = this.filtros.asObservable();
+  private filtros$ = this.filtros.asObservable();
+
+  // Linhas decoradas e filtradas, prontas para o *ngFor da tabela
+  readonly linhas$: Observable<LinhaTabela<T>[]>;
+
+  // Colunas visíveis, na ordem em que a tabela as mostra, já com título,
+  // tipo de filtro, valor ativo e opções resolvidos
+  readonly colunas$: Observable<ColunaVM[]>;
 
   // Para distinguir "não há dados" de "os filtros não deixaram passar nada"
   readonly temAtivos$: Observable<boolean> = this.filtros$.pipe(
     map((filtros) => Object.keys(filtros).length > 0),
   );
 
-  constructor(private mapa: MapaColunas<T, C>) {}
+  constructor(
+    private mapa: MapaColunas<T, C>,
+    colunasVisiveis$: Observable<C[]>,
+    fonte$: Observable<T[]>,
+  ) {
+    //   publishReplay(1) - uma só subscrição à fonte, partilhada; o buffer serve quem subscreve depois (senão os <select> nasciam vazios).
+    //   refCount() - larga a fonte quando sai o último subscritor. O service é `root` e sobrevive à página; sem isto ficava pendurado.
+    // Não `shareReplay` porque nunca larga a fonte.
+    const decoradas$ = fonte$.pipe(
+      map((linhas) => linhas.map((item) => this.decorar(item))),
+      publishReplay(1),
+      refCount(),
+    );
+
+    // Trocar de tab troca o conjunto de colunas. Um filtro numa coluna que
+    // deixou de estar visível ficaria pendurado a esconder linhas sem que o
+    // utilizador tivesse como o desfazer.
+    const visiveis$ = colunasVisiveis$.pipe(
+      tap((colunas) => this.esquecerOcultas(colunas)),
+      publishReplay(1),
+      refCount(),
+    );
+
+    // `startWith` é obrigatório: o `debounceTime` seguraria a primeira
+    // emissão do BehaviorSubject 150ms e a tabela nasceria vazia a piscar.
+    const filtrosEstaveis$ = this.filtros$.pipe(
+      debounceTime(150),
+      startWith({} as EstadoFiltros),
+    );
+
+    this.linhas$ = combineLatest(decoradas$, filtrosEstaveis$).pipe(
+      map(([linhas, filtros]) => this.filtrar(linhas, filtros)),
+    );
+
+    // As opções dos <select> derivam das linhas SEM filtro: se derivassem
+    // das filtradas, escolher "Edifício A" apagaria "Edifício B" da lista e
+    // não haveria como voltar atrás.
+    const opcoes$ = decoradas$.pipe(
+      map((linhas) => this.calcularOpcoes(linhas)),
+    );
+
+    // Sem debounce, ao contrário das linhas: o valor escrito tem de voltar
+    // ao <input> no mesmo instante em que é escrito.
+    this.colunas$ = combineLatest(visiveis$, this.filtros$, opcoes$).pipe(
+      map(([visiveis, filtros, opcoes]) =>
+        visiveis.map((coluna) => this.toVM(coluna, filtros, opcoes)),
+      ),
+    );
+  }
 
   // Valor vazio remove o filtro em vez de guardar "" — mantém o estado
   // limpo e `temAtivos$` honesto.
@@ -50,41 +120,6 @@ export class FiltroTabela<T, C extends string> {
     this.filtros.next({});
   }
 
-  aplicar(linhas$: Observable<T[]>): Observable<T[]> {
-    // `startWith` é obrigatório: o `debounceTime` seguraria a primeira
-    // emissão do BehaviorSubject 150ms e a tabela nasceria vazia a piscar.
-    const filtrosEstaveis$ = this.filtros$.pipe(
-      debounceTime(150),
-      startWith({} as EstadoFiltros),
-    );
-
-    return combineLatest(linhas$, filtrosEstaveis$).pipe(
-      map(([linhas, filtros]) => this.filtrar(linhas, filtros)),
-    );
-  }
-
-  // Valores distintos para preencher os <select>. Deriva das linhas SEM
-  // filtro: se derivasse das filtradas, escolher "Edifício A" apagaria
-  // "Edifício B" da lista e não haveria como voltar atrás.
-  opcoes(linhas$: Observable<T[]>): Observable<OpcoesFiltro> {
-    return linhas$.pipe(map((linhas) => this.calcularOpcoes(linhas)));
-  }
-
-  // Tipo de controlo por coluna, para alimentar a linha de filtros. Colunas
-  // não filtráveis ficam de fora do resultado.
-  // Chamar uma vez e guardar: devolve um objeto novo a cada chamada, não é
-  // para usar diretamente num template.
-  tipos(): Record<string, string> {
-    const resultado: Record<string, string> = {};
-
-    (Object.keys(this.mapa) as C[]).forEach((coluna) => {
-      const config = this.mapa[coluna];
-      if (config) resultado[coluna] = config.tipo;
-    });
-
-    return resultado;
-  }
-
   // Acentos separados do caractere base (NFD) e removidos: "edificio"
   // escrito no filtro passa a encontrar "Edifício" na célula.
   static normalizar(texto: string): string {
@@ -94,10 +129,21 @@ export class FiltroTabela<T, C extends string> {
       .replace(/[\u0300-\u036f]/g, "");
   }
 
-  private filtrar(linhas: T[], filtros: EstadoFiltros): T[] {
-    // As chaves só entram no estado via `setFiltro(coluna: C, ...)`, por isso
-    // são colunas válidas — o cast repõe o que o `Object.keys` perde.
-    const ativos = Object.keys(filtros).filter((c) => !!filtros[c]) as C[];
+  private decorar(item: T): LinhaTabela<T> {
+    const celulas: { [coluna: string]: string } = {};
+
+    this.colunasDoMapa().forEach((coluna) => {
+      celulas[coluna] = this.mapa[coluna].texto(item) || "";
+    });
+
+    return { item, celulas };
+  }
+
+  private filtrar(
+    linhas: LinhaTabela<T>[],
+    filtros: EstadoFiltros,
+  ): LinhaTabela<T>[] {
+    const ativos = Object.keys(filtros).filter((coluna) => !!filtros[coluna]);
     if (ativos.length === 0) return linhas;
 
     return linhas.filter((linha) =>
@@ -105,31 +151,31 @@ export class FiltroTabela<T, C extends string> {
     );
   }
 
-  private passa(linha: T, coluna: C, valor: string): boolean {
-    const config = this.mapa[coluna];
-    // Coluna sem extrator (ex: `acoes`) nunca exclui uma linha
-    if (!config) return true;
+  private passa(linha: LinhaTabela<T>, coluna: string, valor: string): boolean {
+    const definicao = this.mapa[coluna as C];
+    // Coluna sem filtro declarado (ex: `acoes`) nunca exclui uma linha
+    if (!definicao || !definicao.filtro) return true;
 
-    const celula = FiltroTabela.normalizar(config.extrair(linha));
+    const celula = FiltroTabela.normalizar(linha.celulas[coluna]);
     const procurado = FiltroTabela.normalizar(valor);
 
     // O <select> só oferece valores que existem nos dados, por isso compara
     // exato. O <input> é escrita livre e compara por trecho.
-    return config.tipo === "select"
+    return definicao.filtro === "select"
       ? celula === procurado
       : celula.indexOf(procurado) !== -1;
   }
 
-  private calcularOpcoes(linhas: T[]): OpcoesFiltro {
+  // Valores distintos por coluna, para preencher os <select>
+  private calcularOpcoes(linhas: LinhaTabela<T>[]): OpcoesFiltro {
     const resultado: OpcoesFiltro = {};
 
-    (Object.keys(this.mapa) as C[]).forEach((coluna) => {
-      const config = this.mapa[coluna];
-      if (!config || config.tipo !== "select") return;
+    this.colunasDoMapa().forEach((coluna) => {
+      if (this.mapa[coluna].filtro !== "select") return;
 
       const distintos: string[] = [];
       linhas.forEach((linha) => {
-        const valor = config.extrair(linha);
+        const valor = linha.celulas[coluna];
         if (valor && distintos.indexOf(valor) === -1) distintos.push(valor);
       });
 
@@ -139,7 +185,41 @@ export class FiltroTabela<T, C extends string> {
     return resultado;
   }
 
-  // Cópia rasa sem `spread`: o TypeScript 2.9 do projeto não sabe espalhar
+  private toVM(
+    coluna: C,
+    filtros: EstadoFiltros,
+    opcoes: OpcoesFiltro,
+  ): ColunaVM {
+    const definicao = this.mapa[coluna];
+
+    return {
+      chave: coluna,
+      titulo: definicao.titulo,
+      filtro: definicao.filtro || null,
+      personalizada: !!definicao.personalizada,
+      classe: definicao.classe || "",
+      valor: filtros[coluna] || "",
+      opcoes: opcoes[coluna] || SEM_OPCOES,
+    };
+  }
+
+  private esquecerOcultas(visiveis: C[]): void {
+    const atuais = this.filtros.value;
+    const orfaos = Object.keys(atuais).filter(
+      (coluna) => visiveis.indexOf(coluna as C) === -1,
+    );
+    if (orfaos.length === 0) return;
+
+    const proximos = this.clonar(atuais);
+    orfaos.forEach((coluna) => delete proximos[coluna]);
+    this.filtros.next(proximos);
+  }
+
+  private colunasDoMapa(): C[] {
+    return Object.keys(this.mapa) as C[];
+  }
+
+  
   // um mapped type sobre um parâmetro genérico.
   private clonar(estado: EstadoFiltros): EstadoFiltros {
     const copia: EstadoFiltros = {};

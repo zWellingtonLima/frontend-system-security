@@ -116,17 +116,6 @@ export type ColunaChave =
   | "nomeFuncionario"
   | "acoes";
 
-// Como cada coluna se chama na tela
-export const COLUNA_TITULO: Record<ColunaChave, string> = {
-  edificio: "Edifício",
-  codigo: "Chave / Código",
-  sala: "Sala / Piso",
-  estado: "Estado",
-  desde: "Desde",
-  nomeFuncionario: "Com quem",
-  acoes: "Ações",
-};
-
 // Cada tab decide quais colunas mostra e em que ordem
 export type ChavesTabConfig = TabConfig<TabsChave> & {
   colunas: ColunaChave[];

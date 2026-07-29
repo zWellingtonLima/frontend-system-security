@@ -8,7 +8,7 @@
 // Padding mais curto que o <th> do cabeçalho: a linha de filtros é
 // secundária e não deve competir em altura com os títulos das colunas.
 .filtro-th {
-  padding: 0 $p-xs $p-xs;
+  padding: $p-xs;
   border-bottom: 1px solid $portaria-color-border-faint;
 }
 

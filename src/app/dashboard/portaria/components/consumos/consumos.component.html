@@ -196,7 +196,9 @@
                 >{{
                   item.observacao ? (item.observacao | slice: 0 : 100) : "_"
                 }}
-                {{ item.observacao.length > 100 ? "..." : "" }}</span
+                {{
+                  item.observacao && item.observacao.length > 100 ? "..." : ""
+                }}</span
               >
             </td>
             <td class="tbl-col-tight">

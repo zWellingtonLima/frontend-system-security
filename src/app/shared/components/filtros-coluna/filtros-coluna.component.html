@@ -1,34 +1,38 @@
 <!-- Sem <tr> aqui: o <tr> é o host (selector de atributo). Incluí-lo
-     aninharia uma linha dentro de outra e desmontava a tabela. -->
-<th
-  *ngFor="let coluna of colunas"
-  [ngClass]="'col-' + coluna"
-  [ngSwitch]="tipoDe(coluna)"
-  class="filtro-th"
->
-  <input
-    *ngSwitchCase="'texto'"
-    type="text"
-    class="filtro-controlo"
-    autocomplete="off"
-    [value]="valorDe(coluna)"
-    [attr.aria-label]="'Filtrar por ' + rotuloDe(coluna)"
-    [placeholder]="rotuloDe(coluna)"
-    (input)="onEscrever(coluna, $event)"
-  />
+     aninharia uma linha dentro de outra e desmontava a tabela.
 
-  <select
-    *ngSwitchCase="'select'"
-    class="filtro-controlo"
-    [value]="valorDe(coluna)"
-    [attr.aria-label]="'Filtrar por ' + rotuloDe(coluna)"
-    (change)="onEscolher(coluna, $event)"
+     O ngIf protege o caso de o [filtro] não ter sido passado -->
+<ng-container *ngIf="filtro">
+  <th
+    *ngFor="let coluna of filtro.colunas$ | async; trackBy: trackByChave"
+    [ngClass]="'col-' + coluna.chave"
+    [ngSwitch]="coluna.filtro"
+    class="filtro-th"
   >
-    <option value="">Todos</option>
-    <option *ngFor="let opcao of opcoesDe(coluna)" [value]="opcao">
-      {{ opcao }}
-    </option>
-  </select>
+    <input
+      *ngSwitchCase="'texto'"
+      type="text"
+      class="filtro-controlo"
+      autocomplete="off"
+      [value]="coluna.valor"
+      [attr.aria-label]="'Filtrar por ' + coluna.titulo"
+      [placeholder]="coluna.titulo"
+      (input)="onEscrever(coluna.chave, $event)"
+    />
 
-  <!-- Colunas não filtráveis (ex: ações) ficam com a célula vazia -->
-</th>
+    <select
+      *ngSwitchCase="'select'"
+      class="filtro-controlo"
+      [value]="coluna.valor"
+      [attr.aria-label]="'Filtrar por ' + coluna.titulo"
+      (change)="onEscolher(coluna.chave, $event)"
+    >
+      <option value="">Todos</option>
+      <option *ngFor="let opcao of coluna.opcoes" [value]="opcao">
+        {{ opcao }}
+      </option>
+    </select>
+
+    <!-- Colunas não filtráveis (ex: ações) ficam com a célula vazia -->
+  </th>
+</ng-container>

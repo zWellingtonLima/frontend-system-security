@@ -106,16 +106,11 @@
     <ng-template #listaChaves>
       <ng-container
         *ngIf="{
-          colunas: colunas$ | async,
-          linhas: linhas$ | async,
-          filtros: filtros$ | async,
-          opcoes: opcoesFiltro$ | async,
-          temFiltros: temFiltrosAtivos$ | async
+          colunas: filtro.colunas$ | async,
+          linhas: filtro.linhas$ | async,
+          temFiltros: filtro.temAtivos$ | async
         } as vm"
       >
-        <!-- A tabela fica de pé sempre que houver filtros ativos, mesmo sem
-             linhas: se desaparecesse, o utilizador perdia a linha de filtros
-             e não teria como desfazer o que escreveu. -->
         <div
           class="tbl-wrap"
           *ngIf="vm.linhas?.length > 0 || vm.temFiltros; else estadoVazio"
@@ -123,22 +118,20 @@
           <table class="tbl" [ngClass]="'tbl--' + tabAtiva.value.toLowerCase()">
             <thead>
               <tr>
-                <th *ngFor="let col of vm.colunas" [ngClass]="'col-' + col">
-                  {{ titulos[col] }}
+                <th
+                  *ngFor="let col of vm.colunas"
+                  [ngClass]="'col-' + col.chave"
+                >
+                  {{ col.titulo }}
                 </th>
               </tr>
 
               <!-- Filtros client-side. Só em EMPRESTADAS: INVENTARIO é
-                   paginada no backend e aqui só veria a página atual. -->
+                   paginada no backend -->
               <tr
                 appFiltrosColuna
                 *ngIf="tabAtiva.value === 'EMPRESTADAS'"
-                [colunas]="vm.colunas"
-                [valores]="vm.filtros"
-                [tipos]="tiposFiltro"
-                [opcoes]="vm.opcoes"
-                [titulos]="titulos"
-                (mudou)="onFiltroColuna($event)"
+                [filtro]="filtro"
               ></tr>
             </thead>
 
@@ -158,57 +151,39 @@
                 </td>
               </tr>
 
-              <tr *ngFor="let chave of vm.linhas; trackBy: trackById">
+              <tr *ngFor="let linha of vm.linhas; trackBy: trackById">
                 <td
                   *ngFor="let col of vm.colunas"
-                  [ngClass]="'col-' + col"
-                  [ngSwitch]="col"
+                  [ngClass]="['col-' + col.chave, col.classe]"
+                  [ngSwitch]="col.chave"
                 >
-                  <!-- EDIFÍCIO -->
-                  <ng-container *ngSwitchCase="'edificio'">
-                    {{ chave.edificioLabel }}
+                  <!-- Colunas simples: o texto já vem calculado e o template apenas aexibe -->
+                  <ng-container *ngIf="!col.personalizada">
+                    <ng-container
+                      *ngIf="linha.celulas[col.chave] as texto; else vazio"
+                      >{{ texto }}</ng-container
+                    >
                   </ng-container>
-
-                  <!-- CÓDIGO -->
-                  <span *ngSwitchCase="'codigo'" class="bold-text">
-                    {{ chave.codigo }}
-                  </span>
 
                   <!-- SALA / PISO -->
                   <ng-container *ngSwitchCase="'sala'">
-                    <ng-container *ngIf="chave.sala != null; else vazio">
-                      Sala {{ chave.sala }}
-                      <span class="sub-text">{{ chave.pisoLabel }}</span>
+                    <ng-container *ngIf="linha.item.sala != null; else vazio">
+                      Sala {{ linha.item.sala }}
+                      <span class="sub-text">{{ linha.item.pisoLabel }}</span>
                     </ng-container>
                   </ng-container>
 
                   <!-- ESTADO -->
-                  <span
-                    *ngSwitchCase="'estado'"
-                    class="badge"
-                    [ngClass]="chave.statusConfig.classe"
-                  >
-                    <i [ngClass]="chave.statusConfig.icone"></i>
-                    {{ chave.statusConfig.label }}
-                  </span>
-
-                  <!-- DESDE -->
-                  <ng-container *ngSwitchCase="'desde'">
-                    <ng-container *ngIf="chave.desde; else vazio">
-                      {{
-                        chave.desde
-                          | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
-                      }}
-                    </ng-container>
-                  </ng-container>
-
-                  <!-- COM QUEM -->
-                  <ng-container *ngSwitchCase="'nomeFuncionario'">
+                  <ng-container *ngSwitchCase="'estado'">
+                    <!-- `statusConfig` vem de um lookup: um status novo do
+                         backend dá undefined e dá problema aqui. -->
                     <span
-                      class="bold-text"
-                      *ngIf="chave.nomeFuncionario; else vazio"
+                      class="badge"
+                      *ngIf="linha.item.statusConfig as estado; else vazio"
+                      [ngClass]="estado.classe"
                     >
-                      {{ chave.nomeFuncionario }}
+                      <i [ngClass]="estado.icone"></i>
+                      {{ estado.label }}
                     </span>
                   </ng-container>
 
@@ -220,7 +195,7 @@
                       type="button"
                       title="Atualizar ou devolver"
                       [disabled]="salvando$ | async"
-                      (click)="abrirModalAtualizar(chave)"
+                      (click)="abrirModalAtualizar(linha.item)"
                     >
                       <i class="ft-edit-2"></i>
                     </button>
@@ -228,9 +203,9 @@
                     <button
                       class="portaria-btn portaria-btn--ghost"
                       type="button"
-                      title="Devolver em nome de {{ chave.nomeFuncionario }}"
+                      title="Devolver em nome de {{ linha.item.nomeFuncionario }}"
                       [disabled]="salvando$ | async"
-                      (click)="devolverRapido(chave)"
+                      (click)="devolverRapido(linha.item)"
                     >
                       <i class="ft-corner-down-left"></i>
                     </button>

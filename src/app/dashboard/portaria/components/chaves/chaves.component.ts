@@ -1,3 +1,4 @@
+import { DatePipe } from "@angular/common";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import {
   AbstractControl,
@@ -13,12 +14,14 @@ import {
 } from "../../services/api/chave.service";
 import {
   ChavesTabConfig,
-  COLUNA_TITULO,
   ColunaChave,
   EDIFICIO_OPCOES,
   PISOS_OPCOES,
 } from "../../models/enums";
 import { ChaveViewModel, GrupoChaves } from "../../models/api";
+import { FiltroTabela } from "src/app/shared/utils/filtro-tabela";
+import { LinhaTabela } from "src/app/shared/models/filtro-tabela";
+import { criarColunasChave } from "./chaves.colunas";
 
 // Mensagens de `required` por campo. O texto genérico serve de fallback.
 const MENSAGENS_OBRIGATORIO: Record<string, string> = {
@@ -50,28 +53,23 @@ export class ChavesComponent implements OnInit, OnDestroy {
   // (edifício, código, sala, desde) são só leitura e vêm daqui
   chaveEmEdicao: ChaveViewModel | null = null;
 
-  // Renderização condicional da tabela
-  titulos = COLUNA_TITULO;
-  colunas$ = this.service.colunas$;
-  linhas$ = this.service.linhas$;
+  // FILTROS POR COLUNA
+  // O template lê `filtro.colunas$` e `filtro.linhas$` diretamente.
+  readonly filtro = new FiltroTabela<ChaveViewModel, ColunaChave>(
+    criarColunasChave(this.datePipe),
+    this.service.colunas$,
+    this.service.linhas$,
+  );
 
   // Cobobox selects INVENTARIO
   edificios = EDIFICIO_OPCOES;
   pisos = PISOS_OPCOES;
-
-  // FILTROS POR COLUNA (só na tab EMPRESTADAS)
-  filtros$ = this.service.filtros$;
-  opcoesFiltro$ = this.service.opcoesFiltro$;
-  temFiltrosAtivos$ = this.service.temFiltrosAtivos$;
-  tiposFiltro = this.service.tiposFiltro;
 
   // FILTROS E TABS
   tabs = this.service.tabs;
   tabAtiva$ = this.service.tabAtiva$;
   totalEmprestadas$ = this.service.totalEmprestadas$;
 
-  chaves$ = this.service.chavesInventario$;
-  emprestadas$ = this.service.emprestadas$;
   carregando$ = this.service.estaCarregandoDados$; // Loader GET
   salvando$ = this.service.estaSalvando$; // Loader PUT/POST
 
@@ -87,6 +85,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
   constructor(
     private service: ChaveService,
     private fb: FormBuilder,
+    private datePipe: DatePipe,
   ) {}
 
   ngOnInit() {
@@ -122,20 +121,11 @@ export class ChavesComponent implements OnInit, OnDestroy {
 
   limparFiltrosBackend(): void {
     this.filtrosFormBackend.reset(FILTROS_VAZIOS_BACKEND);
-    this.service.limparFiltros();
-  }
-
-  // =========================================
-  // ============== FILTROS ==================
-  // Delegação fina ao service. A repetição rasa é aceitável — tentar
-  // eliminá-la com herança custaria mais do que resolve.
-
-  onFiltroColuna(mudanca: { coluna: string; valor: string }): void {
-    this.service.setFiltroColuna(mudanca.coluna as ColunaChave, mudanca.valor);
+    this.service.limparFiltrosBackend();
   }
 
   limparFiltros(): void {
-    this.service.limparFiltros();
+    this.filtro.limpar();
   }
 
   // Setas anterior/seguinte - recebe a página de destino (0-based)
@@ -301,8 +291,8 @@ export class ChavesComponent implements OnInit, OnDestroy {
     return "Valor inválido.";
   }
 
-  trackById(_: number, chave: { id: number }) {
-    return chave.id;
+  trackById(_: number, linha: LinhaTabela<ChaveViewModel>) {
+    return linha.item.id;
   }
 
   private validarCampos(form: FormGroup, nomes: string[]): boolean {
