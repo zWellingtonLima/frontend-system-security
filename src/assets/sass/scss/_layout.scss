@@ -24,6 +24,17 @@
   margin-bottom: 8px;
 }
 
+.filter-container {
+  margin-block: $m-lg;
+  gap: $m-xs;
+  align-items: baseline;
+
+  & label {
+    color: $portaria-color-text-muted;
+    font-size: 14px;
+  }
+}
+
 .page-header-actions {
   display: flex;
   gap: 1rem;
