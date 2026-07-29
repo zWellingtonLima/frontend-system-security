@@ -1,0 +1,75 @@
+// table-search.component.scss
+
+:host {
+  display: contents; // o :host não deve virar um elemento extra no DOM da tabela
+}
+
+th {
+  padding: 8px 6px;
+  font-weight: normal;
+  vertical-align: middle;
+  background-color: #fff;
+
+  input,
+  select {
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &::placeholder {
+      color: #98a2b3;
+    }
+
+    &:hover {
+      border-color: #98a2b3;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #1976d2;
+      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+    }
+  }
+
+  // input[type=date] — o ícone de calendário nativo já vem pronto,
+  // só ajusta o cursor e o espaçamento
+  input[type="date"] {
+    cursor: pointer;
+    color: #333;
+
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  // select — remove aparência nativa e aplica seta customizada
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23667085'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+
+    &:invalid,
+    option[value=""] {
+      color: #98a2b3;
+    }
+  }
+}

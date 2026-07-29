@@ -1,0 +1,32 @@
+<th *ngFor="let campo of campos" [ngSwitch]="campo.tipo || 'texto'">
+  <ng-container *ngIf="campo.campo">
+    <input
+      *ngSwitchCase="'texto'"
+      type="text"
+      [formControl]="form.get(campo.campo)"
+      [placeholder]="campo.placeholder || campo.label"
+    />
+
+    <input
+      *ngSwitchCase="'numero'"
+      type="number"
+      [formControl]="form.get(campo.campo)"
+      [placeholder]="campo.placeholder || campo.label"
+    />
+
+    <input
+      *ngSwitchCase="'data'"
+      type="datetime"
+      [formControl]="form.get(campo.campo)"
+    />
+
+    <select *ngSwitchCase="'select'" [formControl]="form.get(campo.campo)">
+      <option value="">{{ campo.placeholder || campo.label }}</option>
+      <option *ngFor="let opcao of campo.opcoes" [value]="opcao.valor">
+        {{ opcao.label }}
+      </option>
+    </select>
+  </ng-container>
+
+  <!-- se não tem campo (ex: "Ações"), fica vazio mas ocupa a célula -->
+</th>
