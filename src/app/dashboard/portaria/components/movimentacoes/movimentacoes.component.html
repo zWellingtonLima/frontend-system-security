@@ -43,6 +43,13 @@
             <th>Notas</th>
             <th>Ações</th>
           </tr>
+          <tr>
+            <app-table-search
+              [campos]="camposPesquisa"
+              (filtrosChange)="onFiltrosChange($event)"
+            >
+            </app-table-search>
+          </tr>
         </thead>
 
         <tbody>
@@ -54,7 +61,7 @@
           </tr>
 
           <!-- Estado: sem dados / erro -->
-          <tr *ngIf="!carregando && movimentacoes.length === 0">
+          <tr *ngIf="!carregando && dadosFiltrados.length === 0">
             <td colspan="6" class="tbl-status">
               <i class="ft-alert-circle"></i>
               Nenhum dado encontrado.
@@ -63,7 +70,7 @@
 
           <!-- Estado: com dados -->
           <ng-container *ngIf="!carregando">
-            <tr *ngFor="let item of movimentacoes">
+            <tr *ngFor="let item of dadosFiltrados">
               <td style="align-items: right">
                 <span class="bold-text">{{ item.nomeVisitante }}</span>
               </td>

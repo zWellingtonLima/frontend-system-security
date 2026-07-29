@@ -6,6 +6,7 @@ import {
 } from "../../models/movimentacoes.model";
 import { MovimentacoesService } from "../../services/api/movimentacoes.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { SearchFieldConfig } from "src/app/shared/components/table-search/table-search.component";
 
 @Component({
   selector: "app-movimentacoes",
@@ -18,27 +19,24 @@ export class MovimentacoesComponent implements OnInit {
     private fb: FormBuilder,
   ) {}
 
-  carregarAposAlteracao() {
-    this.carregarAtivas();
-  }
-
   ngOnInit() {
     this.carregarTipoVisitaCombo();
     this.iniciarFormulario();
     this.carregarAtivas();
+    this.montarCamposPesquisa();
   }
   movimentacoes: Movimentacoes[] = [];
   carregando: boolean = false;
 
   carregarAtivas() {
     this.movimentacoesService.carregarAtivas().subscribe((res) => {
-      this.movimentacoes = res;
+      this.dadosOriginais = res;
+      this.dadosFiltrados = res;
     });
   }
   carregarTipoVisitaCombo() {
     this.movimentacoesService.carregarTipoVisita().subscribe((res) => {
       this.tipoVisita = res;
-      console.log(res);
     });
   }
 
@@ -70,12 +68,12 @@ export class MovimentacoesComponent implements OnInit {
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();
-            this.carregarAposAlteracao();
-            this.mostrarToast("Visita registada com sucesso!");
+            this.carregarAtivas();
+            this.mostrarToast("Visita atualizada com sucesso!");
           },
           () => {
             this.alternarVisibilidadeModal();
-            this.mostrarToast("Erro ao registar a visita.");
+            this.mostrarToast("Erro ao atualizar a visita.");
           },
         );
     }
@@ -88,7 +86,7 @@ export class MovimentacoesComponent implements OnInit {
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();
-            this.carregarAposAlteracao();
+            this.carregarAtivas();
             this.mostrarToast("Visita registada com sucesso!");
           },
           () => {
@@ -107,7 +105,7 @@ export class MovimentacoesComponent implements OnInit {
   marcarSaidaRapido(item: Movimentacoes) {
     this.movimentacoesService.marcarSaidaRapida(item.id).subscribe(
       () => {
-        this.carregarAposAlteracao();
+        this.carregarAtivas();
         this.mostrarToast("Saída registada com sucesso!");
       },
       () => {
@@ -126,7 +124,6 @@ export class MovimentacoesComponent implements OnInit {
     this.modoEdicao = true;
     this.modalIsOpen = true;
     this.botaoEnvio = "Atualizar";
-    console.log(this.formularioRegistarVisita.value);
   }
 
   alternarVisibilidadeModal() {
@@ -149,5 +146,53 @@ export class MovimentacoesComponent implements OnInit {
     this.toastVisivel = true;
     clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
+  }
+
+  dadosOriginais: Movimentacoes[] = [];
+  dadosFiltrados: Movimentacoes[] = [];
+  camposPesquisa: SearchFieldConfig<Movimentacoes>[] = [];
+
+  filtrosAtuais: { [campo: string]: string } = {};
+
+  private montarCamposPesquisa(): void {
+    this.camposPesquisa = [
+      { campo: "nomeVisitante", label: "", tipo: "texto" },
+      { campo: "horaEntrada", label: "Data", tipo: "data" },
+      {
+        campo: "tipoVisita",
+        label: "Todos os tipos",
+        tipo: "select",
+        opcoes: this.tipoVisita
+          ? this.tipoVisita.map((element) => ({
+              valor: element.id.toString(),
+              label: element.tipo,
+            }))
+          : [],
+      },
+      { campo: "setorDestino", label: "", tipo: "texto" },
+      { campo: "funcionarioResponsavel", label: "", tipo: "texto" },
+      { campo: "notas", label: "", tipo: "texto" },
+    ];
+  }
+
+  onFiltrosChange(filtros: { [campo: string]: string }): void {
+    this.filtrosAtuais = filtros;
+    this.dadosFiltrados = this.filtrarLocal(this.dadosOriginais, filtros);
+  }
+
+  private filtrarLocal(
+    dados: Movimentacoes[],
+    filtros: { [campo: string]: string },
+  ): Movimentacoes[] {
+    if (!filtros || !Object.keys(filtros).length) {
+      return dados;
+    }
+    return dados.filter((item: any) =>
+      Object.keys(filtros).every((campo) =>
+        String(item[campo] || "")
+          .toLowerCase()
+          .includes(filtros[campo].toLowerCase()),
+      ),
+    );
   }
 }
