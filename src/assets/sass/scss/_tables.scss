@@ -51,7 +51,7 @@ $tbl-cell-padding-y: 10px;
   // de encolher ao conteúdo, e a coluna flexível deixa de receber o
   // espaço sobrante.
   th,
-  td {
+  tr {
     white-space: nowrap;
   }
 
@@ -66,6 +66,7 @@ $tbl-cell-padding-y: 10px;
 
 .tbl-col-flex {
   white-space: normal;
+  max-width: 48ch;
 }
 
 // Colunas de largura fixa (números, botões, ícones): não participam na

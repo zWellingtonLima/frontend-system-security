@@ -192,7 +192,12 @@
               {{ item.edificioName }}
             </td>
             <td class="tbl-col-flex" [title]="item.observacao">
-              <span class="obs-cell">{{ item.observacao || "_" }}</span>
+              <span class="obs-cell"
+                >{{
+                  item.observacao ? (item.observacao | slice: 0 : 100) : "_"
+                }}
+                {{ item.observacao.length > 100 ? "..." : "" }}</span
+              >
             </td>
             <td class="tbl-col-tight">
               <div class="tbl-acoes">

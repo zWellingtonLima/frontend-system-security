@@ -20,9 +20,6 @@ $danger-color: rgb(163, 0, 0);
 
 .obs-cell {
   display: -webkit-box;
-  max-width: 48ch;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
 }
