@@ -39,6 +39,61 @@
       </div>
     </div>
 
+    <ng-container *ngIf="tabAtiva.value === 'INVENTARIO'">
+      <!-- FILTROS -->
+      <div class="filter-container flex content-center" [formGroup]="filtrosFormBackend">
+        <div class="search-wrap flex content-center">
+          <i class="fas fa-search"></i>
+          <input
+            (keyup.enter)="aplicarFiltrosBackend()"
+            type="text"
+            class="search-input"
+            formControlName="textoBusca"
+            placeholder="Pesquisar por código da chave ou número da sala..."
+          />
+        </div>
+
+        <select
+          class="filter-select"
+          name="filter-select"
+          formControlName="idEdificio"
+        >
+          <option value="">Todos os edifícios</option>
+          <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
+            {{ edificio.label }}
+          </option>
+        </select>
+        <select
+          class="filter-select"
+          name="filter-select"
+          formControlName="piso"
+        >
+          <option value="">Todos os pisos</option>
+          <option *ngFor="let piso of pisos" [ngValue]="piso.id">
+            {{ piso.label }}
+          </option>
+        </select>
+
+        <!-- Os filtros só são aplicados aqui: até clicar, o form é só rascunho -->
+        <button
+          type="button"
+          class="portaria-btn portaria-btn--primary"
+          [disabled]="carregando$ | async"
+          (click)="aplicarFiltrosBackend()"
+        >
+          Procurar
+        </button>
+
+        <button
+          type="button"
+          class="portaria-btn portaria-btn--ghost"
+          (click)="limparFiltrosBackend()"
+        >
+          Limpar filtros
+        </button>
+      </div>
+    </ng-container>
+
     <!-- LISTAGEM DE CHAVES -->
     <ng-container *ngIf="carregando$ | async; else listaChaves">
       <!-- Estado: a carregar -->
@@ -140,7 +195,10 @@
                   <!-- DESDE -->
                   <ng-container *ngSwitchCase="'desde'">
                     <ng-container *ngIf="chave.desde; else vazio">
-                      {{ chave.desde | date: "dd/MM HH:mm" : "Europe/Lisbon" }}
+                      {{
+                        chave.desde
+                          | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
+                      }}
                     </ng-container>
                   </ng-container>
 

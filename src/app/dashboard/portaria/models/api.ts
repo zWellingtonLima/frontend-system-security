@@ -113,6 +113,12 @@ export interface ChavesEmprestimosFiltros {
   textoBusca: string;
 }
 
+export interface ChavesInventarioFiltros {
+  textoBusca: string;
+  idEdificio: number | ""; // "" = todos os edifícios
+  piso: string;
+}
+
 // ============================================================
 // OCORRÊNCIAS
 // ============================================================

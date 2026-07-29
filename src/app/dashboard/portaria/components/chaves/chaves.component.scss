@@ -15,6 +15,32 @@
   }
 }
 
+// Vazio por filtro: fica DENTRO da tabela para o cabeçalho e a linha de
+// filtros continuarem visíveis e o utilizador poder desfazer o filtro.
+.linha-sem-resultados {
+  td {
+    padding: $p-large;
+    text-align: center;
+    color: $portaria-color-text-muted;
+  }
+
+  i {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: $m-xs;
+  }
+
+  p {
+    margin: 0 0 $m-sm;
+    font-weight: 500;
+  }
+
+  // O hover genérico das linhas não faz sentido aqui: não é um registo
+  &:hover td {
+    background: transparent;
+  }
+}
+
 .filter-container {
   margin-block: $m-lg;
   gap: $m-xs;

@@ -167,6 +167,10 @@ export const PISO_LABEL: Record<string, string> = {
   "3": "Piso 3",
 };
 
+export const PISOS_OPCOES: { id: string; label: string }[] = Object.keys(
+  PISO_LABEL,
+).map((id) => ({ id: id, label: PISO_LABEL[Number(id)] }));
+
 // EMPRESTIMOS COLUNAS
 export type ColunaEmprestimoChave =
   | "edificio"

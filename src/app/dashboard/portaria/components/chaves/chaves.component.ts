@@ -7,8 +7,17 @@ import {
 } from "@angular/forms";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import { ChaveService } from "../../services/api/chave.service";
-import { ChavesTabConfig, COLUNA_TITULO, ColunaChave } from "../../models/enums";
+import {
+  ChaveService,
+  FILTROS_VAZIOS_BACKEND,
+} from "../../services/api/chave.service";
+import {
+  ChavesTabConfig,
+  COLUNA_TITULO,
+  ColunaChave,
+  EDIFICIO_OPCOES,
+  PISOS_OPCOES,
+} from "../../models/enums";
 import { ChaveViewModel, GrupoChaves } from "../../models/api";
 
 // Mensagens de `required` por campo. O texto genérico serve de fallback.
@@ -35,6 +44,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
   atualizarModalIsOpen: boolean = false;
   emprestarForm!: FormGroup;
   atualizarForm!: FormGroup;
+  filtrosFormBackend!: FormGroup;
 
   // Chave do empréstimo aberto no modal de atualização. Os dados do contexto como
   // (edifício, código, sala, desde) são só leitura e vêm daqui
@@ -44,6 +54,10 @@ export class ChavesComponent implements OnInit, OnDestroy {
   titulos = COLUNA_TITULO;
   colunas$ = this.service.colunas$;
   linhas$ = this.service.linhas$;
+
+  // Cobobox selects INVENTARIO
+  edificios = EDIFICIO_OPCOES;
+  pisos = PISOS_OPCOES;
 
   // FILTROS POR COLUNA (só na tab EMPRESTADAS)
   filtros$ = this.service.filtros$;
@@ -92,10 +106,23 @@ export class ChavesComponent implements OnInit, OnDestroy {
       // Quem devolve, que pode ser outra pessoa
       idDevolvidaPor: [null, [Validators.required]],
     });
+
+    // Filtros Backend
+    this.filtrosFormBackend = this.fb.group(FILTROS_VAZIOS_BACKEND);
   }
 
   onTabChange(tab: ChavesTabConfig): void {
     this.service.setTab(tab);
+  }
+
+  // Botão Procurar e Enter no campo de pesquisa
+  aplicarFiltrosBackend(): void {
+    this.service.aplicarFiltrosBackend(this.filtrosFormBackend.value);
+  }
+
+  limparFiltrosBackend(): void {
+    this.filtrosFormBackend.reset(FILTROS_VAZIOS_BACKEND);
+    this.service.limparFiltros();
   }
 
   // =========================================

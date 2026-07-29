@@ -131,7 +131,10 @@
                 <!-- DESDE -->
                 <ng-container *ngSwitchCase="'desde'">
                   <ng-container *ngIf="chave.desde; else vazio">
-                    {{ chave.desde | date: "dd/MM HH:mm" : "Europe/Lisbon" }}
+                    {{
+                      chave.desde
+                        | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
+                    }}
                   </ng-container>
                 </ng-container>
 
@@ -139,7 +142,10 @@
                 <ng-container *ngSwitchCase="'devolucao'">
                   <ng-container *ngIf="chave.devolucao; else vazio">
                     {{
-                      chave.devolucao | date: "dd/MM HH:mm" : "Europe/Lisbon"
+                      chave.devolucao
+                        | date
+                          : "d 'de' MMMM 'de' y 'às' HH:mm"
+                          : "Europe/Lisbon"
                     }}
                   </ng-container>
                 </ng-container>
