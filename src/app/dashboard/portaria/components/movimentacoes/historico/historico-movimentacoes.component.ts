@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { MovimentacoesService } from "../../../services/api/movimentacoes.service";
 import { Movimentacoes } from "../../../models/movimentacoes.model";
+import { TIPOS_LIST } from "../../../models/enums";
 
 @Component({
   selector: "app-historico-movimentacoes",
@@ -12,7 +13,9 @@ export class HistoricoMovimentacoesComponent implements OnInit {
 
   ngOnInit() {
     this.carregarVisitas();
+    console.log(this.tipoVisita);
   }
+  limparFiltros() {}
 
   carregarVisitas(): void {
     this.carregando = true;
@@ -25,7 +28,6 @@ export class HistoricoMovimentacoesComponent implements OnInit {
       })
       .subscribe(
         (res) => {
-          console.log(res.movimentacoes);
           this.listaMovimentacoes = res.movimentacoes;
           this.totalElements = res.totalElements;
           this.totalPages = res.totalPages;
@@ -37,15 +39,18 @@ export class HistoricoMovimentacoesComponent implements OnInit {
         },
       );
   }
-
+  aplicarFiltros() {}
   // ─────────────────────────────────────────────
   // LÓGICA DOS FILTROS DE PESQUISA
   // ─────────────────────────────────────────────
+  tipoVisita = TIPOS_LIST;
+
   dataInicio?: Date | null;
   dataFim?: Date | null;
   edificioId?: number;
 
   filtroInicio(dataInicio: Date) {
+    console.log(this.tipoVisita);
     this.currentPage = 1;
     this.dataInicio = dataInicio;
     this.carregarVisitas();

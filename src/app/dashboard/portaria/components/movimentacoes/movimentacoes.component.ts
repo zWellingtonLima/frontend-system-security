@@ -12,8 +12,9 @@ import { SearchFieldConfig } from "src/app/shared/components/table-search/table-
   selector: "app-movimentacoes",
   templateUrl: "./movimentacoes.component.html",
   styleUrls: ["./movimentacoes.component.scss"],
-})
+  })
 export class MovimentacoesComponent implements OnInit {
+  
   constructor(
     private movimentacoesService: MovimentacoesService,
     private fb: FormBuilder,
@@ -33,6 +34,7 @@ export class MovimentacoesComponent implements OnInit {
       this.dadosFiltrados = res;
     });
   }
+
   carregarTipoVisitaCombo() {
     this.movimentacoesService.carregarTipoVisita().subscribe((res) => {
       this.tipoVisita = res;

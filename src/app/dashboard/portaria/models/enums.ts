@@ -161,3 +161,15 @@ export const PISO_LABEL: Record<string, string> = {
   "2": "Piso 2",
   "3": "Piso 3",
 };
+
+export const TIPOS_ENUM: Record<number, string> = {
+  1: "MANUTENCAO",
+  2: "VISITANTE",
+  3: "SERVICO",
+  4: "ENTREGA",
+  5: "REUNIAO",
+};
+
+export const TIPOS_LIST: { id: number; tipo: string }[] = Object.keys(
+  TIPOS_ENUM,
+).map((id) => ({ id: Number(id), tipo: TIPOS_ENUM[Number(id)] }));

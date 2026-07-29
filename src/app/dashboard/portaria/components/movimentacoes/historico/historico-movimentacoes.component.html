@@ -15,13 +15,16 @@
   </div>
   <!-- BARRA DE PESQUISA TABELA-->
   <div class="barra-pesquisa-container">
-    <select
-      #barraEdificio
-      class="filter-select"
-      (change)="filtroEdificio(barraEdificio.value)"
-    >
-      <option value="">Todos os edificios</option>
-    </select>
+    <div class="search-wrap flex content-center">
+      <i class="fas fa-search"></i>
+      <input
+        (keyup.enter)="aplicarFiltros()"
+        type="text"
+        class="search-input"
+        placeholder="Pesquisar por código ou quem levou a chave..."
+      />
+    </div>
+
     <div>
       <span> de: </span>
       <input
@@ -38,6 +41,23 @@
         class="filter-select"
       />
     </div>
+    <select
+      #tipoVisita
+      class="filter-select"
+      (change)="filtroEdificio(tipoVisita.value)"
+    >
+      <option value="">Todos os tipos</option>
+      <option *ngFor="let item of tipoVisita" [ngValue]="item.id">
+        {{ item.tipo }}
+      </option>
+    </select>
+    <button
+      type="button"
+      class="portaria-btn portaria-btn--ghost"
+      (click)="limparFiltros()"
+    >
+      Limpar filtros
+    </button>
   </div>
 
   <div>

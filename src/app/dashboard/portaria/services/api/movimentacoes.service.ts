@@ -47,10 +47,10 @@ export class MovimentacoesService {
       params = params.set("tipo", filtro.tipo);
     }
     if (filtro.dataInicio) {
-      params = params.set("dataInicio", String(filtro.dataInicio));
+      params = params.set("inicio", String(filtro.dataInicio));
     }
     if (filtro.dataFim) {
-      params = params.set("dataFim", String(filtro.dataFim));
+      params = params.set("fim", String(filtro.dataFim));
     }
     return this.http.get<any>(this.apiUrl, { params }).pipe(
       map((res) => ({
