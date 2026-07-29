@@ -71,7 +71,7 @@
           <!-- Estado: com dados -->
           <ng-container *ngIf="!carregando">
             <tr *ngFor="let item of dadosFiltrados">
-              <td style="align-items: right">
+              <td>
                 <span class="bold-text">{{ item.nomeVisitante }}</span>
               </td>
               <td>
@@ -93,8 +93,8 @@
               <td>
                 <span class="data">{{ item.notas ? item.notas : "_" }}</span>
               </td>
-              <td>
-                <div class="acoes-chave">
+              <td class="tbl-col-tight">
+                <div class="tbl-acoes">
                   <!-- ATUALIZAR DADOS DA VISITA -->
                   <button
                     class="portaria-btn portaria-btn--secondary"
@@ -192,6 +192,7 @@
         <div class="form-group">
           <label for="observacao">Observação</label>
           <textarea
+            class="portaria-modal__textarea"
             id="observacao"
             formControlName="notas"
             placeholder="Notas sobre esta visita (opcional)..."
