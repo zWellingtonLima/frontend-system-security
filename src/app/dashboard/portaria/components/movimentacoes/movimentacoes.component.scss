@@ -1,6 +1,4 @@
-@import "src/app/dashboard/portaria/portaria.component.scss";
-
-@import "src/app/dashboard/portaria/components/consumos/scss/_consumos-modal.scss";
+@import "tokens";
 
 .page-header-row {
   margin-bottom: 25px;
@@ -23,11 +21,6 @@
 .page-header-actions {
   display: flex;
   gap: 1rem;
-}
-
-.filter-container {
-  margin-block: $m-lg;
-  gap: $m-xs;
 }
 
 .search-wrap {

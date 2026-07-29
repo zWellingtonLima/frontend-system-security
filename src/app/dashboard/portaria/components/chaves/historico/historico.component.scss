@@ -1,20 +1,5 @@
 @import "tokens";
 
-// A tabela (.tbl, .tbl-wrap, .tbl-col-flex), os filtros (.filter-select,
-// .search-wrap), a paginação (.paginacao) e os estados vazio/carregamento
-// vêm todos da camada global. Aqui ficam só os ajustes desta página.
-
-.filter-container {
-  margin-block: $m-lg;
-  gap: $m-xs;
-  align-items: baseline;
-
-  & label {
-    color: $portaria-color-text-muted;
-    font-size: 14px;
-  }
-}
-
 // Subtexto da célula Sala (ex: "Piso 1")
 .sub-text {
   display: block;
