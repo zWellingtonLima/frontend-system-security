@@ -5,14 +5,22 @@
       <p class="portaria-section-copy">Gestão e empréstimos de chaves</p>
     </div>
 
-    <button
-      type="button"
-      class="portaria-btn portaria-btn--primary"
-      (click)="abrirModalEmprestar()"
-    >
-      <i class="fas fa-plus"></i>
-      <span>Emprestar Chave</span>
-    </button>
+    <div class="page-header-actions">
+      <a
+        class="portaria-btn portaria-btn--ghost"
+        [routerLink]="['/chaves/historico']"
+        >Histórico Empréstimos</a
+      >
+
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary ml-auto"
+        (click)="abrirModalEmprestar()"
+      >
+        <i class="fas fa-plus"></i>
+        <span>Emprestar Chave</span>
+      </button>
+    </div>
   </div>
 
   <ng-container *ngIf="tabAtiva$ | async as tabAtiva">
@@ -31,43 +39,87 @@
       </div>
     </div>
 
-    <!-- FILTROS -->
-    <div class="filter-container flex">
-      <div class="search-wrap flex content-center">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          name="search-input"
-          class="search-input"
-          placeholder="Pesquisar por código, sala ou responsável..."
-        />
+    <ng-container *ngIf="tabAtiva.value === 'INVENTARIO'">
+      <!-- FILTROS -->
+      <div class="filter-container flex content-center" [formGroup]="filtrosFormBackend">
+        <div class="search-wrap flex content-center">
+          <i class="fas fa-search"></i>
+          <input
+            (keyup.enter)="aplicarFiltrosBackend()"
+            type="text"
+            class="search-input"
+            formControlName="textoBusca"
+            placeholder="Pesquisar por código da chave ou número da sala..."
+          />
+        </div>
+
+        <select
+          class="filter-select"
+          name="filter-select"
+          formControlName="idEdificio"
+        >
+          <option value="">Todos os edifícios</option>
+          <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
+            {{ edificio.label }}
+          </option>
+        </select>
+        <select
+          class="filter-select"
+          name="filter-select"
+          formControlName="piso"
+        >
+          <option value="">Todos os pisos</option>
+          <option *ngFor="let piso of pisos" [ngValue]="piso.id">
+            {{ piso.label }}
+          </option>
+        </select>
+
+        <!-- Os filtros só são aplicados aqui: até clicar, o form é só rascunho -->
+        <button
+          type="button"
+          class="portaria-btn portaria-btn--primary"
+          [disabled]="carregando$ | async"
+          (click)="aplicarFiltrosBackend()"
+        >
+          Procurar
+        </button>
+
+        <button
+          type="button"
+          class="portaria-btn portaria-btn--ghost"
+          (click)="limparFiltrosBackend()"
+        >
+          Limpar filtros
+        </button>
       </div>
-      <select class="filter-select" name="filter-select">
-        <option value="">Edifício</option>
-        <option value="1">Edifício A</option>
-        <option value="2">Edifício B</option>
-      </select>
-      <select class="filter-select" name="filter-select">
-        <option value="">Piso</option>
-        <option value="PRIMEIRO">Primeiro</option>
-        <option value="SEGUNDO">Segundo</option>
-        <option value="TERCEIRO">Terceiro</option>
-      </select>
-    </div>
+    </ng-container>
 
     <!-- LISTAGEM DE CHAVES -->
     <ng-container *ngIf="carregando$ | async; else listaChaves">
+      <!-- Estado: a carregar -->
       <div class="loading-state">
-        <img class="loader" src="assets/img/oval.svg" alt="" />
+        <div class="spinner-inline"></div>
         <p>Carregando chaves...</p>
       </div>
     </ng-container>
 
     <ng-template #listaChaves>
       <ng-container
-        *ngIf="{ colunas: colunas$ | async, linhas: linhas$ | async } as vm"
+        *ngIf="{
+          colunas: colunas$ | async,
+          linhas: linhas$ | async,
+          filtros: filtros$ | async,
+          opcoes: opcoesFiltro$ | async,
+          temFiltros: temFiltrosAtivos$ | async
+        } as vm"
       >
-        <div class="tbl-wrap" *ngIf="vm.linhas?.length > 0; else estadoVazio">
+        <!-- A tabela fica de pé sempre que houver filtros ativos, mesmo sem
+             linhas: se desaparecesse, o utilizador perdia a linha de filtros
+             e não teria como desfazer o que escreveu. -->
+        <div
+          class="tbl-wrap"
+          *ngIf="vm.linhas?.length > 0 || vm.temFiltros; else estadoVazio"
+        >
           <table class="tbl" [ngClass]="'tbl--' + tabAtiva.value.toLowerCase()">
             <thead>
               <tr>
@@ -75,9 +127,37 @@
                   {{ titulos[col] }}
                 </th>
               </tr>
+
+              <!-- Filtros client-side. Só em EMPRESTADAS: INVENTARIO é
+                   paginada no backend e aqui só veria a página atual. -->
+              <tr
+                appFiltrosColuna
+                *ngIf="tabAtiva.value === 'EMPRESTADAS'"
+                [colunas]="vm.colunas"
+                [valores]="vm.filtros"
+                [tipos]="tiposFiltro"
+                [opcoes]="vm.opcoes"
+                [titulos]="titulos"
+                (mudou)="onFiltroColuna($event)"
+              ></tr>
             </thead>
 
             <tbody>
+              <!-- Há dados, mas os filtros não deixaram passar nada -->
+              <tr *ngIf="vm.linhas?.length === 0" class="linha-sem-resultados">
+                <td [attr.colspan]="vm.colunas?.length">
+                  <i class="ft-search"></i>
+                  <p>Nenhuma chave corresponde aos filtros.</p>
+                  <button
+                    type="button"
+                    class="portaria-btn portaria-btn--ghost"
+                    (click)="limparFiltros()"
+                  >
+                    Limpar filtros
+                  </button>
+                </td>
+              </tr>
+
               <tr *ngFor="let chave of vm.linhas; trackBy: trackById">
                 <td
                   *ngFor="let col of vm.colunas"
@@ -115,7 +195,10 @@
                   <!-- DESDE -->
                   <ng-container *ngSwitchCase="'desde'">
                     <ng-container *ngIf="chave.desde; else vazio">
-                      {{ chave.desde | date: "dd/MM HH:mm" : "Europe/Lisbon" }}
+                      {{
+                        chave.desde
+                          | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
+                      }}
                     </ng-container>
                   </ng-container>
 
@@ -130,7 +213,7 @@
                   </ng-container>
 
                   <!-- AÇÕES -->
-                  <div *ngSwitchCase="'acoes'" class="acoes-chave">
+                  <div *ngSwitchCase="'acoes'" class="tbl-acoes">
                     <!-- Ação primária: permite corrigir dados e escolher quem devolve -->
                     <button
                       class="portaria-btn portaria-btn--secondary"
@@ -240,9 +323,11 @@
         </div>
       </ng-container>
 
+      <!-- O label vazio para evitar layout shifting -->
       <ng-template #aCarregarDisponiveis>
         <div class="form-row-port">
           <div class="form-group-port">
+            <label class="form-label-port">&nbsp;</label>
             <select class="filter-select" disabled>
               <option>A carregar chaves...</option>
             </select>

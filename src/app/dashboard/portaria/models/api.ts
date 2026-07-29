@@ -76,13 +76,13 @@ export interface GrupoChaves {
 // Regista um novo empréstimo
 export interface EmprestimoCriarDTO {
   idChave: number;
-  devolvidaPorIdRH: number;
+  idRH: number;
 }
 
 // Corrige um empréstimo já registrado (engano do segurança no ato do empréstimo)
 export interface EmprestimoUpdateDTO {
   idChave: number;
-  devolvidaPorIdRH: number;
+  idRH: number;
 }
 
 // Regista a devolução de um empréstimo em aberto
@@ -92,7 +92,7 @@ export interface DevolucaoRapidaDTO {
 
 export interface DevolucaoDTO {
   idChave: number;
-  devolvidaPorIdRH: number;
+  idRH: number;
 }
 
 export interface HistoricoEntregaChave {
@@ -104,6 +104,19 @@ export interface HistoricoEntregaChave {
   horaDevolucao: Date;
   devolvidaPor: string;
   observacoes: string;
+}
+
+export interface ChavesEmprestimosFiltros {
+  dataInicio: string; // yyyy-MM-dd
+  dataFim: string;
+  idEdificio: number | ""; // "" = todos os edifícios
+  textoBusca: string;
+}
+
+export interface ChavesInventarioFiltros {
+  textoBusca: string;
+  idEdificio: number | ""; // "" = todos os edifícios
+  piso: string;
 }
 
 // ============================================================
@@ -133,7 +146,7 @@ export interface OcorrenciasPage {
   totalElements: number; // total da query, não o total da página
 }
 
-export interface Filtros {
+export interface FiltrosOcorrencias {
   tipo: TipoOcorrenciaEnumType | "";
   search: string;
 }

@@ -8,6 +8,7 @@ import { PortariaShellComponent } from "./components/portaria-shell/portaria-she
 import { BaseModalComponent } from "./components/base-modal/base-modal.component";
 import { FuncionarioAutocompleteComponent } from "./components/funcionario-autocomplete/funcionario-autocomplete.component";
 import { TableSearchComponent } from "./components/table-search/table-search.component";
+import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-coluna.component";
 
 @NgModule({
   imports: [
@@ -22,6 +23,7 @@ import { TableSearchComponent } from "./components/table-search/table-search.com
     PortariaShellComponent,
     BaseModalComponent,
     FuncionarioAutocompleteComponent,
+    FiltrosColunaComponent,
     TableSearchComponent,
   ],
   exports: [
@@ -30,6 +32,7 @@ import { TableSearchComponent } from "./components/table-search/table-search.com
     BaseModalComponent,
     TableSearchComponent,
     FuncionarioAutocompleteComponent,
+    FiltrosColunaComponent,
   ],
 })
 export class SharedModule {}

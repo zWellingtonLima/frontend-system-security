@@ -4,6 +4,7 @@ import { ConsumosComponent } from "./components/consumos/consumos.component";
 import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { ChavesComponent } from "./components/chaves/chaves.component";
+import { EmprestimosHistoricoComponent } from "./components/chaves/historico/historico.component";
 import { MovimentacoesComponent } from "./components/movimentacoes/movimentacoes.component";
 import { HistoricoMovimentacoesComponent } from "./components/movimentacoes/historico/historico-movimentacoes.component";
 
@@ -29,6 +30,10 @@ const routes: Routes = [
     component: ChavesComponent,
   },
   {
+    path: "chaves/historico",
+    component: EmprestimosHistoricoComponent,
+  },
+  {
     path: "historico/movimentacoes",
     component: HistoricoMovimentacoesComponent,
   },
@@ -41,11 +46,6 @@ const routes: Routes = [
   {
     path: "**",
     redirectTo: "ocorrencias",
-  },
-  {
-    path: "chaves",
-    redirectTo: "/chaves",
-    pathMatch: "full",
   },
   {
     path: "movimentacoes",

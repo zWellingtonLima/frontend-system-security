@@ -1,4 +1,4 @@
-@import "src/app/dashboard/portaria/portaria.component.scss";
+@import "tokens";
 
 // Sem isto o host fica `inline` e o campo desalinha dos vizinhos.
 :host {
@@ -15,7 +15,7 @@
   & i {
     position: absolute;
     left: 12px;
-    top: 8px;
+    top: 15px;
     color: $portaria-color-text-muted-alt;
   }
 }
@@ -47,10 +47,7 @@
 .autocomplete__lista {
   position: fixed;
   z-index: 1100;
-
-  max-height: 240px;
   overflow-y: auto;
-
   border: 1px solid $portaria-color-border;
   border-radius: $portaria-radius-xs;
   background: #fff;

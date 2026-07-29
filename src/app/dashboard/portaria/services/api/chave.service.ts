@@ -1,3 +1,4 @@
+import { DatePipe } from "@angular/common";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
@@ -6,6 +7,7 @@ import {
   ChaveDisponivelDTO,
   ChaveOpcao,
   ChaveViewModel,
+  ChavesInventarioFiltros,
   ChavesPage,
   ChavesResponseDTO,
   DevolucaoDTO,
@@ -23,6 +25,21 @@ import {
   STATUS_CHAVE_CONFIG,
 } from "../../models/enums";
 import { environment } from "src/environments/environment";
+import { FiltroTabela } from "src/app/shared/utils/filtro-tabela";
+import {
+  EstadoFiltros,
+  OpcoesFiltro,
+} from "src/app/shared/models/filtro-tabela";
+
+// Formato da coluna "Desde". Tem de ser IDÊNTICO ao do template, senão o
+// utilizador filtra pelo que vê no ecrã e não encontra nada.
+const FORMATO_DESDE = "dd/MM HH:mm";
+
+export const FILTROS_VAZIOS_BACKEND: ChavesInventarioFiltros = {
+  idEdificio: "",
+  piso: "",
+  textoBusca: "",
+};
 
 // A ordem aqui define a ordem que aparece na tela, tanto das tabs quanto
 // das colunas de cada uma.
@@ -31,13 +48,27 @@ const TABS: ChavesTabConfig[] = [
     value: "EMPRESTADAS",
     label: "Emprestadas",
     paginada: false,
-    colunas: ["edificio", "codigo", "sala", "desde", "nomeFuncionario", "acoes"],
+    colunas: [
+      "edificio",
+      "codigo",
+      "sala",
+      "desde",
+      "nomeFuncionario",
+      "acoes",
+    ],
   },
   {
     value: "INVENTARIO",
     label: "Inventário",
     paginada: true,
-    colunas: ["edificio", "codigo", "sala", "estado", "desde", "nomeFuncionario"],
+    colunas: [
+      "edificio",
+      "codigo",
+      "sala",
+      "estado",
+      "desde",
+      "nomeFuncionario",
+    ],
   },
 ];
 
@@ -50,16 +81,38 @@ export class ChaveService {
   private emprestadas = new BehaviorSubject<ChaveViewModel[]>([]);
   readonly emprestadas$ = this.emprestadas.asObservable();
 
+  private filtrosBackend = new BehaviorSubject<ChavesInventarioFiltros>(
+    FILTROS_VAZIOS_BACKEND,
+  );
+
   // Inicia em [0] (EMPRESTADAS), a tab carregada primeiro
   private tabAtiva = new BehaviorSubject<ChavesTabConfig>(TABS[0]);
   readonly tabAtiva$ = this.tabAtiva.asObservable();
 
   tabs = TABS;
 
+  // FILTROS DA TABELA
+  // Só EMPRESTADAS filtra no frontend: tem todos os dados em memória.
+  // INVENTARIO é paginada no backend e filtrar aqui só veria a página atual,
+  // por isso fica de fora até ter filtros server-side.
+  // Atribuídos no construtor — o mapa depende do `datePipe` injetado.
+  private readonly filtro: FiltroTabela<ChaveViewModel, ColunaChave>;
+  readonly filtros$: Observable<EstadoFiltros>;
+  readonly emprestadasFiltradas$: Observable<ChaveViewModel[]>;
+  readonly opcoesFiltro$: Observable<OpcoesFiltro>;
+  readonly temFiltrosAtivos$: Observable<boolean>;
+  // Calculado uma vez a partir do mapa — evita duplicar num enum a informação
+  // de que `edificio` é dropdown e `codigo` é texto.
+  readonly tiposFiltro: Record<string, string>;
+
   // DEVOLVE OS DADOS PARA A VIEW DE ACORDO COM O ENDPOINT CHAMADO (EMPRESTADAS || TODAS)
+  // O `switchMap` só corre quando uma tab é emitida — depois do construtor —,
+  // por isso pode referir campos que ainda não existem nesta linha.
   readonly linhas$: Observable<ChaveViewModel[]> = this.tabAtiva$.pipe(
     switchMap((tab) =>
-      tab.value === "INVENTARIO" ? this.chavesInventario$ : this.emprestadas$,
+      tab.value === "INVENTARIO"
+        ? this.chavesInventario$
+        : this.emprestadasFiltradas$,
     ),
   );
 
@@ -110,7 +163,54 @@ export class ChaveService {
     })),
   );
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private datePipe: DatePipe,
+  ) {
+    // O mapa vive no service, não no componente: é lógica de dados.
+    // Cada extrator devolve o texto que a célula mostra no ecrã.
+    this.filtro = new FiltroTabela<ChaveViewModel, ColunaChave>({
+      edificio: { tipo: "select", extrair: (c) => c.edificioLabel },
+      codigo: { tipo: "texto", extrair: (c) => c.codigo },
+      sala: {
+        tipo: "texto",
+        extrair: (c) => (c.sala != null ? `Sala ${c.sala} ${c.pisoLabel}` : ""),
+      },
+      estado: {
+        tipo: "select",
+        // `statusConfig` vem de um lookup: um status novo do backend daria
+        // undefined e rebentava o filtro em todas as linhas.
+        extrair: (c) => (c.statusConfig ? c.statusConfig.label : ""),
+      },
+      desde: {
+        tipo: "texto",
+        extrair: (c) =>
+          this.datePipe.transform(c.desde, FORMATO_DESDE, "Europe/Lisbon") ||
+          "",
+      },
+      nomeFuncionario: {
+        tipo: "texto",
+        extrair: (c) => c.nomeFuncionario || "",
+      },
+      // Sem texto pesquisável — nunca exclui uma linha
+      acoes: null,
+    });
+
+    // As opções dos <select> derivam da lista SEM filtro
+    this.emprestadasFiltradas$ = this.filtro.aplicar(this.emprestadas$);
+    this.opcoesFiltro$ = this.filtro.opcoes(this.emprestadas$);
+    this.filtros$ = this.filtro.filtros$;
+    this.temFiltrosAtivos$ = this.filtro.temAtivos$;
+    this.tiposFiltro = this.filtro.tipos();
+  }
+
+  setFiltroColuna(coluna: ColunaChave, valor: string): void {
+    this.filtro.setFiltro(coluna, valor);
+  }
+
+  limparFiltros(): void {
+    this.filtro.limpar();
+  }
 
   inicializar(): void {
     this.tabAtiva.next(TABS[0]);
@@ -119,10 +219,14 @@ export class ChaveService {
   }
 
   setTab(tab: ChavesTabConfig): void {
+    // As colunas mudam entre tabs: um filtro em `estado` (só existe em
+    // INVENTARIO) ficaria pendurado e invisível ao voltar a EMPRESTADAS,
+    // escondendo linhas sem explicação.
+    this.filtro.limpar();
     this.tabAtiva.next(tab);
 
     if (tab.value === "INVENTARIO") {
-      this.carregarChavesInventario(tab);
+      this.carregarChavesInventario();
     } else {
       this.carregarEmprestadas();
     }
@@ -136,7 +240,7 @@ export class ChaveService {
     if (!dentroDoLimite || pagina === this.paginaAtual$.value) return;
 
     this.paginaAtual$.next(pagina);
-    this.carregarChavesInventario(this.tabAtiva.value);
+    this.carregarChavesInventario();
   }
 
   // Recarrega a tab atual — usado depois de um PUT/POST bem sucedido
@@ -144,17 +248,38 @@ export class ChaveService {
     this.carregarEmprestadas();
   }
 
+  // FILTROS BACKEND
+  aplicarFiltrosBackend(filtros: ChavesInventarioFiltros): void {
+    this.filtrosBackend.next({
+      ...filtros,
+      textoBusca: this.normalizarTexto(filtros.textoBusca),
+    });
+    this.paginaAtual$.next(0);
+    this.carregarChavesInventario();
+  }
+
+  limparFiltrosBackend(): void {
+    this.filtrosBackend.next(FILTROS_VAZIOS_BACKEND);
+    this.paginaAtual$.next(0);
+    this.carregarChavesInventario();
+  }
+
   // =============================================
   // ================= GET =======================
 
-  private carregarChavesInventario(tab: ChavesTabConfig): void {
+  private carregarChavesInventario(): void {
     this.estaCarregandoDados.next(true);
 
-    let parametros = new HttpParams();
-    if (tab.paginada)
-      parametros = parametros
-        .set("page", String(this.paginaAtual$.value))
-        .set("size", "20");
+    const filtros = this.filtrosBackend.value;
+    let parametros = new HttpParams()
+      .set("page", String(this.paginaAtual$.value))
+      .set("size", "20");
+
+    if (filtros.piso) parametros = parametros.set("piso", filtros.piso);
+    if (filtros.idEdificio !== "")
+      parametros = parametros.set("idEdificio", String(filtros.idEdificio));
+    if (filtros.textoBusca)
+      parametros = parametros.set("codigoChave", filtros.textoBusca);
 
     this.http
       .get<ChavesPage>(environment.chavesListagemApiUrl, {

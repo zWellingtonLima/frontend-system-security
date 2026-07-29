@@ -1,0 +1,96 @@
+@import "tokens";
+
+// ============================================================
+// TABELAS (.tbl)
+// ============================================================
+// Camada partilhada por todas as tabelas simples da aplicação.
+//
+// Estratégia de larguras: em vez de distribuir porcentagens coluna a
+// coluna, `table-layout: auto` + `nowrap` faz cada coluna encolher ao
+// seu conteúdo. Depois basta marcar UMA coluna com `.tbl-col-flex`
+// para ela absorver todo o espaço que sobra.
+
+// Folga lateral entre colunas.
+$tbl-cell-padding-x: 18px;
+$tbl-cell-padding-y: 10px;
+
+.tbl-wrap {
+  overflow-x: auto;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  // `auto` distribui o espaço sobrante por todas as colunas de forma
+  // proporcional ao conteúdo de cada uma. Com `fixed` seriam todas iguais.
+  table-layout: auto;
+
+  thead {
+    background: $portaria-color-bg-soft;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 500;
+    color: $portaria-color-text-muted-alt;
+    text-align: left;
+    padding: $tbl-cell-padding-y $tbl-cell-padding-x;
+    border-top: 1px solid $portaria-color-border-faint;
+    border-bottom: 1px solid $portaria-color-border-faint;
+  }
+
+  td {
+    font-size: 12px;
+    color: $portaria-color-text-table-cell;
+    padding: $tbl-cell-padding-y $tbl-cell-padding-x;
+    border-bottom: 1px solid $portaria-color-border-faint;
+    vertical-align: middle;
+  }
+
+  // Sem isto uma coluna estreita parte o texto em várias linhas em vez
+  // de encolher ao conteúdo, e a coluna flexível deixa de receber o
+  // espaço sobrante.
+  th,
+  tr {
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: $portaria-color-bg-soft;
+  }
+}
+
+.tbl-col-flex {
+  white-space: normal;
+  max-width: 48ch;
+}
+
+// Colunas de largura fixa (números, botões, ícones): não participam na
+// partilha do espaço sobrante.
+//
+// O `width: 1%` é a forma de dizer "esta coluna não quer espaço extra".
+// O browser não consegue encolher abaixo do conteúdo, por isso trata o
+// valor como "o mínimo possível" e entrega as sobras às outras colunas.
+.tbl-col-tight {
+  width: 1%;
+}
+
+// Colunas numéricas: alinhadas à direita e com dígitos de largura fixa,
+// para os valores ficarem alinhados na vertical. Números não beneficiam
+// de espaço extra, por isso são sempre `tight`.
+.tbl-col-num {
+  @extend .tbl-col-tight;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+// Wrapper dos botões de ação dentro de uma célula.
+.tbl-acoes {
+  display: flex;
+  align-items: center;
+  gap: $m-xs;
+}

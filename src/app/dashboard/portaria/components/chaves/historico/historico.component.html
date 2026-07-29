@@ -1,0 +1,201 @@
+<app-portaria-shell>
+  <div class="page-header-row">
+    <div>
+      <h1 class="portaria-section-title">Histórico de Empréstimos</h1>
+      <p class="portaria-section-copy">
+        Gestão do histórico dos empréstimos de chaves
+      </p>
+    </div>
+
+    <a class="portaria-btn portaria-btn--ghost" [routerLink]="['/chaves']"
+      >Voltar</a
+    >
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filter-container flex" [formGroup]="filtrosForm">
+    <div class="search-wrap flex content-center">
+      <i class="fas fa-search"></i>
+      <input
+        (keyup.enter)="aplicarFiltros()"
+        type="text"
+        class="search-input"
+        formControlName="textoBusca"
+        placeholder="Pesquisar por código ou quem levou a chave..."
+      />
+    </div>
+    <label for="data-inicio">Data início: </label>
+    <input
+      class="filter-select"
+      type="date"
+      formControlName="dataInicio"
+      id="data-inicio"
+    />
+
+    <label for="data-fim">Data fim: </label>
+    <input
+      class="filter-select"
+      type="date"
+      formControlName="dataFim"
+      id="data-fim"
+    />
+
+    <select
+      class="filter-select"
+      name="filter-select"
+      formControlName="idEdificio"
+    >
+      <option value="">Todos os edifícios</option>
+      <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
+        {{ edificio.label }}
+      </option>
+    </select>
+
+    <!-- Os filtros só são aplicados aqui: até clicar, o form é só rascunho -->
+    <button
+      type="button"
+      class="portaria-btn portaria-btn--primary"
+      [disabled]="carregando$ | async"
+      (click)="aplicarFiltros()"
+    >
+      Procurar
+    </button>
+
+    <button
+      type="button"
+      class="portaria-btn portaria-btn--ghost"
+      (click)="limparFiltros()"
+    >
+      Limpar filtros
+    </button>
+  </div>
+
+  <!-- LISTAGEM DE CHAVES -->
+  <ng-container *ngIf="carregando$ | async; else emprestimoHistorico">
+    <div class="loading-state">
+      <div class="spinner-inline"></div>
+      <p>A carregar histórico de empréstimos...</p>
+    </div>
+  </ng-container>
+
+  <ng-template #emprestimoHistorico>
+    <ng-container *ngIf="historico$ | async as linhas">
+      <div class="tbl-wrap" *ngIf="linhas.length > 0; else estadoVazio">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th
+                *ngFor="let col of colunas"
+                [class.tbl-col-flex]="col === 'nomeFuncionario'"
+              >
+                {{ titulos[col] }}
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let chave of linhas; trackBy: trackById">
+              <td
+                *ngFor="let col of colunas"
+                [class.tbl-col-flex]="col === 'nomeFuncionario'"
+                [ngSwitch]="col"
+              >
+                <!-- EDIFÍCIO -->
+                <ng-container *ngSwitchCase="'edificio'">
+                  {{ chave.edificioLabel }}
+                </ng-container>
+
+                <!-- CÓDIGO -->
+                <span *ngSwitchCase="'codigo'" class="bold-text">
+                  {{ chave.codigo }}
+                </span>
+
+                <!-- SALA / PISO -->
+                <ng-container *ngSwitchCase="'sala'">
+                  <ng-container *ngIf="chave.sala != null; else vazio">
+                    Sala {{ chave.sala }}
+                    <span class="sub-text">{{ chave.pisoLabel }}</span>
+                  </ng-container>
+                </ng-container>
+
+                <!-- RESPONSÁVEL -->
+                <ng-container *ngSwitchCase="'nomeFuncionario'">
+                  <span
+                    class="bold-text"
+                    *ngIf="chave.nomeFuncionario; else vazio"
+                  >
+                    {{ chave.nomeFuncionario }}
+                  </span>
+                </ng-container>
+
+                <!-- DESDE -->
+                <ng-container *ngSwitchCase="'desde'">
+                  <ng-container *ngIf="chave.desde; else vazio">
+                    {{
+                      chave.desde
+                        | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
+                    }}
+                  </ng-container>
+                </ng-container>
+
+                <!-- DEVOLUÇÃO -->
+                <ng-container *ngSwitchCase="'devolucao'">
+                  <ng-container *ngIf="chave.devolucao; else vazio">
+                    {{
+                      chave.devolucao
+                        | date
+                          : "d 'de' MMMM 'de' y 'às' HH:mm"
+                          : "Europe/Lisbon"
+                    }}
+                  </ng-container>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #estadoVazio>
+        <div class="empty-state">
+          <i class="ft-x-circle"></i>
+          <p>Nenhum empréstimo encontrado</p>
+        </div>
+      </ng-template>
+
+      <!-- PAGINAÇÃO -->
+      <ng-container *ngIf="paginacao$ | async as pag">
+        <div class="paginacao" *ngIf="pag.visivel">
+          <button
+            [disabled]="!pag.temAnterior"
+            (click)="onPageChange(pag.paginaAtual - 1)"
+          >
+            <i class="ft-arrow-left"></i>
+          </button>
+
+          <ng-container *ngFor="let p of pag.paginas">
+            <button
+              *ngIf="p !== '...'; else reticencia"
+              [class.active]="p === pag.paginaAtual + 1"
+              (click)="irParaPagina(p)"
+            >
+              {{ p }}
+            </button>
+            <ng-template #reticencia>
+              <span class="reticencia">…</span>
+            </ng-template>
+          </ng-container>
+
+          <button
+            [disabled]="!pag.temProximo"
+            (click)="onPageChange(pag.paginaAtual + 1)"
+          >
+            <i class="ft-arrow-right"></i>
+          </button>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-template>
+
+  <!-- Placeholder partilhado por todas as células -->
+  <ng-template #vazio><span class="empty-dash">—</span></ng-template>
+</app-portaria-shell>
