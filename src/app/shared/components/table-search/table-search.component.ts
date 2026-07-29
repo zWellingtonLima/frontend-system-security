@@ -2,12 +2,14 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 
 export type TipoInputPesquisa = "texto" | "numero" | "data" | "select";
@@ -25,20 +27,36 @@ export interface SearchFieldConfig<T = any> {
   templateUrl: "./table-search.component.html",
   styleUrls: ["./table-search.component.scss"],
 })
-export class TableSearchComponent<T = any> implements OnInit, OnDestroy {
-  @Input() campos: SearchFieldConfig[] = [];
+export class TableSearchComponent<T = any>
+  implements OnInit, OnChanges, OnDestroy
+{
+  @Input() campos: SearchFieldConfig<T>[] = [];
   @Input() debounceMs = 300;
+  @Output() filtrosChange = new EventEmitter<{ [K in keyof T]?: string }>();
 
-  // emite o objeto completo de filtros já "limpo"
-  @Output() filtrosChange = new EventEmitter<{ [campo: string]: string }>();
   form: FormGroup = new FormGroup({});
   private destroy$ = new Subject<void>();
+  private formSubscription: Subscription = new Subscription();
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    const group: { [key: string]: any } = {};
+    this.montarForm();
+  }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.campos && !changes.campos.firstChange) {
+      this.montarForm(); // reconstrói o form E a assinatura junto
+    }
+  }
+
+  private montarForm(): void {
+    // cancela a assinatura antiga antes de criar um form novo
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+
+    const group: { [key: string]: any } = {};
     this.campos
       .filter((c) => c.campo !== undefined)
       .forEach((c) => {
@@ -47,7 +65,7 @@ export class TableSearchComponent<T = any> implements OnInit, OnDestroy {
 
     this.form = this.fb.group(group);
 
-    this.form.valueChanges
+    this.formSubscription = this.form.valueChanges
       .pipe(
         debounceTime(this.debounceMs),
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
@@ -61,10 +79,6 @@ export class TableSearchComponent<T = any> implements OnInit, OnDestroy {
       });
   }
 
-  private valorInicial(config: SearchFieldConfig<T>): string {
-    // todos começam vazios, mas dá pra já preparar espaço pra defaults diferentes no futuro
-    return "";
-  }
   limpar(): void {
     this.form.reset();
   }

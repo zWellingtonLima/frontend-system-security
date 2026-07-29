@@ -23,7 +23,6 @@ export class MovimentacoesComponent implements OnInit {
     this.carregarTipoVisitaCombo();
     this.iniciarFormulario();
     this.carregarAtivas();
-    this.montarCamposPesquisa();
   }
   movimentacoes: Movimentacoes[] = [];
   carregando: boolean = false;
@@ -37,6 +36,7 @@ export class MovimentacoesComponent implements OnInit {
   carregarTipoVisitaCombo() {
     this.movimentacoesService.carregarTipoVisita().subscribe((res) => {
       this.tipoVisita = res;
+      this.montarCamposPesquisa();
     });
   }
 
@@ -136,18 +136,6 @@ export class MovimentacoesComponent implements OnInit {
     this.formularioRegistarVisita.reset();
   }
 
-  // ── Toast ──
-  toastVisivel = false;
-  toastMensagem = "";
-  private toastTimeout: any;
-
-  private mostrarToast(mensagem: string): void {
-    this.toastMensagem = mensagem;
-    this.toastVisivel = true;
-    clearTimeout(this.toastTimeout);
-    this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
-  }
-
   dadosOriginais: Movimentacoes[] = [];
   dadosFiltrados: Movimentacoes[] = [];
   camposPesquisa: SearchFieldConfig<Movimentacoes>[] = [];
@@ -155,6 +143,7 @@ export class MovimentacoesComponent implements OnInit {
   filtrosAtuais: { [campo: string]: string } = {};
 
   private montarCamposPesquisa(): void {
+    console.log(this.tipoVisita);
     this.camposPesquisa = [
       { campo: "nomeVisitante", label: "", tipo: "texto" },
       { campo: "horaEntrada", label: "Data", tipo: "data" },
@@ -164,7 +153,7 @@ export class MovimentacoesComponent implements OnInit {
         tipo: "select",
         opcoes: this.tipoVisita
           ? this.tipoVisita.map((element) => ({
-              valor: element.id.toString(),
+              valor: element.tipo,
               label: element.tipo,
             }))
           : [],
@@ -194,5 +183,17 @@ export class MovimentacoesComponent implements OnInit {
           .includes(filtros[campo].toLowerCase()),
       ),
     );
+  }
+
+  // ── Toast ──
+  toastVisivel = false;
+  toastMensagem = "";
+  private toastTimeout: any;
+
+  private mostrarToast(mensagem: string): void {
+    this.toastMensagem = mensagem;
+    this.toastVisivel = true;
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
   }
 }
