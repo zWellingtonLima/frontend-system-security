@@ -5,7 +5,12 @@ import {
   TiposVisitas,
 } from "../../models/movimentacoes.model";
 import { MovimentacoesService } from "../../services/api/movimentacoes.service";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
 import { SearchFieldConfig } from "src/app/shared/components/table-search/table-search.component";
 
 @Component({
@@ -57,9 +62,10 @@ export class MovimentacoesComponent implements OnInit {
     this.formularioRegistarVisita = this.fb.group({
       id: [null],
       nomeVisitante: ["", Validators.required],
-      setorDestino: ["", Validators.required],
+      setorDestino: ["", [Validators.required, Validators.maxLength(50)]],
       idTipoVisita: [null, Validators.required],
-      funcionarioResponsavel: [null],
+      idRHFuncionario: [null],
+      setorFuncionario: [{ value: "", disabled: true }],
       notas: ["", [Validators.maxLength(255)]],
     });
   }
@@ -87,6 +93,7 @@ export class MovimentacoesComponent implements OnInit {
 
   registarFormuluarioVisita() {
     if (this.formularioRegistarVisita.valid) {
+      console.log(this.formularioRegistarVisita.value);
       this.movimentacoesService
         .registoVisita(this.formularioRegistarVisita.value)
         .subscribe(
@@ -133,13 +140,13 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   alternarVisibilidadeModal() {
+    this.formularioRegistarVisita.reset();
     this.modalIsOpen = !this.modalIsOpen;
 
     if (this.modalIsOpen) {
       this.modoEdicao = false;
       this.botaoEnvio = "Registar";
     }
-    this.formularioRegistarVisita.reset();
   }
 
   dadosOriginais: Movimentacoes[] = [];
@@ -191,6 +198,12 @@ export class MovimentacoesComponent implements OnInit {
     );
   }
 
+  preencherSetor(funcionario: Event) {
+    console.log(funcionario.target);
+  }
+  onInput(funcionario: Event) {
+    console.log(funcionario.target);
+  }
   // ── Toast ──
   toastVisivel = false;
   toastMensagem = "";

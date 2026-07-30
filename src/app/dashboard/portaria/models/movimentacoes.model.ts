@@ -4,6 +4,8 @@ export interface Movimentacoes {
   horaEntrada: Date;
   horaSaida: Date;
   funcionarioResponsavel: string;
+  idRHFuncionario: number;
+  setorFuncionario: string;
   setorDestino: string;
   tipoVisita: string;
   idTipoVisita: number;
@@ -12,7 +14,7 @@ export interface Movimentacoes {
 
 export interface novaVisita {
   nomeVisitante: string;
-  idRHFuncionarioResponsavel: string;
+  idRHFuncionario: number;
   setorDestino: string;
   notas: string;
   idTipoVisita: number;
