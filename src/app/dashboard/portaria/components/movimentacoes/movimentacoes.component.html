@@ -163,16 +163,21 @@
         <div class="form-row">
           <div class="form-group">
             <label for="funcionarioResponsavel">Nome funcionário</label>
-            <input
-              id="funcionarioResponsavel"
-              type="text"
-              placeholder="Buscar funcionário"
-              formControlName="funcionarioResponsavel"
-            />
+            <app-funcionario-autocomplete
+              #funcionarioAuto
+              id="emprestar-pessoa"
+              formControlName="idRHFuncionario"
+              placeholder="Funcionário responsável..."
+            ></app-funcionario-autocomplete>
           </div>
           <div class="form-group">
             <label for="setorFuncionario"> Setor do funcionário </label>
-            <input id="setorFuncionario" type="text" disabled />
+            <input
+              id="setorFuncionario"
+              [value]="funcionarioAuto.setorFuncionario"
+              type="text"
+              formControlName="setorFuncionario"
+            />
           </div>
         </div>
 

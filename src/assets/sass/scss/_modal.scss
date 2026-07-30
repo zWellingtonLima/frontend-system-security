@@ -124,11 +124,81 @@
     resize: vertical;
   }
 
+  &__upload {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 18px;
+    border: 1px solid $portaria-color-border-soft;
+    border-radius: $portaria-radius-lg;
+    background: $portaria-color-bg-soft;
+  }
+
+  &__upload-copy {
+    flex: 1;
+    min-width: 240px;
+
+    strong,
+    span {
+      display: block;
+    }
+
+    strong {
+      margin-bottom: 4px;
+      color: $portaria-color-text-dark;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    span {
+      color: $portaria-color-text-muted-alt;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  &__feedback {
+    margin: 0;
+  }
+
   &__empty {
     padding: 18px;
     color: $portaria-color-text-muted-alt;
     font-size: 13px;
     line-height: 1.5;
+  }
+
+  // Bloco de decisão (ex.: confirmação após aprovação)
+  &__decisao {
+    display: flex;
+    align-items: right;
+    justify-content: right;
+    gap: 1rem;
+    margin: 10px 0;
+
+    &-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+
+      strong {
+        font-size: 0.9rem;
+        color: #065f46;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
+    }
+
+    &-acoes {
+      display: flex;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
   }
 }
 

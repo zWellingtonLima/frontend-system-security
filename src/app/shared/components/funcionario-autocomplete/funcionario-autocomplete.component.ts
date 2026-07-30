@@ -142,8 +142,9 @@ export class FuncionarioAutocompleteComponent
       }
     }
   }
-
+  setorFuncionario: string | null = "";
   selecionar(funcionario: Funcionario): void {
+    this.setorFuncionario = funcionario.uEstorg;
     this.valor = funcionario.idRH;
     this.texto = this.nomeDe(funcionario);
     this.onChange(funcionario.idRH);
