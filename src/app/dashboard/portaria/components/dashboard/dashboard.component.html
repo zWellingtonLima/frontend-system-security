@@ -34,7 +34,7 @@
 
       <div class="linha-lista" *ngFor="let item of chaves">
         <span class="coluna-principal">{{ item.codigo }}</span>
-        <span class="coluna-secundaria">{{ item.pessoa }}</span>
+        <span class="coluna-secundaria">{{ item.nomeFuncionario }}</span>
         <span class="badge" [ngClass]="'badge-' + statusLabel">
           {{ statusLabel }}
         </span>
