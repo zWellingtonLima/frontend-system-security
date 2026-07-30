@@ -15,7 +15,7 @@ import {
 })
 export class InventarioComponent implements OnInit {
   chaves$ = this.service.chaves$;
-  paginacao$ = this.service.paginacao$;
+  paginador = this.service.paginador;
   carregando$ = this.service.estaCarregando$;
 
   edificios = EDIFICIO_OPCOES;
@@ -40,17 +40,6 @@ export class InventarioComponent implements OnInit {
   limparFiltros(): void {
     this.filtrosForm.reset(FILTROS_VAZIOS_INVENTARIO);
     this.service.limparFiltros();
-  }
-
-  // Setas anterior/seguinte - recebe a página de destino (0-based)
-  onPageChange(pagina: number) {
-    this.service.setPagina(pagina);
-  }
-
-  // Botões numerados - converte a página exibida (1-based) para 0-based
-  irParaPagina(pagina: number | "...") {
-    if (typeof pagina !== "number") return;
-    this.service.setPagina(pagina - 1);
   }
 
   trackById(_: number, chave: ChaveViewModel) {

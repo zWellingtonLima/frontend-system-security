@@ -174,13 +174,13 @@
       <div class="devolver-block">
         <div class="form-group-port">
           <label for="atualizar-devolvida-por" class="form-label-port"
-            >Devolver chave</label
+            >Quem está a devolver a chave: </label
           >
           <app-funcionario-autocomplete
             id="atualizar-devolvida-por"
             formControlName="idDevolvidaPor"
             placeholder="Quem está a devolver a chave..."
-            [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
+          [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
           ></app-funcionario-autocomplete>
           <span
             class="form-error"
@@ -204,7 +204,6 @@
 
     <!-- CORREÇÃO DOS DADOS DO EMPRÉSTIMO — guardada pelo rodapé do modal -->
     <ng-container *ngIf="secaoAtiva === 'EDICAO'">
-      <p class="form-tipo-title">ATUALIZAR EMPRÉSTIMO</p>
 
       <div class="form-row-port">
         <div class="form-group-port">

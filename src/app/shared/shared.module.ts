@@ -9,6 +9,7 @@ import { BaseModalComponent } from "./components/base-modal/base-modal.component
 import { FuncionarioAutocompleteComponent } from "./components/funcionario-autocomplete/funcionario-autocomplete.component";
 import { TableSearchComponent } from "./components/table-search/table-search.component";
 import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-coluna.component";
+import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
 
 @NgModule({
   imports: [
@@ -25,6 +26,7 @@ import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-colu
     FuncionarioAutocompleteComponent,
     FiltrosColunaComponent,
     TableSearchComponent,
+    PaginacaoComponent,
   ],
   exports: [
     NavbarComponent,
@@ -33,6 +35,7 @@ import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-colu
     TableSearchComponent,
     FuncionarioAutocompleteComponent,
     FiltrosColunaComponent,
+    PaginacaoComponent,
   ],
 })
 export class SharedModule {}

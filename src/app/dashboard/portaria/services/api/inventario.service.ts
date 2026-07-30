@@ -1,14 +1,14 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { catchError, finalize, map } from "rxjs/operators";
+import { BehaviorSubject, of } from "rxjs";
+import { catchError, finalize } from "rxjs/operators";
 import {
   ChaveViewModel,
   ChavesInventarioFiltros,
   ChavesPage,
-  PaginacaoVM,
 } from "../../models/api";
 import { environment } from "src/environments/environment";
+import { Paginador } from "src/app/shared/utils/paginador";
 import { toViewModel } from "./chaves.mapper";
 
 export const FILTROS_VAZIOS_INVENTARIO: ChavesInventarioFiltros = {
@@ -17,7 +17,7 @@ export const FILTROS_VAZIOS_INVENTARIO: ChavesInventarioFiltros = {
   textoBusca: "",
 };
 
-const TAMANHO_PAGINA = "20";
+const TAMANHO_PAGINA = 20;
 
 @Injectable()
 export class InventarioService {
@@ -31,47 +31,22 @@ export class InventarioService {
   private estaCarregando = new BehaviorSubject<boolean>(false);
   readonly estaCarregando$ = this.estaCarregando.asObservable();
 
-  private paginaAtual = new BehaviorSubject<number>(0);
-  private totalPaginas = new BehaviorSubject<number>(0);
-
-  readonly paginacao$: Observable<PaginacaoVM> = combineLatest(
-    this.paginaAtual,
-    this.totalPaginas,
-  ).pipe(
-    map(([paginaAtual, totalPaginas]) => ({
-      paginaAtual,
-      totalPaginas,
-      paginas: this.calcularPaginasVisiveis(paginaAtual + 1, totalPaginas),
-      temAnterior: paginaAtual > 0,
-      temProximo: paginaAtual < totalPaginas - 1,
-      visivel: totalPaginas > 1,
-    })),
-  );
+  readonly paginador = new Paginador(() => this.carregar(), TAMANHO_PAGINA);
 
   constructor(private http: HttpClient) {}
-
-  setPagina(pagina: number): void {
-    const total = this.totalPaginas.value;
-    const dentroDoLimite = pagina >= 0 && pagina <= total - 1;
-
-    if (!dentroDoLimite || pagina === this.paginaAtual.value) return;
-
-    this.paginaAtual.next(pagina);
-    this.carregar();
-  }
 
   aplicarFiltros(filtros: ChavesInventarioFiltros): void {
     this.filtros.next({
       ...filtros,
       textoBusca: this.normalizarTexto(filtros.textoBusca),
     });
-    this.paginaAtual.next(0);
+    this.paginador.primeiraPagina();
     this.carregar();
   }
 
   limparFiltros(): void {
     this.filtros.next(FILTROS_VAZIOS_INVENTARIO);
-    this.paginaAtual.next(0);
+    this.paginador.primeiraPagina();
     this.carregar();
   }
 
@@ -93,7 +68,10 @@ export class InventarioService {
         if (resultado === null) return;
 
         this.chaves.next(resultado.content.map(toViewModel));
-        this.totalPaginas.next(resultado.totalPages);
+        this.paginador.definirTotal(
+          resultado.totalPages,
+          resultado.totalElements,
+        );
       });
   }
 
@@ -103,8 +81,8 @@ export class InventarioService {
     const filtros = this.filtros.value;
 
     let parametros = new HttpParams()
-      .set("page", String(this.paginaAtual.value))
-      .set("size", TAMANHO_PAGINA);
+      .set("page", String(this.paginador.pagina))
+      .set("size", String(this.paginador.tamanho));
 
     if (filtros.piso) parametros = parametros.set("piso", filtros.piso);
     if (filtros.idEdificio !== "")
@@ -119,26 +97,5 @@ export class InventarioService {
   // Remove múltiplos espaços entre palavras e limpa início/fim
   private normalizarTexto(texto: string): string {
     return texto.replace(/\s+/g, " ").trim();
-  }
-
-  private calcularPaginasVisiveis(
-    atual: number,
-    total: number,
-  ): (number | "...")[] {
-    if (total <= 1) return [];
-
-    const paginasRelevantes = Array.from(
-      new Set([1, atual - 1, atual, atual + 1, total]),
-    )
-      .filter((p) => p >= 1 && p <= total)
-      .sort((a, b) => a - b);
-
-    const resultado: (number | "...")[] = [];
-    paginasRelevantes.forEach((p, i) => {
-      if (i > 0 && p - paginasRelevantes[i - 1] > 1) resultado.push("...");
-      resultado.push(p);
-    });
-
-    return resultado;
   }
 }

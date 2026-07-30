@@ -16,7 +16,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 })
 export class EmprestimosHistoricoComponent implements OnInit {
   historico$ = this.service.chavesEmprestimoHistorico$;
-  paginacao$ = this.service.paginacao$;
+  paginador = this.service.paginador;
   carregando$ = this.service.estaCarregandoDados$;
 
   colunas = this.service.colunas;
@@ -44,17 +44,6 @@ export class EmprestimosHistoricoComponent implements OnInit {
   limparFiltros(): void {
     this.filtrosForm.reset(FILTROS_VAZIOS);
     this.service.limparFiltros();
-  }
-
-  // Setas anterior/seguinte - recebe a página de destino (0-based)
-  onPageChange(pagina: number) {
-    this.service.setPagina(pagina);
-  }
-
-  // Botões numerados - converte a página exibida (1-based) para 0-based
-  irParaPagina(pagina: number | "...") {
-    if (typeof pagina !== "number") return;
-    this.service.setPagina(pagina - 1);
   }
 
   trackById(_: number, chave: { id: number }) {
