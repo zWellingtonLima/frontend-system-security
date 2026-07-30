@@ -23,7 +23,7 @@ export function criarColunasChave(
     codigo: {
       titulo: "Chave / Código",
       filtro: "texto",
-      classe: "bold-text",
+      classe: "bold-text tbl-col-tight",
       texto: (chave) => chave.codigo,
     },
 
@@ -31,6 +31,7 @@ export function criarColunasChave(
     sala: {
       titulo: "Sala / Piso",
       filtro: "texto",
+      classe: "tbl-col-tight",
       personalizada: true,
       texto: (chave) =>
         chave.sala != null ? `Sala ${chave.sala} ${chave.pisoLabel}` : "",
@@ -49,6 +50,7 @@ export function criarColunasChave(
     desde: {
       titulo: "Desde",
       filtro: "texto",
+      classe: "tbl-col-tight",
       texto: (chave) =>
         datePipe.transform(chave.desde, FORMATO_DESDE, FUSO) || "",
     },
