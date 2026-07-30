@@ -1,113 +1,46 @@
-<!-- Estado: a carregar -->
-<ng-container *ngIf="carregando$ | async; else listaEmprestadas">
-  <div class="loading-state">
-    <div class="spinner-inline"></div>
-    <p>Carregando chaves...</p>
-  </div>
-</ng-container>
+<app-tabela-filtrada
+  [modelo]="modelo"
+  [carregando]="carregando$ | async"
+  [idDe]="idDaChave"
+  classeTabela="tbl--emprestadas"
+  textoCarregando="Carregando chaves..."
+  mensagemVazia="Não existem empréstimos no momento."
+>
+  <!-- SALA / PISO: o piso é um subtexto por baixo da sala -->
+  <ng-template appCelula="sala" let-chave>
+    <ng-container *ngIf="chave.sala != null; else semSala">
+      Sala {{ chave.sala }}
+      <span class="sub-text">{{ chave.pisoLabel }}</span>
+    </ng-container>
+    <ng-template #semSala><span class="empty-dash">—</span></ng-template>
+  </ng-template>
 
-<ng-template #listaEmprestadas>
-  <ng-container
-    *ngIf="{
-      colunas: filtro.colunas$ | async,
-      linhas: filtro.linhas$ | async,
-      temFiltros: filtro.temAtivos$ | async
-    } as vm"
-  >
-    <div
-      class="tbl-wrap"
-      *ngIf="vm.linhas?.length > 0 || vm.temFiltros; else estadoVazio"
-    >
-      <table class="tbl tbl--emprestadas">
-        <thead>
-          <tr>
-            <th *ngFor="let col of vm.colunas" [ngClass]="'col-' + col.chave">
-              {{ col.titulo }}
-            </th>
-          </tr>
-
-          <!-- Filtros client-side -->
-          <tr appFiltrosColuna [filtro]="filtro"></tr>
-        </thead>
-
-        <tbody>
-          <!-- Há dados, mas os filtros não deixaram passar nada -->
-          <tr *ngIf="vm.linhas?.length === 0" class="linha-sem-resultados">
-            <td [attr.colspan]="vm.colunas?.length">
-              <i class="ft-search"></i>
-              <p>Nenhuma chave corresponde aos filtros.</p>
-              <button
-                type="button"
-                class="portaria-btn portaria-btn--ghost"
-                (click)="limparFiltros()"
-              >
-                Limpar filtros
-              </button>
-            </td>
-          </tr>
-
-          <tr *ngFor="let linha of vm.linhas; trackBy: trackById">
-            <td
-              *ngFor="let col of vm.colunas"
-              [ngClass]="['col-' + col.chave, col.classe]"
-              [ngSwitch]="col.chave"
-            >
-              <!-- Colunas simples: o texto já vem calculado, o template exibe -->
-              <ng-container *ngIf="!col.personalizada">
-                <ng-container
-                  *ngIf="linha.celulas[col.chave] as texto; else vazio"
-                  >{{ texto }}</ng-container
-                >
-              </ng-container>
-
-              <!-- SALA / PISO -->
-              <ng-container *ngSwitchCase="'sala'">
-                <ng-container *ngIf="linha.item.sala != null; else vazio">
-                  Sala {{ linha.item.sala }}
-                  <span class="sub-text">{{ linha.item.pisoLabel }}</span>
-                </ng-container>
-              </ng-container>
-
-              <!-- AÇÕES -->
-              <div *ngSwitchCase="'acoes'" class="tbl-acoes">
-                <!-- Ação primária: corrigir dados ou escolher quem devolve -->
-                <button
-                  class="portaria-btn portaria-btn--secondary"
-                  type="button"
-                  title="Atualizar ou devolver"
-                  [disabled]="salvando$ | async"
-                  (click)="abrirModalAtualizar(linha.item)"
-                >
-                  <i class="ft-edit-2"></i>
-                </button>
-                <!-- Ação secundária: devolve em nome de quem levou -->
-                <button
-                  class="portaria-btn portaria-btn--ghost"
-                  type="button"
-                  title="Devolver em nome de {{ linha.item.nomeFuncionario }}"
-                  [disabled]="salvando$ | async"
-                  (click)="devolverRapido(linha.item)"
-                >
-                  <i class="ft-corner-down-left"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- AÇÕES -->
+  <ng-template appCelula="acoes" let-chave>
+    <div class="tbl-acoes">
+      <!-- Ação primária: corrigir dados ou escolher quem devolve -->
+      <button
+        class="portaria-btn portaria-btn--secondary"
+        type="button"
+        title="Atualizar ou devolver"
+        [disabled]="salvando$ | async"
+        (click)="abrirModalAtualizar(chave)"
+      >
+        <i class="ft-edit-2"></i>
+      </button>
+      <!-- Ação secundária: devolve em nome de quem levou -->
+      <button
+        class="portaria-btn portaria-btn--ghost"
+        type="button"
+        title="Devolver em nome de {{ chave.nomeFuncionario }}"
+        [disabled]="salvando$ | async"
+        (click)="devolverRapido(chave)"
+      >
+        <i class="ft-corner-down-left"></i>
+      </button>
     </div>
-
-    <ng-template #estadoVazio>
-      <div class="empty-state">
-        <i class="ft-x-circle"></i>
-        <p>Não existem empréstimos no momento.</p>
-      </div>
-    </ng-template>
-  </ng-container>
-</ng-template>
-
-<!-- Placeholder partilhado por todas as células -->
-<ng-template #vazio><span class="empty-dash">—</span></ng-template>
+  </ng-template>
+</app-tabela-filtrada>
 
 <!-- =================================================== -->
 <!-- MODAL ATUALIZAR / DEVOLVER CHAVE -->

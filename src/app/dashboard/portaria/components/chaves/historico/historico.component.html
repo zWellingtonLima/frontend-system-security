@@ -57,101 +57,21 @@
   </button>
 </div>
 
-<!-- LISTAGEM DE CHAVES -->
-<ng-container *ngIf="carregando$ | async; else emprestimoHistorico">
-  <div class="loading-state">
-    <div class="spinner-inline"></div>
-    <p>A carregar histórico de empréstimos...</p>
-  </div>
-</ng-container>
+<app-tabela-filtrada
+  [modelo]="modelo"
+  [carregando]="carregando$ | async"
+  [idDe]="idDaChave"
+  textoCarregando="A carregar histórico de empréstimos..."
+  mensagemVazia="Nenhum empréstimo encontrado"
+>
+  <!-- SALA / PISO: o piso é um subtexto por baixo da sala -->
+  <ng-template appCelula="sala" let-chave>
+    <ng-container *ngIf="chave.sala != null; else semSala">
+      Sala {{ chave.sala }}
+      <span class="sub-text">{{ chave.pisoLabel }}</span>
+    </ng-container>
+    <ng-template #semSala><span class="empty-dash">—</span></ng-template>
+  </ng-template>
 
-<ng-template #emprestimoHistorico>
-  <ng-container *ngIf="historico$ | async as linhas">
-    <div class="tbl-wrap" *ngIf="linhas.length > 0; else estadoVazio">
-      <table class="tbl">
-        <thead>
-          <tr>
-            <th
-              *ngFor="let col of colunas"
-              [class.tbl-col-flex]="col === 'nomeFuncionario'"
-            >
-              {{ titulos[col] }}
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let chave of linhas; trackBy: trackById">
-            <td
-              *ngFor="let col of colunas"
-              [class.tbl-col-flex]="col === 'nomeFuncionario'"
-              [ngSwitch]="col"
-            >
-              <!-- EDIFÍCIO -->
-              <ng-container *ngSwitchCase="'edificio'">
-                {{ chave.edificioLabel }}
-              </ng-container>
-
-              <!-- CÓDIGO -->
-              <span *ngSwitchCase="'codigo'" class="bold-text">
-                {{ chave.codigo }}
-              </span>
-
-              <!-- SALA / PISO -->
-              <ng-container *ngSwitchCase="'sala'">
-                <ng-container *ngIf="chave.sala != null; else vazio">
-                  Sala {{ chave.sala }}
-                  <span class="sub-text">{{ chave.pisoLabel }}</span>
-                </ng-container>
-              </ng-container>
-
-              <!-- RESPONSÁVEL -->
-              <ng-container *ngSwitchCase="'nomeFuncionario'">
-                <span
-                  class="bold-text"
-                  *ngIf="chave.nomeFuncionario; else vazio"
-                >
-                  {{ chave.nomeFuncionario }}
-                </span>
-              </ng-container>
-
-              <!-- DESDE -->
-              <ng-container *ngSwitchCase="'desde'">
-                <ng-container *ngIf="chave.desde; else vazio">
-                  {{
-                    chave.desde
-                      | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
-                  }}
-                </ng-container>
-              </ng-container>
-
-              <!-- DEVOLUÇÃO -->
-              <ng-container *ngSwitchCase="'devolucao'">
-                <ng-container *ngIf="chave.devolucao; else vazio">
-                  {{
-                    chave.devolucao
-                      | date
-                        : "d 'de' MMMM 'de' y 'às' HH:mm"
-                        : "Europe/Lisbon"
-                  }}
-                </ng-container>
-              </ng-container>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <ng-template #estadoVazio>
-      <div class="empty-state">
-        <i class="ft-x-circle"></i>
-        <p>Nenhum empréstimo encontrado</p>
-      </div>
-    </ng-template>
-
-    <app-paginacao [paginador]="paginador"></app-paginacao>
-  </ng-container>
-</ng-template>
-
-<!-- Placeholder partilhado por todas as células -->
-<ng-template #vazio><span class="empty-dash">—</span></ng-template>
+  <app-paginacao rodape [paginador]="paginador"></app-paginacao>
+</app-tabela-filtrada>

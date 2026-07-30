@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { MapaColunas } from "src/app/shared/models/filtro-tabela";
+import { MapaColunas } from "src/app/shared/models/modelo-tabela";
 import {
   Movimentacoes,
   MovimentacoesColunaChave,
@@ -30,14 +30,12 @@ export function criarColunasChave(
         datePipe.transform(chave.horaEntrada, FORMATO_DESDE, FUSO) || "",
     },
 
-    // Personalizada: o piso é um subtexto por baixo da sala
     tipo: {
       titulo: "Tipo visita",
       filtro: "texto",
       texto: (chave) => chave.tipoVisita,
     },
 
-    // Personalizada: badge com ícone e cor
     setor: {
       titulo: "Setor",
       filtro: "texto",
@@ -56,10 +54,8 @@ export function criarColunasChave(
       texto: (chave) => chave.notas || "",
     },
 
-    // Sem `filtro` — nunca exclui uma linha. Sem texto pesquisável.
     acoes: {
       titulo: "Ações",
-      personalizada: true,
       texto: () => "",
     },
   };

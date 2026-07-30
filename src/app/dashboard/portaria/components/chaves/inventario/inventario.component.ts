@@ -1,11 +1,19 @@
+import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
+import { of } from "rxjs";
+import { ModeloTabela } from "src/app/shared/utils/modelo-tabela";
 import { ChaveViewModel } from "../../../models/api";
 import { EDIFICIO_OPCOES, PISOS_OPCOES } from "../../../models/enums";
 import {
   FILTROS_VAZIOS_INVENTARIO,
   InventarioService,
 } from "../../../services/api/inventario.service";
+import {
+  ColunaInventario,
+  COLUNAS_INVENTARIO,
+  criarColunasInventario,
+} from "./inventario.colunas";
 
 @Component({
   selector: "app-inventario",
@@ -14,7 +22,12 @@ import {
   providers: [InventarioService],
 })
 export class InventarioComponent implements OnInit {
-  chaves$ = this.service.chaves$;
+  readonly modelo = new ModeloTabela<ChaveViewModel, ColunaInventario>(
+    criarColunasInventario(this.datePipe),
+    of(COLUNAS_INVENTARIO),
+    this.service.chaves$,
+  );
+
   paginador = this.service.paginador;
   carregando$ = this.service.estaCarregando$;
 
@@ -26,6 +39,7 @@ export class InventarioComponent implements OnInit {
   constructor(
     private service: InventarioService,
     private fb: FormBuilder,
+    private datePipe: DatePipe,
   ) {}
 
   ngOnInit() {
@@ -42,7 +56,7 @@ export class InventarioComponent implements OnInit {
     this.service.limparFiltros();
   }
 
-  trackById(_: number, chave: ChaveViewModel) {
+  idDaChave(chave: ChaveViewModel): number {
     return chave.id;
   }
 }

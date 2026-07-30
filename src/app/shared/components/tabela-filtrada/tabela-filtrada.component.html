@@ -1,0 +1,99 @@
+<ng-container *ngIf="carregando; else conteudo">
+  <div class="loading-state">
+    <div class="spinner-inline"></div>
+    <p>{{ textoCarregando }}</p>
+  </div>
+</ng-container>
+
+<ng-template #conteudo>
+  <ng-container
+    *ngIf="modelo && {
+      colunas: modelo.colunas$ | async,
+      linhas: modelo.linhas$ | async,
+      temFiltros: modelo.temAtivos$ | async
+    } as vm"
+  >
+    <!-- Com filtros ativos a tabela fica de pé mesmo sem linhas: é preciso
+         chegar aos campos para desfazer o filtro -->
+    <div
+      class="tbl-wrap"
+      *ngIf="vm.linhas?.length > 0 || vm.temFiltros; else estadoVazio"
+    >
+      <table class="tbl" [ngClass]="classeTabela">
+        <thead>
+          <tr>
+            <th
+              *ngFor="let col of vm.colunas; trackBy: trackByChave"
+              [ngClass]="'col-' + col.chave"
+            >
+              {{ col.titulo }}
+            </th>
+          </tr>
+
+          <!-- Só quando alguma coluna declara filtro -->
+          <tr
+            appFiltrosColuna
+            *ngIf="modelo.filtravel"
+            [modelo]="modelo"
+          ></tr>
+        </thead>
+
+        <tbody>
+          <!-- Há dados, mas os filtros não deixaram passar nada -->
+          <tr *ngIf="vm.linhas?.length === 0" class="linha-sem-resultados">
+            <td [attr.colspan]="vm.colunas?.length">
+              <i class="ft-search"></i>
+              <p>Nenhum registo corresponde aos filtros.</p>
+              <button
+                type="button"
+                class="portaria-btn portaria-btn--ghost"
+                (click)="limparFiltros()"
+              >
+                Limpar filtros
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngFor="let linha of vm.linhas; trackBy: trackByLinha">
+            <td
+              *ngFor="let col of vm.colunas; trackBy: trackByChave"
+              [ngClass]="['col-' + col.chave, col.classe]"
+            >
+              <!-- A página declarou um ng-template para esta coluna -->
+              <ng-container *ngIf="templateDe(col.chave) as celula; else texto">
+                <ng-container
+                  *ngTemplateOutlet="
+                    celula;
+                    context: { $implicit: linha.item, linha: linha }
+                  "
+                ></ng-container>
+              </ng-container>
+
+              <!-- Não declarou: mostra-se o texto que a coluna já calculou -->
+              <ng-template #texto>
+                <ng-container
+                  *ngIf="linha.celulas[col.chave] as conteudo; else vazio"
+                  >{{ conteudo }}</ng-container
+                >
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #estadoVazio>
+      <div class="empty-state">
+        <i class="ft-x-circle"></i>
+        <p>{{ mensagemVazia }}</p>
+      </div>
+    </ng-template>
+  </ng-container>
+</ng-template>
+
+<!-- Fora dos ramos acima de propósito: um <ng-content> dentro de um *ngIf
+     perde o conteúdo projetado quando o ramo é destruído -->
+<ng-content select="[rodape]"></ng-content>
+
+<!-- Placeholder partilhado por todas as células -->
+<ng-template #vazio><span class="empty-dash">—</span></ng-template>

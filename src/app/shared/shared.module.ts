@@ -10,6 +10,8 @@ import { FuncionarioAutocompleteComponent } from "./components/funcionario-autoc
 import { TableSearchComponent } from "./components/table-search/table-search.component";
 import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-coluna.component";
 import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
+import { TabelaFiltradaComponent } from "./components/tabela-filtrada/tabela-filtrada.component";
+import { CelulaTabelaDirective } from "./components/tabela-filtrada/celula-tabela.directive";
 
 @NgModule({
   imports: [
@@ -27,6 +29,8 @@ import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
     FiltrosColunaComponent,
     TableSearchComponent,
     PaginacaoComponent,
+    TabelaFiltradaComponent,
+    CelulaTabelaDirective,
   ],
   exports: [
     NavbarComponent,
@@ -36,6 +40,8 @@ import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
     FuncionarioAutocompleteComponent,
     FiltrosColunaComponent,
     PaginacaoComponent,
+    TabelaFiltradaComponent,
+    CelulaTabelaDirective,
   ],
 })
 export class SharedModule {}

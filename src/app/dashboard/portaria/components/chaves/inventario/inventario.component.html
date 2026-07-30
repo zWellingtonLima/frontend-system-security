@@ -44,84 +44,35 @@
   </button>
 </div>
 
-<!-- Estado: a carregar -->
-<ng-container *ngIf="carregando$ | async; else listaInventario">
-  <div class="loading-state">
-    <div class="spinner-inline"></div>
-    <p>Carregando chaves...</p>
-  </div>
-</ng-container>
+<app-tabela-filtrada
+  [modelo]="modelo"
+  [carregando]="carregando$ | async"
+  [idDe]="idDaChave"
+  classeTabela="tbl--inventario"
+  textoCarregando="Carregando chaves..."
+  mensagemVazia="Nenhuma chave encontrada."
+>
+  <!-- SALA / PISO: o piso é um subtexto por baixo da sala -->
+  <ng-template appCelula="sala" let-chave>
+    <ng-container *ngIf="chave.sala != null; else semSala">
+      Sala {{ chave.sala }}
+      <span class="sub-text">{{ chave.pisoLabel }}</span>
+    </ng-container>
+    <ng-template #semSala><span class="empty-dash">—</span></ng-template>
+  </ng-template>
 
-<ng-template #listaInventario>
-  <ng-container *ngIf="chaves$ | async as chaves">
-    <div class="tbl-wrap" *ngIf="chaves.length > 0; else estadoVazio">
-      <table class="tbl tbl--inventario">
-        <thead>
-          <tr>
-            <th class="col-edificio">Edifício</th>
-            <th class="col-codigo">Chave / Código</th>
-            <th class="col-sala">Sala / Piso</th>
-            <th class="col-estado">Estado</th>
-            <th class="col-desde">Desde</th>
-            <th class="col-nomeFuncionario">Com quem</th>
-          </tr>
-        </thead>
+  <!-- ESTADO: badge com ícone e cor -->
+  <ng-template appCelula="estado" let-chave>
+    <span
+      class="badge"
+      *ngIf="chave.statusConfig as estado; else semEstado"
+      [ngClass]="estado.classe"
+    >
+      <i [ngClass]="estado.icone"></i>
+      {{ estado.label }}
+    </span>
+    <ng-template #semEstado><span class="empty-dash">—</span></ng-template>
+  </ng-template>
 
-        <tbody>
-          <tr *ngFor="let chave of chaves; trackBy: trackById">
-            <td class="col-edificio">{{ chave.edificioLabel }}</td>
-
-            <td class="col-codigo bold-text">{{ chave.codigo }}</td>
-
-            <td class="col-sala">
-              <ng-container *ngIf="chave.sala != null; else vazio">
-                Sala {{ chave.sala }}
-                <span class="sub-text">{{ chave.pisoLabel }}</span>
-              </ng-container>
-            </td>
-
-            <td class="col-estado">
-              <!-- `statusConfig` vem de um lookup: um status novo do backend
-                   dá undefined e dá problema aqui. -->
-              <span
-                class="badge"
-                *ngIf="chave.statusConfig as estado; else vazio"
-                [ngClass]="estado.classe"
-              >
-                <i [ngClass]="estado.icone"></i>
-                {{ estado.label }}
-              </span>
-            </td>
-
-            <td class="col-desde">
-              <ng-container *ngIf="chave.desde; else vazio">
-                {{
-                  chave.desde
-                    | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
-                }}
-              </ng-container>
-            </td>
-
-            <td class="col-nomeFuncionario bold-text">
-              <ng-container *ngIf="chave.nomeFuncionario as nome; else vazio">
-                {{ nome }}
-              </ng-container>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <ng-template #estadoVazio>
-      <div class="empty-state">
-        <i class="ft-x-circle"></i>
-        <p>Nenhuma chave encontrada.</p>
-      </div>
-    </ng-template>
-
-    <app-paginacao [paginador]="paginador"></app-paginacao>
-  </ng-container>
-</ng-template>
-
-<!-- Placeholder partilhado por todas as células -->
-<ng-template #vazio><span class="empty-dash">—</span></ng-template>
+  <app-paginacao rodape [paginador]="paginador"></app-paginacao>
+</app-tabela-filtrada>

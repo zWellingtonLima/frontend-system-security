@@ -3,9 +3,8 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { of, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import { LinhaTabela } from "src/app/shared/models/filtro-tabela";
 import { ErrosForm } from "src/app/shared/utils/erros-form";
-import { FiltroTabela } from "src/app/shared/utils/filtro-tabela";
+import { ModeloTabela } from "src/app/shared/utils/modelo-tabela";
 import { ChaveViewModel } from "../../../models/api";
 import { EmprestimosService } from "../../../services/api/emprestimos.service";
 import {
@@ -36,7 +35,7 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private erros = new ErrosForm(MENSAGENS_OBRIGATORIO);
 
-  readonly filtro = new FiltroTabela<ChaveViewModel, ColunaEmprestada>(
+  readonly modelo = new ModeloTabela<ChaveViewModel, ColunaEmprestada>(
     criarColunasEmprestadas(this.datePipe),
     of(COLUNAS_EMPRESTADAS),
     this.service.emprestadas$,
@@ -75,12 +74,9 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
     });
   }
 
-  limparFiltros(): void {
-    this.filtro.limpar();
-  }
-
-  trackById(_: number, linha: LinhaTabela<ChaveViewModel>) {
-    return linha.item.id;
+  // A tabela usa isto no trackBy para não recriar as linhas todas
+  idDaChave(chave: ChaveViewModel): number {
+    return chave.id;
   }
 
   // =========================================

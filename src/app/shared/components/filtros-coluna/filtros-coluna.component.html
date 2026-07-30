@@ -1,10 +1,6 @@
-<!-- Sem <tr> aqui: o <tr> é o host (selector de atributo). Incluí-lo
-     aninharia uma linha dentro de outra e desmontava a tabela.
-
-     O ngIf protege o caso de o [filtro] não ter sido passado -->
-<ng-container *ngIf="filtro">
+<ng-container *ngIf="modelo">
   <th
-    *ngFor="let coluna of filtro.colunas$ | async; trackBy: trackByChave"
+    *ngFor="let coluna of modelo.colunas$ | async; trackBy: trackByChave"
     [ngClass]="'col-' + coluna.chave"
     [ngSwitch]="coluna.filtro"
     class="filtro-th"

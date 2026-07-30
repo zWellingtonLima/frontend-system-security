@@ -5,7 +5,6 @@ import {
   ChavesPage,
   ChaveViewModel,
 } from "../../models/api";
-import { COLUNAS_HISTORICO_EMPRESTIMO } from "../../models/enums";
 import { catchError, finalize } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
@@ -35,8 +34,6 @@ export class EmprestimosHistoricoService {
   private filtros = new BehaviorSubject<ChavesEmprestimosFiltros>(
     FILTROS_VAZIOS,
   );
-
-  readonly colunas = COLUNAS_HISTORICO_EMPRESTIMO;
 
   readonly paginador = new Paginador(() => this.carregar(), TAMANHO_PAGINA);
 
