@@ -203,7 +203,9 @@
                     <button
                       class="portaria-btn portaria-btn--ghost"
                       type="button"
-                      title="Devolver em nome de {{ linha.item.nomeFuncionario }}"
+                      title="Devolver em nome de {{
+                        linha.item.nomeFuncionario
+                      }}"
                       [disabled]="salvando$ | async"
                       (click)="devolverRapido(linha.item)"
                     >
@@ -368,141 +370,164 @@
     subtitulo="Corrigir os dados do empréstimo ou registar a devolução"
     (fechar)="fecharModalAtualizar()"
   >
-    <form
-      class="portaria-modal__body"
-      [formGroup]="atualizarForm"
-      *ngIf="chaveEmEdicao as chave"
-    >
-      <!-- CONTEXTO (só leitura — não faz parte do formulário) -->
-      <div class="chave-info">
-        <div class="form-row-port">
-          <div class="form-group-port">
-            <span class="label">Edifício</span>
-            <span class="valor">{{ chave.edificioLabel }}</span>
+    <ng-container *ngIf="modalTabAtiva | async as modalTabAtiva">
+      <form
+        class="portaria-modal__body"
+        [formGroup]="atualizarForm"
+        *ngIf="chaveEmEdicao as chave"
+      >
+        <!-- CONTEXTO (só leitura — não faz parte do formulário) -->
+        <div class="chave-info">
+          <div class="form-row-port">
+            <div class="form-group-port">
+              <span class="label">Edifício</span>
+              <span class="valor">{{ chave.edificioLabel }}</span>
+            </div>
+            <div class="form-group-port">
+              <span class="label">Código</span>
+              <span class="valor">{{ chave.codigo }}</span>
+            </div>
           </div>
-          <div class="form-group-port">
-            <span class="label">Código</span>
-            <span class="valor">{{ chave.codigo }}</span>
+          <div class="form-row-port">
+            <div class="form-group-port">
+              <span class="label">Sala / Piso</span>
+              <span class="valor" *ngIf="chave.sala != null; else semSalaCtx">
+                Sala {{ chave.sala }} · {{ chave.pisoLabel }}
+              </span>
+              <ng-template #semSalaCtx>
+                <span class="valor empty-dash">—</span>
+              </ng-template>
+            </div>
+            <div class="form-group-port">
+              <span class="label">Emprestada desde</span>
+              <span class="valor" *ngIf="chave.desde; else semDesdeCtx">
+                {{ chave.desde | date: "dd/MM/yyyy HH:mm" : "Europe/Lisbon" }}
+              </span>
+              <ng-template #semDesdeCtx>
+                <span class="valor empty-dash">—</span>
+              </ng-template>
+            </div>
           </div>
         </div>
-        <div class="form-row-port">
-          <div class="form-group-port">
-            <span class="label">Sala / Piso</span>
-            <span class="valor" *ngIf="chave.sala != null; else semSalaCtx">
-              Sala {{ chave.sala }} · {{ chave.pisoLabel }}
-            </span>
-            <ng-template #semSalaCtx>
-              <span class="valor empty-dash">—</span>
-            </ng-template>
-          </div>
-          <div class="form-group-port">
-            <span class="label">Emprestada desde</span>
-            <span class="valor" *ngIf="chave.desde; else semDesdeCtx">
-              {{ chave.desde | date: "dd/MM/yyyy HH:mm" : "Europe/Lisbon" }}
-            </span>
-            <ng-template #semDesdeCtx>
-              <span class="valor empty-dash">—</span>
-            </ng-template>
+
+        <!-- FILTRAGEM POR TABS -->
+        <div class="tabs">
+          <div
+            class="tab"
+            *ngFor="let tab of modalTabs"
+            [class.active]="modalTabAtiva.value === tab.value"
+            (click)="onModalTabChange(tab)"
+          >
+            {{ tab.value }}
           </div>
         </div>
-      </div>
 
-      <!-- CORREÇÃO DOS DADOS DO EMPRÉSTIMO -->
-      <p class="form-tipo-title">DADOS DO EMPRÉSTIMO</p>
-
-      <div class="form-row-port">
-        <div class="form-group-port">
-          <label for="atualizar-funcionario" class="form-label-port"
-            >Funcionário</label
-          >
-          <app-funcionario-autocomplete
-            id="atualizar-funcionario"
-            formControlName="idFuncionarioEmprestimo"
-            placeholder="Quem levou a chave..."
-            [temErro]="!!erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo')"
-          ></app-funcionario-autocomplete>
-          <span
-            class="form-error"
-            *ngIf="
-              erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro
-            "
-          >
-            {{ erro }}
-          </span>
-        </div>
-
-        <div class="form-group-port">
-          <label for="atualizar-chave" class="form-label-port"
-            >Chave selecionada</label
-          >
-          <!-- Disponíveis + a chave atual, agrupadas por edifício -->
-          <ng-container *ngIf="opcoesEdicao$ | async as grupos; else aCarregar">
-            <select
-              id="atualizar-chave"
-              class="filter-select"
-              formControlName="idChave"
-            >
-              <optgroup
-                *ngFor="let grupo of grupos"
-                [label]="grupo.edificioLabel"
+        <ng-container *ngIf="modalTabAtiva.value === 'DEVOLUCAO'">
+          <div class="devolver-block">
+            <div class="form-group-port">
+              <label for="atualizar-devolvida-por" class="form-label-port"
+                >Devolver chave</label
               >
-                <option *ngFor="let opcao of grupo.chaves" [ngValue]="opcao.id">
-                  {{ opcao.codigo
-                  }}<ng-container *ngIf="opcao.sala != null">
-                    — Sala {{ opcao.sala }}</ng-container
+              <app-funcionario-autocomplete
+                id="atualizar-devolvida-por"
+                formControlName="idDevolvidaPor"
+                placeholder="Quem está a devolver a chave..."
+                [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
+              ></app-funcionario-autocomplete>
+              <span
+                class="form-error"
+                *ngIf="erroDoCampo(atualizarForm, 'idDevolvidaPor') as erro"
+              >
+                {{ erro }}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="portaria-btn portaria-btn--primary btn-devolver"
+              [disabled]="salvando$ | async"
+              (click)="onDevolver()"
+            >
+              <i class="ft-corner-down-left"></i>
+              Devolver chave
+            </button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="modalTabAtiva.value === 'EDICAO'">
+          <p class="form-tipo-title">ATUALIZAR EMPRÉSTIMO</p>
+
+          <div class="form-row-port">
+            <div class="form-group-port">
+              <label for="atualizar-funcionario" class="form-label-port"
+                >Funcionário</label
+              >
+              <app-funcionario-autocomplete
+                id="atualizar-funcionario"
+                formControlName="idFuncionarioEmprestimo"
+                placeholder="Quem levou a chave..."
+                [temErro]="
+                  !!erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo')
+                "
+              ></app-funcionario-autocomplete>
+              <span
+                class="form-error"
+                *ngIf="
+                  erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro
+                "
+              >
+                {{ erro }}
+              </span>
+            </div>
+
+            <div class="form-group-port">
+              <label for="atualizar-chave" class="form-label-port"
+                >Chave selecionada</label
+              >
+              <!-- Disponíveis + a chave atual, agrupadas por edifício -->
+              <ng-container
+                *ngIf="opcoesEdicao$ | async as grupos; else aCarregar"
+              >
+                <select
+                  id="atualizar-chave"
+                  class="filter-select"
+                  formControlName="idChave"
+                >
+                  <optgroup
+                    *ngFor="let grupo of grupos"
+                    [label]="grupo.edificioLabel"
                   >
-                </option>
-              </optgroup>
-            </select>
-          </ng-container>
-          <ng-template #aCarregar>
-            <select class="filter-select" disabled>
-              <option>A carregar chaves...</option>
-            </select>
-          </ng-template>
-          <span
-            class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'idChave') as erro"
-          >
-            {{ erro }}
-          </span>
-        </div>
-      </div>
+                    <option
+                      *ngFor="let opcao of grupo.chaves"
+                      [ngValue]="opcao.id"
+                    >
+                      {{ opcao.codigo
+                      }}<ng-container *ngIf="opcao.sala != null">
+                        — Sala {{ opcao.sala }}</ng-container
+                      >
+                    </option>
+                  </optgroup>
+                </select>
+              </ng-container>
+              <ng-template #aCarregar>
+                <select class="filter-select" disabled>
+                  <option>A carregar chaves...</option>
+                </select>
+              </ng-template>
+              <span
+                class="form-error"
+                *ngIf="erroDoCampo(atualizarForm, 'idChave') as erro"
+              >
+                {{ erro }}
+              </span>
+            </div>
+          </div>
+        </ng-container>
+        <!-- CORREÇÃO DOS DADOS DO EMPRÉSTIMO -->
 
-      <!-- DEVOLUÇÃO — ação independente, com botão próprio -->
-      <p class="form-tipo-title">DEVOLUÇÃO</p>
-
-      <div class="devolver-block">
-        <div class="form-group-port">
-          <label for="atualizar-devolvida-por" class="form-label-port"
-            >Devolvida por</label
-          >
-          <app-funcionario-autocomplete
-            id="atualizar-devolvida-por"
-            formControlName="idDevolvidaPor"
-            placeholder="Quem está a devolver a chave..."
-            [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
-          ></app-funcionario-autocomplete>
-          <span
-            class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'idDevolvidaPor') as erro"
-          >
-            {{ erro }}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          class="portaria-btn portaria-btn--primary btn-devolver"
-          [disabled]="salvando$ | async"
-          (click)="onDevolver()"
-        >
-          <i class="ft-corner-down-left"></i>
-          Devolver chave
-        </button>
-      </div>
-    </form>
-
+        <!-- DEVOLUÇÃO — ação independente, com botão próprio -->
+      </form>
+    </ng-container>
     <ng-container slot="footer" *ngIf="{ salvando: salvando$ | async } as vm">
       <button
         type="button"

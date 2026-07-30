@@ -60,7 +60,22 @@ const TABS: ChavesTabConfig[] = [
       "nomeFuncionario",
     ],
   },
+  {
+    value: "HISTORICO",
+    label: "Histórico de Empréstimos",
+    paginada: true,
+    colunas: [
+      "edificio",
+      "codigo",
+      "sala",
+      "nomeFuncionario",
+      "desde",
+      "devolucao"
+    ],
+  },
 ];
+
+const modalTabs = [{ value: "DEVOLUCAO" }, { value: "EDICAO" }];
 
 @Injectable({
   providedIn: "root",
@@ -74,6 +89,15 @@ export class ChaveService {
   private filtrosBackend = new BehaviorSubject<ChavesInventarioFiltros>(
     FILTROS_VAZIOS_BACKEND,
   );
+
+  // TESTE
+  modalTabs = modalTabs;
+  private modalTabAtiva = new BehaviorSubject<any>(modalTabs[0]);
+  readonly modalTabAtiva$ = this.modalTabAtiva.asObservable();
+
+  onModalTabChange(value: string) {
+    this.modalTabAtiva.next(value);
+  }
 
   // Inicia em [0] (EMPRESTADAS), a tab carregada primeiro
   private tabAtiva = new BehaviorSubject<ChavesTabConfig>(TABS[0]);

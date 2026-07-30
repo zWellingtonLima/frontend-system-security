@@ -104,7 +104,7 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 // CHAVES
 // ============================================================
-export type TabsChave = "EMPRESTADAS" | "INVENTARIO";
+export type TabsChave = "EMPRESTADAS" | "INVENTARIO" | "HISTORICO";
 
 // Quais são todas as colunas que existem nessa página
 export type ColunaChave =
@@ -113,6 +113,7 @@ export type ColunaChave =
   | "sala"
   | "estado"
   | "desde"
+  | "devolucao"
   | "nomeFuncionario"
   | "acoes";
 

@@ -65,6 +65,14 @@ export class ChavesComponent implements OnInit, OnDestroy {
   edificios = EDIFICIO_OPCOES;
   pisos = PISOS_OPCOES;
 
+  // TESTE
+  modalTabs = this.service.modalTabs;
+  modalTabAtiva = this.service.modalTabAtiva$;
+
+  onModalTabChange(valor: string) {
+    this.service.onModalTabChange(valor)
+  }
+
   // FILTROS E TABS
   tabs = this.service.tabs;
   tabAtiva$ = this.service.tabAtiva$;
