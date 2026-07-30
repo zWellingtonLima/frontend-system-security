@@ -36,9 +36,9 @@
         <thead>
           <tr>
             <th>Pessoa</th>
-            <th>Entrada</th>
+            <th class="tbl-col-tight">Entrada</th>
             <th>Tipo</th>
-            <th>Setor / Destino</th>
+            <th class="tbl-col-tight">Setor / Destino</th>
             <th>Responsável</th>
             <th>Notas</th>
             <th>Ações</th>
@@ -134,7 +134,7 @@
       "
       (fechar)="alternarVisibilidadeModal()"
     >
-      <form [formGroup]="formularioRegistarVisita" class="form-leitura">
+      <form [formGroup]="formularioRegistarVisita" class="portaria-modal__body">
         <div class="form-group">
           <label for="nomeVisitante">
             Nome visitante <span class="required">*</span>
@@ -151,7 +151,11 @@
           <label for="idTipoVisita">
             Tipo de visita <span class="required">*</span>
           </label>
-          <select id="idTipoVisita" formControlName="idTipoVisita">
+          <select
+            id="idTipoVisita"
+            formControlName="idTipoVisita"
+            class="filter-select"
+          >
             <option [ngValue]="null" disabled>Selecione um tipo</option>
             <option *ngFor="let tipo of tipoVisita" [ngValue]="tipo.id">
               {{ tipo.tipo }}
@@ -160,9 +164,10 @@
         </div>
 
         <!-- ── Destino ── -->
+
         <div class="form-row">
           <div class="form-group">
-            <label for="funcionarioResponsavel">Nome funcionário</label>
+            <label for="emprestar-pessoa">Nome funcionário</label>
             <app-funcionario-autocomplete
               #funcionarioAuto
               id="emprestar-pessoa"
@@ -171,8 +176,9 @@
             ></app-funcionario-autocomplete>
           </div>
           <div class="form-group">
-            <label for="setorFuncionario"> Setor do funcionário </label>
+            <label for="setorFuncionario">Setor do funcionário</label>
             <input
+              class="search-input"
               id="setorFuncionario"
               [value]="funcionarioAuto.setorFuncionario"
               type="text"
@@ -192,7 +198,6 @@
         </div>
 
         <!-- ── Observação ── -->
-        <p class="form-section-titulo">Observação</p>
 
         <div class="form-group">
           <label for="observacao">Observação</label>
