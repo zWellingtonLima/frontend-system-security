@@ -39,3 +39,24 @@ export interface PageResponse<Movimentacoes> {
   page: number;
   size: number;
 }
+
+// TABELA
+
+export type MovimentacoesColunaChave =
+  | "pessoa"
+  | "entrada"
+  | "tipo"
+  | "setor"
+  | "responsavel"
+  | "notas"
+  | "acoes";
+
+export const movColunas: MovimentacoesColunaChave[] = [
+  "pessoa",
+  "entrada",
+  "tipo",
+  "setor",
+  "responsavel",
+  "notas",
+  "acoes",
+];

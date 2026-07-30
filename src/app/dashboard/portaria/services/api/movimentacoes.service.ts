@@ -38,6 +38,17 @@ export class MovimentacoesService {
     return this.http.patch(`${this.apiUrl}/${id}`, body);
   }
 
+  // linhasMovimentacoes$ = new BehaviorSubject<Movimentacoes[]>([]);
+  // colunasMovimentacoes$ = new BehaviorSubject<MovimentacoesColunaChave[]>(
+  //   movColunas,
+  // );
+
+  // carregarAtivas() {
+  //   this.http
+  //     .get<Movimentacoes[]>(`${environment.movimentacoesApiUrl}/ativas`)
+  //     .subscribe((resultado) => this.linhasMovimentacoes$.next(resultado));
+  // }
+
   listar(filtro: movimentacoesFiltro): Observable<PageResponse<Movimentacoes>> {
     let params = new HttpParams()
       .set("page", String(filtro.page))

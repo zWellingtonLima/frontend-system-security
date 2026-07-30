@@ -12,21 +12,25 @@ import { SearchFieldConfig } from "src/app/shared/components/table-search/table-
   selector: "app-movimentacoes",
   templateUrl: "./movimentacoes.component.html",
   styleUrls: ["./movimentacoes.component.scss"],
-  })
+})
 export class MovimentacoesComponent implements OnInit {
-  
   constructor(
     private movimentacoesService: MovimentacoesService,
     private fb: FormBuilder,
   ) {}
 
   ngOnInit() {
+    // this.movimentacoesService.carregarAtivas() // movimentacoes tabela
     this.carregarTipoVisitaCombo();
     this.iniciarFormulario();
     this.carregarAtivas();
   }
   movimentacoes: Movimentacoes[] = [];
   carregando: boolean = false;
+
+  // limparFiltros(): void { // filtro mov
+  //   this.filtro.limpar();
+  // }
 
   carregarAtivas() {
     this.movimentacoesService.carregarAtivas().subscribe((res) => {
