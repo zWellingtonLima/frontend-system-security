@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { MapaColunas } from "src/app/shared/models/filtro-tabela";
+import { MapaColunas } from "src/app/shared/models/modelo-tabela";
 import { ChaveViewModel } from "../../../models/api";
 
 // Formato único da coluna "Desde": é o que se mostra E o que se filtra.
@@ -44,11 +44,10 @@ export function criarColunasEmprestadas(
       texto: (chave) => chave.codigo,
     },
 
-    // Personalizada: o piso é um subtexto por baixo da sala
+    // Desenhada pela página: o piso é um subtexto por baixo da sala
     sala: {
       titulo: "Sala / Piso",
       filtro: "texto",
-      personalizada: true,
       texto: (chave) =>
         chave.sala != null ? `Sala ${chave.sala} ${chave.pisoLabel}` : "",
     },
@@ -70,7 +69,6 @@ export function criarColunasEmprestadas(
     // Sem `filtro` — nunca exclui uma linha. Sem texto pesquisável.
     acoes: {
       titulo: "Ações",
-      personalizada: true,
       texto: () => "",
     },
   };
