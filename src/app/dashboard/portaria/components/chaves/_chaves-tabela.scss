@@ -1,0 +1,65 @@
+@import "tokens";
+
+/* Subtextos (ex: o piso por baixo da sala) */
+.sub-text {
+  display: block;
+  font-size: 12px;
+  color: $portaria-color-text-muted;
+}
+
+.bold-text {
+  font-weight: 700;
+  color: $portaria-color-text-dark;
+}
+
+.empty-dash {
+  color: $portaria-color-text-muted-alt;
+}
+
+// Vazio por filtro: fica DENTRO da tabela para o cabeçalho e a linha de
+// filtros continuarem visíveis e o utilizador poder desfazer o filtro.
+.linha-sem-resultados {
+  td {
+    padding: $p-large;
+    text-align: center;
+    color: $portaria-color-text-muted;
+  }
+
+  i {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: $m-xs;
+  }
+
+  p {
+    margin: 0 0 $m-sm;
+    font-weight: 500;
+  }
+
+  &:hover td {
+    background: transparent;
+  }
+}
+
+/* Badges / Etiquetas de Estado */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Estilo Estado: Disponível */
+.badge-disponivel {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+/* Estilo Estado: Emprestada */
+.badge-emprestada {
+  background-color: #fef3c7;
+  color: #92400e;
+}

@@ -104,23 +104,6 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 // CHAVES
 // ============================================================
-export type TabsChave = "EMPRESTADAS" | "INVENTARIO" | "HISTORICO";
-
-// Quais são todas as colunas que existem nessa página
-export type ColunaChave =
-  | "edificio"
-  | "codigo"
-  | "sala"
-  | "estado"
-  | "desde"
-  | "devolucao"
-  | "nomeFuncionario"
-  | "acoes";
-
-// Cada tab decide quais colunas mostra e em que ordem
-export type ChavesTabConfig = TabConfig<TabsChave> & {
-  colunas: ColunaChave[];
-};
 
 export type StatusChaveEnumType = "EMPRESTADA" | "DISPONIVEL";
 

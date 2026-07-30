@@ -1,18 +1,35 @@
 import { DatePipe } from "@angular/common";
 import { MapaColunas } from "src/app/shared/models/filtro-tabela";
-import { ChaveViewModel } from "../../models/api";
-import { ColunaChave } from "../../models/enums";
+import { ChaveViewModel } from "../../../models/api";
 
 // Formato único da coluna "Desde": é o que se mostra E o que se filtra.
 const FORMATO_DESDE = "d 'de' MMMM 'às' HH:mm";
 const FUSO = "Europe/Lisbon";
 
-// As colunas da tabela de chaves: título, texto da célula e como (ou se) a
-// coluna é filtrável. Acrescentar uma coluna simples é acrescentar uma
-// entrada aqui — o template não muda.
-export function criarColunasChave(
+export type ColunaEmprestada =
+  | "edificio"
+  | "codigo"
+  | "sala"
+  | "desde"
+  | "nomeFuncionario"
+  | "acoes";
+
+// A ordem aqui é a ordem em que as colunas aparecem na tabela.
+export const COLUNAS_EMPRESTADAS: ColunaEmprestada[] = [
+  "edificio",
+  "codigo",
+  "sala",
+  "desde",
+  "nomeFuncionario",
+  "acoes",
+];
+
+// As colunas da tabela de chaves emprestadas: título, texto da célula e como
+// (ou se) a coluna é filtrável. Acrescentar uma coluna simples é acrescentar
+// uma entrada aqui e o nome à lista acima — o template não muda.
+export function criarColunasEmprestadas(
   datePipe: DatePipe,
-): MapaColunas<ChaveViewModel, ColunaChave> {
+): MapaColunas<ChaveViewModel, ColunaEmprestada> {
   return {
     edificio: {
       titulo: "Edifício",
@@ -23,7 +40,7 @@ export function criarColunasChave(
     codigo: {
       titulo: "Chave / Código",
       filtro: "texto",
-      classe: "bold-text tbl-col-tight",
+      classe: "bold-text",
       texto: (chave) => chave.codigo,
     },
 
@@ -31,27 +48,14 @@ export function criarColunasChave(
     sala: {
       titulo: "Sala / Piso",
       filtro: "texto",
-      classe: "tbl-col-tight",
       personalizada: true,
       texto: (chave) =>
         chave.sala != null ? `Sala ${chave.sala} ${chave.pisoLabel}` : "",
     },
 
-    // Personalizada: badge com ícone e cor
-    estado: {
-      titulo: "Estado",
-      filtro: "select",
-      classe: "tbl-col-tight",
-      personalizada: true,
-      // `statusConfig` vem de um lookup: um status novo do backend daria
-      // undefined e rebentava o filtro em todas as linhas.
-      texto: (chave) => (chave.statusConfig ? chave.statusConfig.label : ""),
-    },
-
     desde: {
       titulo: "Desde",
       filtro: "texto",
-      classe: "tbl-col-tight",
       texto: (chave) =>
         datePipe.transform(chave.desde, FORMATO_DESDE, FUSO) || "",
     },

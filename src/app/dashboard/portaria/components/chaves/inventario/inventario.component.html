@@ -1,0 +1,157 @@
+<!-- FILTROS — resolvidos no backend -->
+<div class="filter-container flex" [formGroup]="filtrosForm">
+  <div class="search-wrap flex content-center">
+    <i class="fas fa-search"></i>
+    <input
+      (keyup.enter)="aplicarFiltros()"
+      type="text"
+      class="search-input"
+      formControlName="textoBusca"
+      placeholder="Pesquisar por código da chave ou número da sala..."
+    />
+  </div>
+
+  <select class="filter-select" name="filter-select" formControlName="idEdificio">
+    <option value="">Todos os edifícios</option>
+    <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
+      {{ edificio.label }}
+    </option>
+  </select>
+
+  <select class="filter-select" name="filter-select" formControlName="piso">
+    <option value="">Todos os pisos</option>
+    <option *ngFor="let piso of pisos" [ngValue]="piso.id">
+      {{ piso.label }}
+    </option>
+  </select>
+
+  <!-- Os filtros só são aplicados aqui: até clicar, o form é só rascunho -->
+  <button
+    type="button"
+    class="portaria-btn portaria-btn--primary"
+    [disabled]="carregando$ | async"
+    (click)="aplicarFiltros()"
+  >
+    Procurar
+  </button>
+
+  <button
+    type="button"
+    class="portaria-btn portaria-btn--ghost"
+    (click)="limparFiltros()"
+  >
+    Limpar filtros
+  </button>
+</div>
+
+<!-- Estado: a carregar -->
+<ng-container *ngIf="carregando$ | async; else listaInventario">
+  <div class="loading-state">
+    <div class="spinner-inline"></div>
+    <p>Carregando chaves...</p>
+  </div>
+</ng-container>
+
+<ng-template #listaInventario>
+  <ng-container *ngIf="chaves$ | async as chaves">
+    <div class="tbl-wrap" *ngIf="chaves.length > 0; else estadoVazio">
+      <table class="tbl tbl--inventario">
+        <thead>
+          <tr>
+            <th class="col-edificio">Edifício</th>
+            <th class="col-codigo">Chave / Código</th>
+            <th class="col-sala">Sala / Piso</th>
+            <th class="col-estado">Estado</th>
+            <th class="col-desde">Desde</th>
+            <th class="col-nomeFuncionario">Com quem</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let chave of chaves; trackBy: trackById">
+            <td class="col-edificio">{{ chave.edificioLabel }}</td>
+
+            <td class="col-codigo bold-text">{{ chave.codigo }}</td>
+
+            <td class="col-sala">
+              <ng-container *ngIf="chave.sala != null; else vazio">
+                Sala {{ chave.sala }}
+                <span class="sub-text">{{ chave.pisoLabel }}</span>
+              </ng-container>
+            </td>
+
+            <td class="col-estado">
+              <!-- `statusConfig` vem de um lookup: um status novo do backend
+                   dá undefined e dá problema aqui. -->
+              <span
+                class="badge"
+                *ngIf="chave.statusConfig as estado; else vazio"
+                [ngClass]="estado.classe"
+              >
+                <i [ngClass]="estado.icone"></i>
+                {{ estado.label }}
+              </span>
+            </td>
+
+            <td class="col-desde">
+              <ng-container *ngIf="chave.desde; else vazio">
+                {{
+                  chave.desde
+                    | date: "d 'de' MMMM 'às' HH:mm" : "Europe/Lisbon"
+                }}
+              </ng-container>
+            </td>
+
+            <td class="col-nomeFuncionario bold-text">
+              <ng-container *ngIf="chave.nomeFuncionario as nome; else vazio">
+                {{ nome }}
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #estadoVazio>
+      <div class="empty-state">
+        <i class="ft-x-circle"></i>
+        <p>Nenhuma chave encontrada.</p>
+      </div>
+    </ng-template>
+
+    <!-- PAGINAÇÃO -->
+    <ng-container *ngIf="paginacao$ | async as pag">
+      <div class="paginacao" *ngIf="pag.visivel">
+        <button
+          [disabled]="!pag.temAnterior"
+          (click)="onPageChange(pag.paginaAtual - 1)"
+        >
+          <i class="ft-arrow-left"></i>
+        </button>
+
+        <ng-container *ngFor="let p of pag.paginas">
+          <button
+            *ngIf="p !== '...'; else reticencia"
+            [class.active]="p === pag.paginaAtual + 1"
+            (click)="irParaPagina(p)"
+          >
+            {{ p }}
+          </button>
+          <ng-template #reticencia>
+            <span class="reticencia">…</span>
+          </ng-template>
+        </ng-container>
+
+        <button
+          [disabled]="!pag.temProximo"
+          (click)="onPageChange(pag.paginaAtual + 1)"
+        >
+          <i class="ft-arrow-right"></i>
+        </button>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<!-- Placeholder partilhado por todas as células -->
+<ng-template #vazio><span class="empty-dash">—</span></ng-template>
