@@ -306,8 +306,9 @@ export class ChaveService {
           this.recarregar();
           return true;
         }),
-        catchError((err) => {
-          console.error("CHAV-SERV-UPDATE: " + err);
+        catchError(({ error }) => {
+          console.log(error);
+          console.error("CHAV-SERV-UPDATE: " + error.detail);
           return of(false);
         }),
         finalize(() => this.estaSalvando.next(false)),
@@ -326,8 +327,10 @@ export class ChaveService {
         this.recarregar();
         return true;
       }),
-      catchError((err) => {
-        console.error("CHAV-SERV-EMPRESTIMO: " + err);
+      catchError(({ error }) => {
+        console.log(error);
+
+        console.error("CHAV-SERV-EMPRESTIMO: " + error.detail);
         return of(false);
       }),
       finalize(() => this.estaSalvando.next(false)),

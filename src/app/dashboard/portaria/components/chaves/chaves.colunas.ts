@@ -41,6 +41,7 @@ export function criarColunasChave(
     estado: {
       titulo: "Estado",
       filtro: "select",
+      classe: "tbl-col-tight",
       personalizada: true,
       // `statusConfig` vem de um lookup: um status novo do backend daria
       // undefined e rebentava o filtro em todas as linhas.
