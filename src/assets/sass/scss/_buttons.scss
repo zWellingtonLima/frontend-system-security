@@ -59,6 +59,13 @@
       outline: 1px solid $portaria-color-accent-dark;
       outline-offset: 4px;
     }
+
+    &.filter {
+      padding: 6px 16px;
+      font-weight: 600;
+      font-size: 12px;
+      height: 32px;
+    }
   }
 
   &--ghost {

@@ -21,7 +21,7 @@ import { FormBuilder, FormGroup } from "@angular/forms";
   styleUrls: ["./historico.component.scss"],
 })
 export class EmprestimosHistoricoComponent implements OnInit {
-  
+
 
   readonly modelo = new ModeloTabela<ChaveViewModel, ColunaHistorico>(
     criarColunasHistorico(this.datePipe),
@@ -48,7 +48,6 @@ export class EmprestimosHistoricoComponent implements OnInit {
     this.filtrosForm = this.fb.group(FILTROS_VAZIOS);
   }
 
-  // Botão Procurar e Enter no campo de pesquisa
   aplicarFiltros(): void {
     this.service.aplicarFiltros(this.filtrosForm.value);
   }

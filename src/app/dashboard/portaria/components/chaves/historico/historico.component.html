@@ -1,4 +1,3 @@
-
 <!-- FILTROS -->
 <div class="filter-container flex" [formGroup]="filtrosForm">
   <div class="search-wrap flex content-center">
@@ -17,6 +16,7 @@
     type="date"
     formControlName="dataInicio"
     id="data-inicio"
+    (change)="aplicarFiltros()"
   />
 
   <label for="data-fim">Data fim: </label>
@@ -25,12 +25,14 @@
     type="date"
     formControlName="dataFim"
     id="data-fim"
+    (change)="aplicarFiltros()"
   />
 
   <select
     class="filter-select"
     name="filter-select"
     formControlName="idEdificio"
+    (change)="aplicarFiltros()"
   >
     <option value="">Todos os edifícios</option>
     <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
@@ -38,21 +40,12 @@
     </option>
   </select>
 
-  <!-- Os filtros só são aplicados aqui: até clicar, o form é só rascunho -->
   <button
     type="button"
-    class="portaria-btn portaria-btn--primary"
-    [disabled]="carregando$ | async"
-    (click)="aplicarFiltros()"
-  >
-    Procurar
-  </button>
-
-  <button
-    type="button"
-    class="portaria-btn portaria-btn--ghost"
+    class="portaria-btn portaria-btn--secondary filter"
     (click)="limparFiltros()"
   >
+    <i class="ft-filter"></i>
     Limpar
   </button>
 </div>

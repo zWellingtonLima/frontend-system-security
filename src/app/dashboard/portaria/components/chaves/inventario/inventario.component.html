@@ -11,35 +11,26 @@
     />
   </div>
 
-  <select class="filter-select" name="filter-select" formControlName="idEdificio">
+  <select class="filter-select" name="filter-select-edificios" formControlName="idEdificio" (change)="aplicarFiltros()">
     <option value="">Todos os edifícios</option>
     <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
       {{ edificio.label }}
     </option>
   </select>
 
-  <select class="filter-select" name="filter-select" formControlName="piso">
+  <select class="filter-select" name="filter-select-pisos" formControlName="piso" (change)="aplicarFiltros()">
     <option value="">Todos os pisos</option>
     <option *ngFor="let piso of pisos" [ngValue]="piso.id">
       {{ piso.label }}
     </option>
   </select>
 
-  <!-- Os filtros só são aplicados aqui: até clicar, o form é só rascunho -->
   <button
     type="button"
-    class="portaria-btn portaria-btn--primary"
-    [disabled]="carregando$ | async"
-    (click)="aplicarFiltros()"
-  >
-    Procurar
-  </button>
-
-  <button
-    type="button"
-    class="portaria-btn portaria-btn--ghost"
+    class="portaria-btn portaria-btn--secondary filter"
     (click)="limparFiltros()"
   >
+  <i class="ft-filter"></i>
     Limpar
   </button>
 </div>
