@@ -47,8 +47,8 @@
 <!-- =================================================== -->
 <app-base-modal
   [modalEstaAberto]="atualizarModalIsOpen"
-  titulo="Atualizar empréstimo"
-  subtitulo="Corrigir os dados do empréstimo ou registar a devolução"
+  titulo="Dados do empréstimo"
+  subtitulo="Alterar os dados do empréstimo ou registar a devolução da chave"
   (fechar)="fecharModalAtualizar()"
 >
   <form
@@ -105,95 +105,95 @@
     <!-- DEVOLUÇÃO — tem botão próprio, não usa o rodapé do modal -->
     <ng-container *ngIf="secaoAtiva === 'DEVOLUCAO'">
       <div class="devolver-block">
-        <div class="form-group-port">
-          <label for="atualizar-devolvida-por" class="form-label-port"
-            >Quem está a devolver a chave: </label
-          >
-          <app-funcionario-autocomplete
-            id="atualizar-devolvida-por"
-            formControlName="idDevolvidaPor"
-            placeholder="Quem está a devolver a chave..."
-          [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
-          ></app-funcionario-autocomplete>
-          <span
-            class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'idDevolvidaPor') as erro"
-          >
-            {{ erro }}
-          </span>
+        <div class="form-row-port full">
+          <div class="form-group-port">
+            <label for="atualizar-devolvida-por" class="form-label-port"
+              >Quem está a devolver a chave:
+            </label>
+            <app-funcionario-autocomplete
+              id="atualizar-devolvida-por"
+              formControlName="idDevolvidaPor"
+              placeholder="Quem está a devolver a chave..."
+              [temErro]="!!erroDoCampo(atualizarForm, 'idDevolvidaPor')"
+            ></app-funcionario-autocomplete>
+            <span
+              class="form-error"
+              *ngIf="erroDoCampo(atualizarForm, 'idDevolvidaPor') as erro"
+            >
+              {{ erro }}
+            </span>
+          </div>
         </div>
-
-        <button
-          type="button"
-          class="portaria-btn portaria-btn--primary btn-devolver"
-          [disabled]="salvando$ | async"
-          (click)="onDevolver()"
-        >
-          <i class="ft-corner-down-left"></i>
-          Devolver chave
-        </button>
       </div>
     </ng-container>
 
     <!-- CORREÇÃO DOS DADOS DO EMPRÉSTIMO — guardada pelo rodapé do modal -->
     <ng-container *ngIf="secaoAtiva === 'EDICAO'">
-
-      <div class="form-row-port">
-        <div class="form-group-port">
-          <label for="atualizar-funcionario" class="form-label-port"
-            >Funcionário</label
-          >
-          <app-funcionario-autocomplete
-            id="atualizar-funcionario"
-            formControlName="idFuncionarioEmprestimo"
-            placeholder="Quem levou a chave..."
-            [temErro]="!!erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo')"
-          ></app-funcionario-autocomplete>
-          <span
-            class="form-error"
-            *ngIf="
-              erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro
-            "
-          >
-            {{ erro }}
-          </span>
-        </div>
-
-        <div class="form-group-port">
-          <label for="atualizar-chave" class="form-label-port"
-            >Chave selecionada</label
-          >
-          <!-- Disponíveis + a chave atual, agrupadas por edifício -->
-          <ng-container *ngIf="opcoesEdicao$ | async as grupos; else aCarregar">
-            <select
-              id="atualizar-chave"
-              class="filter-select"
-              formControlName="idChave"
+      <div class="devolver-block">
+        <div class="form-row-port primary">
+          <div class="form-group-port">
+            <label for="atualizar-funcionario" class="form-label-port"
+              >Funcionário</label
             >
-              <optgroup
-                *ngFor="let grupo of grupos"
-                [label]="grupo.edificioLabel"
+            <app-funcionario-autocomplete
+              id="atualizar-funcionario"
+              formControlName="idFuncionarioEmprestimo"
+              placeholder="Quem levou a chave..."
+              [temErro]="
+                !!erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo')
+              "
+            ></app-funcionario-autocomplete>
+            <span
+              class="form-error"
+              *ngIf="
+                erroDoCampo(atualizarForm, 'idFuncionarioEmprestimo') as erro
+              "
+            >
+              {{ erro }}
+            </span>
+          </div>
+
+          <div class="form-group-port">
+            <label for="atualizar-chave" class="form-label-port"
+              >Chave selecionada</label
+            >
+            <!-- Disponíveis + a chave atual, agrupadas por edifício -->
+            <ng-container
+              *ngIf="opcoesEdicao$ | async as grupos; else aCarregar"
+            >
+              <select
+                id="atualizar-chave"
+                class="filter-select"
+                formControlName="idChave"
               >
-                <option *ngFor="let opcao of grupo.chaves" [ngValue]="opcao.id">
-                  {{ opcao.codigo
-                  }}<ng-container *ngIf="opcao.sala != null">
-                    — Sala {{ opcao.sala }}</ng-container
+                <optgroup
+                  *ngFor="let grupo of grupos"
+                  [label]="grupo.edificioLabel"
+                >
+                  <option
+                    *ngFor="let opcao of grupo.chaves"
+                    [ngValue]="opcao.id"
                   >
-                </option>
-              </optgroup>
-            </select>
-          </ng-container>
-          <ng-template #aCarregar>
-            <select class="filter-select" disabled>
-              <option>A carregar chaves...</option>
-            </select>
-          </ng-template>
-          <span
-            class="form-error"
-            *ngIf="erroDoCampo(atualizarForm, 'idChave') as erro"
-          >
-            {{ erro }}
-          </span>
+                    {{ opcao.codigo
+                    }}<ng-container *ngIf="opcao.sala != null">
+                      — Sala {{ opcao.sala }}</ng-container
+                    >
+                  </option>
+                </optgroup>
+              </select>
+            </ng-container>
+            <ng-template #aCarregar>
+              <select class="filter-select" disabled>
+                <option>A carregar chaves...</option>
+              </select>
+            </ng-template>
+            <span
+              class="form-error"
+              *ngIf="erroDoCampo(atualizarForm, 'idChave') as erro"
+            >
+              {{ erro }}
+            </span>
+          </div>
         </div>
       </div>
     </ng-container>
@@ -208,14 +208,28 @@
     >
       Cancelar
     </button>
-    <button
-      type="button"
-      class="portaria-btn portaria-btn--primary"
-      [disabled]="vm.salvando"
-      (click)="onGuardarAlteracoes()"
-    >
-      <i class="ft-edit-2"></i>
-      Guardar alterações
-    </button>
+    <ng-container *ngIf="secaoAtiva === 'DEVOLUCAO'">
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary"
+        [disabled]="salvando$ | async"
+        (click)="onDevolver()"
+      >
+        <i class="ft-corner-down-left"></i>
+        Devolver
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="secaoAtiva === 'EDICAO'">
+      <button
+        type="button"
+        class="portaria-btn portaria-btn--primary"
+        [disabled]="vm.salvando"
+        (click)="onGuardarAlteracoes()"
+      >
+        <i class="ft-edit-2"></i>
+        Guardar
+      </button>
+    </ng-container>
   </ng-container>
 </app-base-modal>

@@ -19,10 +19,10 @@ const MENSAGENS_OBRIGATORIO = {
   idDevolvidaPor: "Selecione na lista quem está a devolver a chave.",
 };
 
-type SecaoModal = "DEVOLUCAO" | "EDICAO";
+type SecaoModal =  "EDICAO" | "DEVOLUCAO";
 
 const SECOES_MODAL: { value: SecaoModal; label: string }[] = [
-  { value: "DEVOLUCAO", label: "Devolução" },
+  { value: "DEVOLUCAO", label: "Devolver chave" },
   { value: "EDICAO", label: "Editar empréstimo" },
 ];
 
@@ -50,7 +50,7 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
   atualizarForm!: FormGroup;
 
   secoes = SECOES_MODAL;
-  secaoAtiva: SecaoModal = "DEVOLUCAO";
+  secaoAtiva: SecaoModal = "EDICAO";
 
   // Chave do empréstimo aberto no modal. Os dados de contexto (edifício,
   // código, sala, desde) são só leitura e vêm daqui
@@ -67,9 +67,7 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
 
     this.atualizarForm = this.fb.group({
       idChave: [null, [Validators.required]],
-      // Quem levou a chave — corrigível aqui em caso de engano do segurança
       idFuncionarioEmprestimo: [null, [Validators.required]],
-      // Quem devolve, que pode ser outra pessoa
       idDevolvidaPor: [null, [Validators.required]],
     });
   }
