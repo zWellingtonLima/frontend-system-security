@@ -25,6 +25,10 @@
     grid-template-columns: 1fr;
   }
 
+  &.primary {
+    grid-template-columns: 2fr 1fr;
+  }
+
   .filter-select,
   .search-input {
     box-sizing: border-box;
