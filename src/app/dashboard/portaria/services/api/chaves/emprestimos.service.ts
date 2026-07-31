@@ -10,7 +10,7 @@ import {
   EmprestimoCriarDTO,
   EmprestimoUpdateDTO,
   GrupoChaves,
-} from "../../models/api";
+} from "../../../models/api";
 import { environment } from "src/environments/environment";
 import {
   agruparParaEdicao,

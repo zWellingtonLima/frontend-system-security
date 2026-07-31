@@ -6,7 +6,7 @@ import {
   ChaveViewModel,
   ChavesInventarioFiltros,
   ChavesPage,
-} from "../../models/api";
+} from "../../../models/api";
 import { environment } from "src/environments/environment";
 import { Paginador } from "src/app/shared/utils/paginador";
 import { toViewModel } from "./chaves.mapper";

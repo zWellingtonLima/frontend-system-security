@@ -4,7 +4,7 @@ import {
   ChavesEmprestimosFiltros,
   ChavesPage,
   ChaveViewModel,
-} from "../../models/api";
+} from "../../../models/api";
 import { catchError, finalize } from "rxjs/operators";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";

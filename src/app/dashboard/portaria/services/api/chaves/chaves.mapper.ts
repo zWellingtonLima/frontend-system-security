@@ -4,12 +4,12 @@ import {
   ChaveViewModel,
   ChavesResponseDTO,
   GrupoChaves,
-} from "../../models/api";
+} from "../../../models/api";
 import {
   EDIFICIO_LABEL,
   PISO_LABEL,
   STATUS_CHAVE_CONFIG,
-} from "../../models/enums";
+} from "../../../models/enums";
 
 // Insere os rótulos de exibição (status, edifício, piso) na chave retornada
 export function toViewModel(chave: ChavesResponseDTO): ChaveViewModel {
