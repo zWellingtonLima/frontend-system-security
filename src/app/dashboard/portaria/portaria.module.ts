@@ -13,6 +13,7 @@ import { CardLeiturasComponent } from "./components/consumos/card-leituras/card-
 import { EmprestimosHistoricoComponent } from "./components/chaves/historico/historico.component";
 import { MovimentacoesComponent } from "./components/movimentacoes/movimentacoes.component";
 import { HistoricoMovimentacoesComponent } from "./components/movimentacoes/historico/historico-movimentacoes.component";
+import { VisitasAtivasComponent } from './components/movimentacoes/visitas-ativas/visitas-ativas.component';
 
 @NgModule({
   imports: [
@@ -32,6 +33,7 @@ import { HistoricoMovimentacoesComponent } from "./components/movimentacoes/hist
     MovimentacoesComponent,
     HistoricoMovimentacoesComponent,
     EmprestimosHistoricoComponent,
+    VisitasAtivasComponent,
   ],
   exports: [PortariaComponent],
 })

@@ -1,168 +1,150 @@
-<app-portaria-shell>
-  <div class="page-header-row">
-    <div>
-      <h1 class="portaria-section-title">Histórico de Movimentações</h1>
-      <p class="portaria-section-copy">
-        Gestão do histórico das movimentações finalizadas
-      </p>
-    </div>
-
-    <a
-      class="portaria-btn portaria-btn--ghost"
-      [routerLink]="['/movimentacoes']"
-      >Voltar</a
-    >
-  </div>
-  <!-- BARRA DE PESQUISA TABELA-->
-  <div class="barra-pesquisa-container">
-    <div class="search-wrap flex content-center">
-      <i class="fas fa-search"></i>
-      <input
-        (keyup.enter)="aplicarFiltros()"
-        type="text"
-        class="search-input"
-        placeholder="Pesquisar por código ou quem levou a chave..."
-      />
-    </div>
-
-    <div>
-      <span> de: </span>
-      <input
-        #inicio
-        (change)="filtroInicio(inicio.value)"
-        type="date"
-        class="filter-select"
-      />
-      <span> até: </span>
-      <input
-        #fim
-        (change)="filtroFim(fim.value)"
-        type="date"
-        class="filter-select"
-      />
-    </div>
-    <select
-      #tipoVisitaId
-      class="filter-select"
-      (change)="filtroEdificio(tipoVisitaId.value)"
-    >
-      <option value="">Todos os tipos</option>
-      <option *ngFor="let item of tipoVisita" [ngValue]="item.id">
-        {{ item.tipo }}
-      </option>
-    </select>
-    <button
-      type="button"
-      class="portaria-btn portaria-btn--ghost"
-      (click)="limparFiltros()"
-    >
-      Limpar filtros
-    </button>
+<!-- BARRA DE PESQUISA TABELA-->
+<div class="barra-pesquisa-container">
+  <div class="search-wrap flex content-center">
+    <i class="fas fa-search"></i>
+    <input
+      (keyup.enter)="aplicarFiltros()"
+      type="text"
+      class="search-input"
+      placeholder="Pesquisar por código ou quem levou a chave..."
+    />
   </div>
 
   <div>
-    <table class="tbl">
-      <thead>
-        <tr>
-          <th>Pessoa</th>
-          <th>Entrada</th>
-          <th>Hora Saida</th>
-          <th>Tipo</th>
-          <th>Setor / Destino</th>
-          <th>Responsável</th>
-          <th>Notas</th>
-        </tr>
-      </thead>
+    <span> de: </span>
+    <input
+      #inicio
+      (change)="filtroInicio(inicio.value)"
+      type="date"
+      class="filter-select"
+    />
+    <span> até: </span>
+    <input
+      #fim
+      (change)="filtroFim(fim.value)"
+      type="date"
+      class="filter-select"
+    />
+  </div>
+  <select
+    #tipoVisitaId
+    class="filter-select"
+    (change)="filtroEdificio(tipoVisitaId.value)"
+  >
+    <option value="">Todos os tipos</option>
+    <option *ngFor="let item of tipoVisita" [ngValue]="item.id">
+      {{ item.tipo }}
+    </option>
+  </select>
+  <button
+    type="button"
+    class="portaria-btn portaria-btn--ghost"
+    (click)="limparFiltros()"
+  >
+    Limpar filtros
+  </button>
+</div>
 
-      <tbody>
-        <!-- Estado: a carregar -->
-        <tr *ngIf="carregando">
-          <td colspan="6" class="tbl-status">
-            <div class="spinner-inline"></div>
+<div>
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Pessoa</th>
+        <th>Entrada</th>
+        <th>Hora Saida</th>
+        <th>Tipo</th>
+        <th>Responsável</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- Estado: a carregar -->
+      <tr *ngIf="carregando">
+        <td colspan="6" class="tbl-status">
+          <div class="spinner-inline"></div>
+        </td>
+      </tr>
+
+      <!-- Estado: sem dados / erro -->
+      <tr *ngIf="!carregando && listaMovimentacoes.length === 0">
+        <td colspan="6" class="tbl-status">
+          <i class="ft-alert-circle"></i>
+          Nenhum dado encontrado.
+        </td>
+      </tr>
+
+      <!-- Estado: com dados -->
+      <ng-container *ngIf="!carregando">
+        <tr *ngFor="let visita of listaMovimentacoes">
+          <td class="bold-text">{{ visita.nomeVisitante }}</td>
+          <td>{{ visita.horaEntrada | date: "dd/MM/yyyy HH:mm" }}</td>
+          <td>
+            <span class="data">{{
+              visita.horaSaida | date: "dd/MM/yyyy HH:mm"
+            }}</span>
+          </td>
+          <td>{{ visita.tipoVisita }}</td>
+          <td>
+            {{
+              visita.funcionarioResponsavel
+                ? visita.funcionarioResponsavel
+                : "_"
+            }}
+          </td>
+          <td [title]="visita.notas">
+            {{ visita.notas ? visita.notas : "_" }}
           </td>
         </tr>
+      </ng-container>
+    </tbody>
+  </table>
 
-        <!-- Estado: sem dados / erro -->
-        <tr *ngIf="!carregando && listaMovimentacoes.length === 0">
-          <td colspan="6" class="tbl-status">
-            <i class="ft-alert-circle"></i>
-            Nenhum dado encontrado.
-          </td>
-        </tr>
-
-        <!-- Estado: com dados -->
-        <ng-container *ngIf="!carregando">
-          <tr *ngFor="let visita of listaMovimentacoes">
-            <td class="bold-text">{{ visita.nomeVisitante }}</td>
-            <td>{{ visita.horaEntrada | date: "dd/MM/yyyy HH:mm" }}</td>
-            <td>
-              <span class="data">{{
-                visita.horaSaida | date: "dd/MM/yyyy HH:mm"
-              }}</span>
-            </td>
-            <td>{{ visita.tipoVisita }}</td>
-            <td>{{ visita.setorDestino ? visita.setorDestino : "_" }}</td>
-            <td>
-              {{
-                visita.funcionarioResponsavel
-                  ? visita.funcionarioResponsavel
-                  : "_"
-              }}
-            </td>
-            <td [title]="visita.notas">
-              {{ visita.notas ? visita.notas : "_" }}
-            </td>
-          </tr>
-        </ng-container>
-      </tbody>
-    </table>
-
-    <!-- Paginação -->
-    <div class="pag-row">
-      <span class="pag-info">
-        {{ textoPaginacao }}
-      </span>
-      <div class="pag-controls">
+  <!-- Paginação -->
+  <div class="pag-row">
+    <span class="pag-info">
+      {{ textoPaginacao }}
+    </span>
+    <div class="pag-controls">
+      <button
+        class="pag-btn"
+        [disabled]="currentPage === 1"
+        (click)="irParaPagina(currentPage - 1)"
+        aria-label="Anterior"
+      >
+        <i class="ft-chevron-left"></i>
+      </button>
+      <ng-container *ngFor="let p of paginasVisiveis">
         <button
+          *ngIf="!ehReticencia(p)"
           class="pag-btn"
-          [disabled]="currentPage === 1"
-          (click)="irParaPagina(currentPage - 1)"
-          aria-label="Anterior"
+          [class.active]="isPaginaAtual(p)"
+          (click)="irParaPagina(p)"
         >
-          <i class="ft-chevron-left"></i>
+          {{ p }}
         </button>
-        <ng-container *ngFor="let p of paginasVisiveis">
-          <button
-            *ngIf="!ehReticencia(p)"
-            class="pag-btn"
-            [class.active]="isPaginaAtual(p)"
-            (click)="irParaPagina(p)"
-          >
-            {{ p }}
-          </button>
-          <button
-            *ngIf="ehReticencia(p)"
-            class="pag-btn"
-            disabled
-            style="
-              border: none;
-              background: none;
-              cursor: default;
-              color: #9ca3af;
-            "
-          >
-            …
-          </button>
-        </ng-container>
         <button
+          *ngIf="ehReticencia(p)"
           class="pag-btn"
-          [disabled]="currentPage === totalPages || totalPages === 0"
-          (click)="irParaPagina(currentPage + 1)"
-          aria-label="Seguinte"
+          disabled
+          style="
+            border: none;
+            background: none;
+            cursor: default;
+            color: #9ca3af;
+          "
         >
-          <i class="ft-chevron-right"></i>
+          …
         </button>
-      </div>
+      </ng-container>
+      <button
+        class="pag-btn"
+        [disabled]="currentPage === totalPages || totalPages === 0"
+        (click)="irParaPagina(currentPage + 1)"
+        aria-label="Seguinte"
+      >
+        <i class="ft-chevron-right"></i>
+      </button>
     </div>
   </div>
-</app-portaria-shell>
+</div>

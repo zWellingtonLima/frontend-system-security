@@ -1,8 +1,12 @@
 @import "tokens";
 @import "modal";
+@import "layout";
 
 .page-header-row {
   margin-bottom: 25px;
+}
+.bold-text {
+  font-weight: bold;
 }
 
 // ── TOAST POP DE AVISO ---

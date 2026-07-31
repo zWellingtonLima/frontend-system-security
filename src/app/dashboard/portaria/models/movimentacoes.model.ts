@@ -62,3 +62,11 @@ export const movColunas: MovimentacoesColunaChave[] = [
   "notas",
   "acoes",
 ];
+
+export const componenteMovimentacoesEnum = {
+  ATIVAS: "ATIVAS",
+  HISTORICO: "HISTORICO",
+};
+
+export type componenteMovimentacoesType =
+  keyof typeof componenteMovimentacoesEnum;
