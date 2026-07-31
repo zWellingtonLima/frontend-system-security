@@ -6,7 +6,7 @@ import { ChaveViewModel } from "../../../models/api";
 import {
   EmprestimosHistoricoService,
   FILTROS_VAZIOS,
-} from "../../../services/api/emprestimos-historico.service";
+} from "../../../services/api/chaves/emprestimos-historico.service";
 import { EDIFICIO_OPCOES } from "../../../models/enums";
 import {
   ColunaHistorico,
@@ -21,6 +21,8 @@ import { FormBuilder, FormGroup } from "@angular/forms";
   styleUrls: ["./historico.component.scss"],
 })
 export class EmprestimosHistoricoComponent implements OnInit {
+  
+
   readonly modelo = new ModeloTabela<ChaveViewModel, ColunaHistorico>(
     criarColunasHistorico(this.datePipe),
     of(COLUNAS_HISTORICO),

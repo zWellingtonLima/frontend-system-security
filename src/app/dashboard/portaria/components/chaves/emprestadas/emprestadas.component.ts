@@ -6,12 +6,12 @@ import { takeUntil } from "rxjs/operators";
 import { ErrosForm } from "src/app/shared/utils/erros-form";
 import { ModeloTabela } from "src/app/shared/utils/modelo-tabela";
 import { ChaveViewModel } from "../../../models/api";
-import { EmprestimosService } from "../../../services/api/emprestimos.service";
 import {
   ColunaEmprestada,
   COLUNAS_EMPRESTADAS,
   criarColunasEmprestadas,
 } from "./emprestadas.colunas";
+import { EmprestimosService } from "../../../services/api/chaves/emprestimos.service";
 
 const MENSAGENS_OBRIGATORIO = {
   idChave: "Selecione a chave do empréstimo.",

@@ -4,7 +4,7 @@ import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ErrosForm } from "src/app/shared/utils/erros-form";
 import { GrupoChaves } from "../../models/api";
-import { EmprestimosService } from "../../services/api/emprestimos.service";
+import { EmprestimosService } from "../../services/api/chaves/emprestimos.service";
 
 const MENSAGENS_OBRIGATORIO = {
   idChave: "Selecione a chave do empréstimo.",
@@ -42,8 +42,6 @@ export class ChavesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Os campos de pessoa guardam o idRH escolhido no autocomplete, não o
-    // nome escrito — por isso `required` basta, sem minLength de texto.
     this.emprestarForm = this.fb.group({
       idChave: [null, [Validators.required]],
       idFuncionario: [null, [Validators.required]],

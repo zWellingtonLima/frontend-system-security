@@ -8,7 +8,7 @@ import { EDIFICIO_OPCOES, PISOS_OPCOES } from "../../../models/enums";
 import {
   FILTROS_VAZIOS_INVENTARIO,
   InventarioService,
-} from "../../../services/api/inventario.service";
+} from "../../../services/api/chaves/inventario.service";
 import {
   ColunaInventario,
   COLUNAS_INVENTARIO,
