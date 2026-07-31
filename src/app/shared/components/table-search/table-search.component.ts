@@ -12,10 +12,10 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged, takeUntil } from "rxjs/operators";
 
-export type TipoInputPesquisa = "texto" | "numero" | "data" | "select";
+export type TipoInputPesquisa = "texto" | "numero" | "data" | "select" | null;
 
 export interface SearchFieldConfig<T = any> {
-  campo?: keyof T;
+  campo?: keyof T | null;
   label: string;
   placeholder?: string;
   tipo?: TipoInputPesquisa; // default: 'texto'

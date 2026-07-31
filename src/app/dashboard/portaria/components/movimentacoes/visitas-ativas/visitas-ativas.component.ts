@@ -131,11 +131,11 @@ export class VisitasAtivasComponent implements OnInit {
   private montarCamposPesquisa(): void {
     console.log(this.tipoVisita);
     this.camposPesquisa = [
-      { campo: "nomeVisitante", label: "", tipo: "texto" },
-      { campo: "horaEntrada", label: "Data", tipo: "data" },
+      { campo: "nomeVisitante", label: "Visitante", tipo: "texto" },
+      { campo: "horaEntrada", label: "Entrada", tipo: "texto" },
       {
         campo: "tipoVisita",
-        label: "Todos os tipos",
+        label: "Todos",
         tipo: "select",
         opcoes: this.tipoVisita
           ? this.tipoVisita.map((element) => ({
@@ -144,8 +144,8 @@ export class VisitasAtivasComponent implements OnInit {
             }))
           : [],
       },
-      { campo: "funcionarioResponsavel", label: "", tipo: "texto" },
-      { campo: "notas", label: "", tipo: "texto" },
+      { campo: "funcionarioResponsavel", label: "Responsável", tipo: "texto" },
+      { campo: "notas", label: "Notas", tipo: "texto" },
     ];
   }
 
