@@ -28,6 +28,10 @@
   background: #ffffff;
   box-shadow: 0 6px 12px rgba(18, 32, 44, 0.2);
 
+  &:focus {
+    outline: none;
+  }
+
   &__header,
   &__footer {
     display: flex;

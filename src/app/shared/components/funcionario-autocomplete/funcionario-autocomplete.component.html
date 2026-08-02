@@ -48,6 +48,7 @@
       <button
         type="button"
         class="autocomplete__item"
+        tabindex="-1"
         *ngFor="let funcionario of resultados; let i = index"
         [class.ativo]="i === indiceAtivo"
         (mousedown)="$event.preventDefault()"
