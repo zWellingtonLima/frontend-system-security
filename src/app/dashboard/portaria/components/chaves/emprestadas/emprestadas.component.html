@@ -2,7 +2,6 @@
   [modelo]="modelo"
   [carregando]="carregando$ | async"
   [idDe]="idDaChave"
-  classeTabela="tbl--emprestadas"
   textoCarregando="Carregando chaves..."
   mensagemVazia="Não existem empréstimos no momento."
 >
@@ -10,14 +9,14 @@
   <ng-template appCelula="sala" let-chave>
     <ng-container *ngIf="chave.sala != null; else semSala">
       Sala {{ chave.sala }}
-      <span class="sub-text">{{ chave.pisoLabel }}</span>
+      <span class="tf-sub">{{ chave.pisoLabel }}</span>
     </ng-container>
-    <ng-template #semSala><span class="empty-dash">—</span></ng-template>
+    <ng-template #semSala><span class="tf-dash">—</span></ng-template>
   </ng-template>
 
   <!-- AÇÕES -->
   <ng-template appCelula="acoes" let-chave>
-    <div class="tbl-acoes">
+    <div class="tf-acoes">
       <!-- Ação primária: corrigir dados ou escolher quem devolve -->
       <button
         class="portaria-btn portaria-btn--secondary"

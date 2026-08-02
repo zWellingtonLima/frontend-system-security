@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { of, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import { ErrosForm } from "src/app/shared/utils/erros-form";
-import { ModeloTabela } from "src/app/shared/utils/modelo-tabela";
+import { ModeloTabela } from "src/app/shared/tabela-filtrada";
 import { ChaveViewModel } from "../../../models/api";
 import {
   ColunaEmprestada,
@@ -19,7 +19,7 @@ const MENSAGENS_OBRIGATORIO = {
   idDevolvidaPor: "Selecione na lista quem está a devolver a chave.",
 };
 
-type SecaoModal =  "EDICAO" | "DEVOLUCAO";
+type SecaoModal = "EDICAO" | "DEVOLUCAO";
 
 const SECOES_MODAL: { value: SecaoModal; label: string }[] = [
   { value: "DEVOLUCAO", label: "Devolver chave" },

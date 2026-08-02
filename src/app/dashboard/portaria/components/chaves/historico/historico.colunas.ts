@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { MapaColunas } from "src/app/shared/models/modelo-tabela";
+import { MapaColunas } from "src/app/shared/tabela-filtrada";
 import { ChaveViewModel } from "../../../models/api";
 
 const FORMATO_DATA = "d 'de' MMMM 'às' HH:mm";
@@ -34,7 +34,7 @@ export function criarColunasHistorico(
 
     codigo: {
       titulo: "Chave / Código",
-      classe: "bold-text",
+      classe: "tf-bold",
       texto: (chave) => chave.codigo,
     },
 
@@ -46,7 +46,7 @@ export function criarColunasHistorico(
 
     nomeFuncionario: {
       titulo: "Responsável",
-      classe: "bold-text tbl-col-flex",
+      classe: "tf-bold tf-col-flex",
       texto: (chave) => chave.nomeFuncionario || "",
     },
 

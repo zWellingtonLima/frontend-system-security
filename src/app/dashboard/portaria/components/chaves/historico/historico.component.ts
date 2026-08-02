@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { of } from "rxjs";
-import { ModeloTabela } from "src/app/shared/utils/modelo-tabela";
+import { ModeloTabela } from "src/app/shared/tabela-filtrada";
 import { ChaveViewModel } from "../../../models/api";
 import {
   EmprestimosHistoricoService,

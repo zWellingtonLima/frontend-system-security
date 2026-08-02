@@ -61,9 +61,9 @@
   <ng-template appCelula="sala" let-chave>
     <ng-container *ngIf="chave.sala != null; else semSala">
       Sala {{ chave.sala }}
-      <span class="sub-text">{{ chave.pisoLabel }}</span>
+      <span class="tf-sub">{{ chave.pisoLabel }}</span>
     </ng-container>
-    <ng-template #semSala><span class="empty-dash">—</span></ng-template>
+    <ng-template #semSala><span class="tf-dash">—</span></ng-template>
   </ng-template>
 
   <app-paginacao rodape [paginador]="paginador"></app-paginacao>

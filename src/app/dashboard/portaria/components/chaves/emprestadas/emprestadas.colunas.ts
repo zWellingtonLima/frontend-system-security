@@ -1,5 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { MapaColunas } from "src/app/shared/models/modelo-tabela";
+import { MapaColunas } from "src/app/shared/tabela-filtrada";
 import { ChaveViewModel } from "../../../models/api";
 
 // Formato único da coluna "Desde": é o que se mostra E o que se filtra.
@@ -32,20 +32,22 @@ export function criarColunasEmprestadas(
 ): MapaColunas<ChaveViewModel, ColunaEmprestada> {
   return {
     edificio: {
+      largura: "15%",
       titulo: "Edifício",
       filtro: "select",
       texto: (chave) => chave.edificioLabel,
     },
 
     codigo: {
+      largura: "13%",
       titulo: "Chave / Código",
       filtro: "texto",
-      classe: "bold-text",
+      classe: "tf-bold",
       texto: (chave) => chave.codigo,
     },
 
-    // Desenhada pela página: o piso é um subtexto por baixo da sala
     sala: {
+      largura: "13%",
       titulo: "Sala / Piso",
       filtro: "texto",
       texto: (chave) =>
@@ -53,6 +55,7 @@ export function criarColunasEmprestadas(
     },
 
     desde: {
+      largura: "17%",
       titulo: "Desde",
       filtro: "texto",
       texto: (chave) =>
@@ -62,12 +65,12 @@ export function criarColunasEmprestadas(
     nomeFuncionario: {
       titulo: "Com quem",
       filtro: "texto",
-      classe: "bold-text",
+      classe: "tf-bold",
       texto: (chave) => chave.nomeFuncionario || "",
     },
 
-    // Sem `filtro` — nunca exclui uma linha. Sem texto pesquisável.
     acoes: {
+      largura: "120px",
       titulo: "Ações",
       texto: () => "",
     },
