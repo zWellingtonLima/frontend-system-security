@@ -1,6 +1,6 @@
 <ng-container *ngIf="carregando; else conteudo">
-  <div class="loading-state">
-    <div class="spinner-inline"></div>
+  <div class="tf-loading-state">
+    <div class="tf-spinner"></div>
     <p>{{ textoCarregando }}</p>
   </div>
 </ng-container>
@@ -16,10 +16,24 @@
     <!-- Com filtros ativos a tabela fica de pé mesmo sem linhas: é preciso
          chegar aos campos para desfazer o filtro -->
     <div
-      class="tbl-wrap"
+      class="tf-tbl-wrap"
       *ngIf="vm.linhas?.length > 0 || vm.temFiltros; else estadoVazio"
     >
-      <table class="tbl" [ngClass]="classeTabela">
+      <table
+        class="tf-tbl"
+        [ngClass]="[classeTabela, modelo.temLarguras ? 'tf-tbl--fixo' : '']"
+      >
+        <!-- As larguras vivem aqui e não nos `th`: assim valem para a
+             coluna inteira e não dependem de nenhuma linha existir. É o
+             que impede as colunas de saltarem quando um filtro esvazia a
+             tabela. Sem `largura` declarada os `col` não fazem nada. -->
+        <colgroup>
+          <col
+            *ngFor="let col of vm.colunas; trackBy: trackByChave"
+            [style.width]="col.largura || null"
+          />
+        </colgroup>
+
         <thead>
           <tr>
             <th
@@ -40,15 +54,11 @@
 
         <tbody>
           <!-- Há dados, mas os filtros não deixaram passar nada -->
-          <tr *ngIf="vm.linhas?.length === 0" class="linha-sem-resultados">
+          <tr *ngIf="vm.linhas?.length === 0" class="tf-sem-resultados">
             <td [attr.colspan]="vm.colunas?.length">
               <i class="ft-search"></i>
               <p>Nenhum registo corresponde aos filtros.</p>
-              <button
-                type="button"
-                class="portaria-btn portaria-btn--ghost"
-                (click)="limparFiltros()"
-              >
+              <button type="button" class="tf-btn" (click)="limparFiltros()">
                 Limpar
               </button>
             </td>
@@ -83,7 +93,7 @@
     </div>
 
     <ng-template #estadoVazio>
-      <div class="empty-state">
+      <div class="tf-empty-state">
         <i class="ft-x-circle"></i>
         <p>{{ mensagemVazia }}</p>
       </div>
@@ -96,4 +106,4 @@
 <ng-content select="[rodape]"></ng-content>
 
 <!-- Placeholder partilhado por todas as células -->
-<ng-template #vazio><span class="empty-dash">—</span></ng-template>
+<ng-template #vazio><span class="tf-dash">—</span></ng-template>

@@ -20,6 +20,15 @@ export interface DefinicaoColuna<T> {
 
   // Classe CSS aplicada à célula desta coluna
   classe?: string;
+
+  // Largura da coluna, qualquer unidade de CSS ("28%", "14ch", "120px").
+  //
+  // Basta UMA coluna declarar largura para a tabela inteira passar a
+  // `table-layout: fixed`: as larguras deixam de depender do conteúdo e as
+  // colunas param de saltar quando um filtro muda o número de linhas.
+  //
+  // Percentagens que somem 100 dão o controlo mais previsível.
+  largura?: string;
 }
 
 // Mapped type sobre o union de colunas: obriga a cobrir TODAS em tempo de
@@ -44,6 +53,8 @@ export interface ColunaVM {
   filtro: TipoFiltro | null;
   // Classe CSS da célula. "" quando a coluna não declara nenhuma.
   classe: string;
+  // Largura para o <col>. "" quando a coluna não declara nenhuma.
+  largura: string;
   // Valor ativo do filtro desta coluna ("" = sem filtro)
   valor: string;
   // Opções do <select>. Vazio nas colunas que não são `select`.

@@ -1,6 +1,6 @@
-import { Component, Input } from "@angular/core";
-import { ColunaVM } from "../../models/modelo-tabela";
-import { ModeloTabela } from "../../utils/modelo-tabela";
+import { Component, HostBinding, Input } from "@angular/core";
+import { ColunaVM } from "./tabela.model";
+import { ModeloTabela } from "./modelo-tabela";
 
 // Recebe a própria instância do modelo, não os seus pedaços: as colunas
 // visíveis, os títulos, os valores ativos e as opções vêm todos do mesmo
@@ -9,9 +9,13 @@ import { ModeloTabela } from "../../utils/modelo-tabela";
 @Component({
   selector: "[appFiltrosColuna]",
   templateUrl: "./filtros-coluna.component.html",
-  styleUrls: ["./filtros-coluna.component.scss"],
 })
 export class FiltrosColunaComponent {
+  // O estilo desta linha vive no CSS global do pacote. Um seletor de
+  // atributo prendia-o ao nome do seletor acima: renomear o seletor tirava
+  // o fundo à linha sem erro nenhum. A classe é o contrato com o CSS.
+  @HostBinding("class.tf-filtro-linha") readonly classeDeEstilo = true;
+
   // `any` deliberado: componentes do Angular 6 não levam genéricos para o
   // template. A segurança de tipos vive no `MapaColunas` e no `setFiltro`
   // da instância, onde importa.

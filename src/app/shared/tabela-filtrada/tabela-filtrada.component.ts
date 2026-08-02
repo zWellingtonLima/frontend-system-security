@@ -8,9 +8,9 @@ import {
   TemplateRef,
 } from "@angular/core";
 import { Subscription } from "rxjs";
-import { ColunaVM, LinhaTabela } from "../../models/modelo-tabela";
-import { ModeloTabela } from "../../utils/modelo-tabela";
 import { CelulaTabelaDirective } from "./celula-tabela.directive";
+import { ModeloTabela } from "./modelo-tabela";
+import { ColunaVM, LinhaTabela } from "./tabela.model";
 
 // Tabela de dados: cabeçalho, linha de filtros, corpo e os estados de
 // carregar / sem dados / sem resultados.
@@ -25,10 +25,13 @@ import { CelulaTabelaDirective } from "./celula-tabela.directive";
 //     <ng-template appCelula="acoes" let-chave>…</ng-template>
 //     <app-paginacao rodape [paginador]="paginador"></app-paginacao>
 //   </app-tabela-filtrada>
+//
+// Os estilos vivem em `styles/tabela.scss`, registado globalmente — ver o
+// README. Não são `styleUrls` porque metade das classes é escrita pela
+// página e estilo encapsulado nunca lá chegaria.
 @Component({
   selector: "app-tabela-filtrada",
   templateUrl: "./tabela-filtrada.component.html",
-  styleUrls: ["./tabela-filtrada.component.scss"],
 })
 export class TabelaFiltradaComponent implements AfterContentInit, OnDestroy {
   // `any` deliberado: componentes do Angular 6 não levam genéricos para o

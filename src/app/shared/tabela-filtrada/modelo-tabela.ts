@@ -7,7 +7,7 @@ import {
   startWith,
   tap,
 } from "rxjs/operators";
-import { ColunaVM, LinhaTabela, MapaColunas } from "../models/modelo-tabela";
+import { ColunaVM, LinhaTabela, MapaColunas } from "./tabela.model";
 
 // Referência estável para colunas sem opções
 const SEM_OPCOES: string[] = [];
@@ -47,14 +47,22 @@ export class ModeloTabela<T, C extends string> {
   // tipo de filtro, valor ativo e opções resolvidos
   readonly colunas$: Observable<ColunaVM[]>;
 
-  // Para distinguir "não há dados" de "os filtros não deixaram passar nada"
-  readonly temAtivos$: Observable<boolean> = this.filtros$.pipe(
-    map((filtros) => Object.keys(filtros).length > 0),
-  );
+  // Para distinguir "não há dados" de "os filtros não deixaram passar nada".
+  //
+  // Sai do MESMO stream debounced que as linhas, de propósito. Se saísse do
+  // estado imediato, limpar o último filtro punha-o a `false` enquanto as
+  // linhas ainda eram as 0 da filtragem anterior — e o `*ngIf` da tabela,
+  // que lê os dois, destruía a tabela inteira durante 150ms. A linha de
+  // filtros ia atrás e o `<input>` onde se estava a escrever perdia o foco.
+  readonly temAtivos$: Observable<boolean>;
 
   // Alguma coluna declara filtro? É o que decide se a tabela desenha a linha
   // de filtros — ninguém tem de a ligar ou desligar à mão.
   readonly filtravel: boolean;
+
+  // Alguma coluna declara largura? Decide se a tabela fixa as larguras em
+  // vez de as deixar seguir o conteúdo.
+  readonly temLarguras: boolean;
 
   constructor(
     private mapa: MapaColunas<T, C>,
@@ -62,6 +70,7 @@ export class ModeloTabela<T, C extends string> {
     fonte$: Observable<T[]>,
   ) {
     this.filtravel = this.colunasDoMapa().some((c) => !!this.mapa[c].filtro);
+    this.temLarguras = this.colunasDoMapa().some((c) => !!this.mapa[c].largura);
 
     //   publishReplay(1) - uma só subscrição à fonte, partilhada; o buffer serve quem subscreve depois (senão os <select> nasciam vazios).
     //   refCount() - larga a fonte quando sai o último subscritor. O service é `root` e sobrevive à página; sem isto ficava pendurado.
@@ -83,13 +92,24 @@ export class ModeloTabela<T, C extends string> {
 
     // `startWith` é obrigatório: o `debounceTime` seguraria a primeira
     // emissão do BehaviorSubject 150ms e a tabela nasceria vazia a piscar.
+    //
+    // Partilhado (`publishReplay + refCount`) porque tem DOIS consumidores —
+    // as linhas e o `temAtivos$` — e a tabela decide com os dois ao mesmo
+    // tempo. Sem partilhar, cada um corria o seu debounce e podiam
+    // discordar; partilhado, emitem os dois na mesma cascata.
     const filtrosEstaveis$ = this.filtros$.pipe(
       debounceTime(150),
       startWith({} as EstadoFiltros),
+      publishReplay(1),
+      refCount(),
     );
 
     this.linhas$ = combineLatest(decoradas$, filtrosEstaveis$).pipe(
       map(([linhas, filtros]) => this.filtrar(linhas, filtros)),
+    );
+
+    this.temAtivos$ = filtrosEstaveis$.pipe(
+      map((filtros) => Object.keys(filtros).length > 0),
     );
 
     // As opções dos <select> derivam das linhas SEM filtro: se derivassem
@@ -208,6 +228,7 @@ export class ModeloTabela<T, C extends string> {
       titulo: definicao.titulo,
       filtro: definicao.filtro || null,
       classe: definicao.classe || "",
+      largura: definicao.largura || "",
       valor: filtros[coluna] || "",
       opcoes: opcoes[coluna] || SEM_OPCOES,
     };

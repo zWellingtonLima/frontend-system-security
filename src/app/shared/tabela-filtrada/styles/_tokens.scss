@@ -1,0 +1,44 @@
+// ============================================================
+// TOKENS DO MÓDULO DA TABELA
+// ============================================================
+// Cópia deliberada dos tokens da aplicação, com prefixo próprio.
+//
+// A tabela é um pacote que se copia inteiro para outro projeto. Se
+// dependesse do `_tokens.scss` global, dependia também do `includePaths`
+// do angular.json — e a pasta deixava de ser auto-suficiente.
+//
+// O prefixo `$tf-` evita que estas variáveis e as da aplicação de destino
+// se sobreponham em silêncio quando as duas são importadas no mesmo build.
+
+// Cores
+$tf-color-accent: #22a7bd;
+$tf-color-accent-dark: #188ea1;
+$tf-color-text-dark: #243746;
+$tf-color-text-muted: #5f7382;
+$tf-color-text-muted-alt: #6b7a88;
+$tf-color-text-body: #4e5d6c;
+$tf-color-text-cell: #374151;
+
+// Superfícies e bordas
+$tf-color-bg-soft: #f9fcfe;
+$tf-color-bg-light: #d8e4ec;
+$tf-color-border: #e2e8f0;
+$tf-color-border-faint: #edf3f7;
+
+// Anel de foco dos controlos de filtro. DERIVADO do accent, não escrito à
+// mão: mudar o accent para adaptar a tabela a outra marca tem de arrastar
+// o anel atrás, senão fica com a cor antiga e ninguém percebe porquê.
+$tf-color-focus-ring: rgba($tf-color-accent, 0.15);
+
+// Geometria
+$tf-radius: 8px;
+
+// Espaçamento
+$tf-space-xs: 8px;
+$tf-space-sm: 12px;
+$tf-space-lg: 24px;
+
+// Folga das células. Extraído porque `th` e `td` têm de concordar: se
+// discordarem, o cabeçalho desalinha das colunas.
+$tf-cell-padding-x: 18px;
+$tf-cell-padding-y: 10px;

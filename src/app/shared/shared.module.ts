@@ -8,10 +8,8 @@ import { PortariaShellComponent } from "./components/portaria-shell/portaria-she
 import { BaseModalComponent } from "./components/base-modal/base-modal.component";
 import { FuncionarioAutocompleteComponent } from "./components/funcionario-autocomplete/funcionario-autocomplete.component";
 import { TableSearchComponent } from "./components/table-search/table-search.component";
-import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-coluna.component";
 import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
-import { TabelaFiltradaComponent } from "./components/tabela-filtrada/tabela-filtrada.component";
-import { CelulaTabelaDirective } from "./components/tabela-filtrada/celula-tabela.directive";
+import { TabelaFiltradaModule } from "./tabela-filtrada";
 
 @NgModule({
   imports: [
@@ -20,17 +18,15 @@ import { CelulaTabelaDirective } from "./components/tabela-filtrada/celula-tabel
     FormsModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    TabelaFiltradaModule,
   ],
   declarations: [
     NavbarComponent,
     PortariaShellComponent,
     BaseModalComponent,
     FuncionarioAutocompleteComponent,
-    FiltrosColunaComponent,
     TableSearchComponent,
     PaginacaoComponent,
-    TabelaFiltradaComponent,
-    CelulaTabelaDirective,
   ],
   exports: [
     NavbarComponent,
@@ -38,10 +34,8 @@ import { CelulaTabelaDirective } from "./components/tabela-filtrada/celula-tabel
     BaseModalComponent,
     TableSearchComponent,
     FuncionarioAutocompleteComponent,
-    FiltrosColunaComponent,
     PaginacaoComponent,
-    TabelaFiltradaComponent,
-    CelulaTabelaDirective,
+    TabelaFiltradaModule,
   ],
 })
 export class SharedModule {}

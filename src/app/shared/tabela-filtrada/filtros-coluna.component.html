@@ -3,12 +3,12 @@
     *ngFor="let coluna of modelo.colunas$ | async; trackBy: trackByChave"
     [ngClass]="'col-' + coluna.chave"
     [ngSwitch]="coluna.filtro"
-    class="filtro-th"
+    class="tf-filtro-th"
   >
     <input
       *ngSwitchCase="'texto'"
       type="text"
-      class="filtro-controlo"
+      class="tf-filtro-controlo"
       autocomplete="off"
       [value]="coluna.valor"
       [attr.aria-label]="'Filtrar por ' + coluna.titulo"
@@ -18,7 +18,7 @@
 
     <select
       *ngSwitchCase="'select'"
-      class="filtro-controlo"
+      class="tf-filtro-controlo"
       [value]="coluna.valor"
       [attr.aria-label]="'Filtrar por ' + coluna.titulo"
       (change)="onEscolher(coluna.chave, $event)"

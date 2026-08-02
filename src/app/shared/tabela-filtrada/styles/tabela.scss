@@ -1,0 +1,305 @@
+// `./` explícito: o projeto pode ter um `_tokens.scss` seu nos
+// `includePaths` e sem isto não é óbvio qual dos dois entra.
+@import "./tokens";
+
+// ============================================================
+// ESTILOS DA TABELA FILTRADA
+// ============================================================
+// Ficheiro GLOBAL de propósito, não estilo de componente.
+//
+// Metade destas classes é escrita pela página e não pela tabela: o `classe`
+// de uma `DefinicaoColuna` é uma string num `.ts`, e o markup dentro de um
+// `ng-template appCelula` é compilado na página. Estilo encapsulado num
+// componente nunca alcança nenhum dos dois.
+//
+// Registar em `angular.json` → `styles[]`, ou com um `@import` a partir do
+// stylesheet global do projeto. Ver o README.
+//
+// Todas as classes levam o prefixo `tf-` para poderem conviver com as do
+// projeto de destino sem uma sobrepor a outra.
+
+// ============================================================
+// TABELA
+// ============================================================
+// Estratégia de larguras: em vez de distribuir percentagens coluna a
+// coluna, `table-layout: auto` + `nowrap` faz cada coluna encolher ao seu
+// conteúdo. Depois basta marcar UMA coluna com `.tf-col-flex` para ela
+// absorver o espaço que sobra.
+
+.tf-tbl-wrap {
+  overflow-x: auto;
+}
+
+.tf-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  // `auto` distribui o espaço sobrante de forma proporcional ao conteúdo
+  // de cada coluna. Com `fixed` seriam todas iguais.
+  table-layout: auto;
+
+  thead {
+    background: $tf-color-bg-soft;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 500;
+    color: $tf-color-text-muted-alt;
+    text-align: left;
+    padding: $tf-cell-padding-y $tf-cell-padding-x;
+    border-top: 1px solid $tf-color-border-faint;
+    border-bottom: 1px solid $tf-color-border-faint;
+  }
+
+  td {
+    font-size: 12px;
+    color: $tf-color-text-cell;
+    padding: $tf-cell-padding-y $tf-cell-padding-x;
+    border-bottom: 1px solid $tf-color-border-faint;
+    vertical-align: middle;
+  }
+
+  // Sem isto uma coluna estreita parte o texto em várias linhas em vez de
+  // encolher ao conteúdo, e a coluna flexível deixa de receber as sobras.
+  th,
+  tr {
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: $tf-color-bg-soft;
+  }
+}
+
+// Larguras fixas: ligado sozinho quando alguma coluna declara `largura`.
+//
+// Com `fixed` o browser decide as larguras a partir do `<colgroup>` e ignora
+// o conteúdo — é isso que faz as colunas pararem de saltar a cada filtragem.
+// Em troca, conteúdo maior que a coluna deixa de a poder esticar, por isso
+// tem de ser cortado com reticências em vez de transbordar para a coluna ao
+// lado. O `nowrap` que a tabela já tem é o que faz o `ellipsis` funcionar.
+.tf-tbl--fixo {
+  table-layout: fixed;
+
+  th,
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ============================================================
+// LARGURA DE COLUNA — para o `classe` da definição de coluna
+// ============================================================
+
+// A coluna que absorve o espaço sobrante. Uma por tabela.
+.tf-col-flex {
+  white-space: normal;
+  max-width: 48ch;
+}
+
+// Colunas de largura fixa (números, botões, ícones): não participam na
+// partilha do espaço sobrante.
+//
+// O `width: 1%` é a forma de dizer "esta coluna não quer espaço extra". O
+// browser não consegue encolher abaixo do conteúdo, por isso trata o valor
+// como "o mínimo possível" e entrega as sobras às outras colunas.
+.tf-col-tight {
+  width: 1%;
+}
+
+// Colunas numéricas: alinhadas à direita e com dígitos de largura fixa,
+// para os valores ficarem alinhados na vertical. Números não beneficiam de
+// espaço extra, por isso são sempre `tight`.
+.tf-col-num {
+  @extend .tf-col-tight;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+// ============================================================
+// CONTEÚDO DE CÉLULA — para o `classe` e para os `appCelula`
+// ============================================================
+
+// Wrapper dos botões de ação dentro de uma célula
+.tf-acoes {
+  display: flex;
+  align-items: center;
+  gap: $tf-space-xs;
+}
+
+// Destaque da célula principal de uma linha (código, nome)
+.tf-bold {
+  font-weight: 700;
+  color: $tf-color-text-dark;
+}
+
+// Segunda linha dentro de uma célula (ex: o piso por baixo da sala)
+.tf-sub {
+  display: block;
+  font-size: 12px;
+  color: $tf-color-text-muted;
+}
+
+// Traço de célula sem valor
+.tf-dash {
+  color: $tf-color-text-muted-alt;
+}
+
+// ============================================================
+// LINHA DE FILTROS
+// ============================================================
+// A classe é posta pelo `host` do `FiltrosColunaComponent` — não depender
+// do nome do seletor da diretiva deixa o seletor livre de ser renomeado.
+
+.tf-filtro-linha {
+  background: $tf-color-bg-soft;
+}
+
+// Folga mais curta que a do `th` do cabeçalho: a linha de filtros é
+// secundária e não deve competir em altura com os títulos das colunas.
+.tf-filtro-th {
+  padding: $tf-space-xs;
+  border-bottom: 1px solid $tf-color-border-faint;
+}
+
+.tf-filtro-controlo {
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  padding: 0 $tf-space-xs;
+
+  font-size: 12px;
+  font-weight: 400;
+  color: $tf-color-text-body;
+
+  border: 1px solid $tf-color-border;
+  border-radius: $tf-radius;
+  background: #fff;
+
+  &::placeholder {
+    color: $tf-color-text-muted-alt;
+    // O placeholder repete o título da coluna logo acima — fica discreto
+    // para não duplicar visualmente o cabeçalho.
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $tf-color-accent;
+    box-shadow: 0 0 0 2px $tf-color-focus-ring;
+  }
+}
+
+// Um `<select>` nativo calcula a altura de forma diferente de um `<input>`,
+// mesmo com a mesma classe.
+select.tf-filtro-controlo {
+  height: 30px;
+  cursor: pointer;
+}
+
+// ============================================================
+// ESTADOS: a carregar, sem dados, sem resultados
+// ============================================================
+
+.tf-empty-state,
+.tf-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $tf-space-xs;
+  padding: $tf-space-lg;
+  font-weight: 500;
+  color: $tf-color-text-muted;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.tf-empty-state i {
+  font-size: 2rem;
+}
+
+.tf-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top-color: $tf-color-accent;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: tf-spin 1.2s cubic-bezier(0.19, 1.06, 0.6, 0.58) infinite;
+}
+
+@keyframes tf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Vazio por filtro: fica DENTRO da tabela para o cabeçalho e a linha de
+// filtros continuarem visíveis e o utilizador poder desfazer o filtro.
+.tf-sem-resultados {
+  td {
+    padding: $tf-space-lg;
+    text-align: center;
+    color: $tf-color-text-muted;
+  }
+
+  i {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: $tf-space-xs;
+  }
+
+  p {
+    margin: 0 0 $tf-space-sm;
+    font-weight: 500;
+  }
+
+  &:hover td {
+    background: transparent;
+  }
+}
+
+// ============================================================
+// BOTÃO
+// ============================================================
+// Só o suficiente para o "Limpar" do estado sem resultados. Não é um
+// sistema de botões — o projeto de destino tem o seu.
+
+.tf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $tf-space-xs;
+  padding: 10px;
+
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+
+  background: #ffffff;
+  border: 1px solid $tf-color-bg-light;
+  border-radius: $tf-radius;
+  color: $tf-color-accent-dark;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+
+  &:hover:not(:disabled) {
+    border-color: $tf-color-accent;
+    background: $tf-color-bg-soft;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
