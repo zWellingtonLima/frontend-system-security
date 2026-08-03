@@ -49,7 +49,7 @@ export class TabelaFiltradaComponent implements AfterContentInit, OnDestroy {
   @Input() classeTabela = "";
 
   // Como identificar uma linha, para o `trackBy` não recriar o DOM todo a
-  // cada resposta do backend. Sem isto cai-se no índice.
+  // cada resposta do backend.
   @Input() idDe: ((item: any) => any) | null = null;
 
   @ContentChildren(CelulaTabelaDirective)

@@ -72,7 +72,6 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
     });
   }
 
-  // A tabela usa isto no trackBy para não recriar as linhas todas
   idDaChave(chave: ChaveViewModel): number {
     return chave.id;
   }
@@ -84,15 +83,12 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
     this.chaveEmEdicao = chave;
     this.secaoAtiva = "DEVOLUCAO";
 
-    // Por padrão assume-se que devolve quem levou
     this.atualizarForm.reset({
       idChave: chave.id,
       idFuncionarioEmprestimo: chave.idRH,
-      idDevolvidaPor: chave.idRH,
+      idDevolvidaPor: "",
     });
     this.erros.limpar(this.atualizarForm);
-
-    this.service.carregarOpcoesEdicao(chave);
     this.atualizarModalIsOpen = true;
   }
 
@@ -103,6 +99,10 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
 
   onSecaoChange(secao: SecaoModal): void {
     this.secaoAtiva = secao;
+
+    if (secao === "EDICAO") {
+      this.service.carregarOpcoesEdicao(this.chaveEmEdicao as ChaveViewModel);
+    }
   }
 
   onGuardarAlteracoes(): void {
@@ -117,8 +117,6 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
     )
       return;
 
-    // Corrigir o empréstimo é corrigir a quem a chave foi entregue, por isso
-    // o que segue é o funcionário do empréstimo, não quem devolve.
     const { idChave, idFuncionarioEmprestimo } = this.atualizarForm.value;
 
     this.service
