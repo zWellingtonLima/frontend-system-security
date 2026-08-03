@@ -8,7 +8,7 @@ const FUSO = "Europe/Lisbon";
 export type ColunaHistorico =
   | "edificio"
   | "codigo"
-  | "sala"
+  | "chaveiro"
   | "nomeFuncionario"
   | "desde"
   | "devolucao";
@@ -17,7 +17,7 @@ export type ColunaHistorico =
 export const COLUNAS_HISTORICO: ColunaHistorico[] = [
   "edificio",
   "codigo",
-  "sala",
+  "chaveiro",
   "nomeFuncionario",
   "desde",
   "devolucao",
@@ -33,15 +33,15 @@ export function criarColunasHistorico(
     },
 
     codigo: {
-      titulo: "Chave / Código",
-      classe: "tf-bold",
+      titulo: "Chave",
+      classe: "tf-bold tf-col-tight",
       texto: (chave) => chave.codigo,
     },
 
-    sala: {
-      titulo: "Sala / Piso",
-      texto: (chave) =>
-        chave.sala != null ? `Sala ${chave.sala} ${chave.pisoLabel}` : "",
+    chaveiro: {
+      titulo: "Código Chaveiro",
+      classe: "tf-col-tight",
+      texto: (chave) => chave.chaveiro,
     },
 
     nomeFuncionario: {
@@ -58,6 +58,7 @@ export function criarColunasHistorico(
 
     devolucao: {
       titulo: "Data / Hora devolução",
+      classe: "tf-col-tight",
       texto: (chave) =>
         datePipe.transform(chave.devolucao, FORMATO_DATA, FUSO) || "",
     },

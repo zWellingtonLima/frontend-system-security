@@ -14,7 +14,7 @@ const MENSAGENS_OBRIGATORIO = {
 // Navegação da página. A ordem aqui é a ordem das tabs no ecrã
 const TABS: { label: string; rota: string }[] = [
   { label: "Emprestadas", rota: "emprestadas" },
-  { label: "Inventário", rota: "inventario" },
+  { label: "Inventário de Chaves", rota: "inventario" },
   { label: "Histórico de Empréstimos", rota: "historico" },
 ];
 
@@ -62,8 +62,6 @@ export class ChavesComponent implements OnInit, OnDestroy {
     this.emprestarModalIsOpen = false;
   }
 
-  // Há um <select> por edifício mas só um empréstimo: todos escrevem no
-  // mesmo controle `idChave`
   onEscolherChave(evento: Event): void {
     const valor = (evento.target as HTMLSelectElement).value;
 

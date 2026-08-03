@@ -8,7 +8,7 @@ const FUSO = "Europe/Lisbon";
 export type ColunaInventario =
   | "edificio"
   | "codigo"
-  | "sala"
+  | "chaveiro"
   | "estado"
   | "desde"
   | "nomeFuncionario";
@@ -17,7 +17,7 @@ export type ColunaInventario =
 export const COLUNAS_INVENTARIO: ColunaInventario[] = [
   "edificio",
   "codigo",
-  "sala",
+  "chaveiro",
   "estado",
   "desde",
   "nomeFuncionario",
@@ -38,16 +38,15 @@ export function criarColunasInventario(
 
     codigo: {
       largura: "14%",
-      titulo: "Chave / Código",
+      titulo: "Chave",
       classe: "tf-bold",
       texto: (chave) => chave.codigo,
     },
 
-    sala: {
-      largura: "14%",
-      titulo: "Sala / Piso",
-      texto: (chave) =>
-        chave.sala != null ? `Sala ${chave.sala} ${chave.pisoLabel}` : "",
+    chaveiro: {
+      titulo: "Código Chaveiro",
+      classe: "tf-col-tight",
+      texto: (chave) => chave.chaveiro,
     },
 
     estado: {

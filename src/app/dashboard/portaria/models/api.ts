@@ -25,6 +25,7 @@ export interface ChavesResponseDTO {
   idEmprestimo: number | null;
   idEdificio: number;
   codigo: string;
+  chaveiro: string;
   sala: number | null;
   piso: string;
   status: StatusChaveEnumType;
@@ -45,9 +46,8 @@ export interface ChaveViewModel extends ChavesResponseDTO {
 export interface ChaveDisponivelDTO {
   id: number;
   idEdificio: number;
+  chaveiro: string;
   codigo: string;
-  piso: string;
-  numeroSala: number | null; // null em caso de molho
 }
 
 export interface ChavesPage {
@@ -62,7 +62,7 @@ export interface ChaveOpcao {
   id: number;
   idEdificio: number;
   codigo: string;
-  sala: number | null;
+  chaveiro: string;
 }
 
 // Chaves de um edifício. Alimenta um <select> por edifício no modal de
