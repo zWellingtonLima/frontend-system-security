@@ -26,21 +26,17 @@ export interface TiposVisitas {
 }
 
 export interface movimentacoesFiltro {
-  tipoVisita?: number;
-  dataInicio?: Date | null;
-  dataFim?: Date | null;
-  pesquisa?: string;
-  /** página baseada em 0, tal como o Spring Data Pageable */
-  page: number;
-  size: number;
+  tipoVisita?: number | null | "";
+  dataInicio?: string | null;
+  dataFim?: string | null;
+  textoBusca: string;
 }
 
-export interface PageResponse<Movimentacoes> {
-  movimentacoes: Movimentacoes[];
-  totalElements: number;
+export interface movimentacoesPage {
+  content: Movimentacoes[];
+  number: number; // página atual (0-based)
   totalPages: number;
-  page: number;
-  size: number;
+  totalElements: number; // total da query, não o total da página
 }
 
 // TABELA
@@ -68,8 +64,6 @@ export const componenteMovimentacoesEnum = {
   ATIVAS: "ATIVAS",
   HISTORICO: "HISTORICO",
 };
-
-
 
 export type componenteMovimentacoesType =
   keyof typeof componenteMovimentacoesEnum;

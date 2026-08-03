@@ -24,6 +24,7 @@
       (click)="selecionarAba(componenteAtivo.ATIVAS)"
     >
       Ativas
+      <span class="tab-count"> {{ count$ | async }} </span>
     </div>
     <div
       class="tab"
@@ -35,6 +36,7 @@
   </div>
 
   <ng-container
+    #ativas
     *ngIf="abaAtiva === componenteAtivo.ATIVAS; else historicoMovimentacoes"
   >
     <app-visitas-ativas></app-visitas-ativas>
@@ -77,7 +79,7 @@
           class="filter-select"
         >
           <option [ngValue]="null" disabled>Selecione um tipo</option>
-          <option *ngFor="let tipo of tipoVisita" [ngValue]="tipo.id">
+          <option *ngFor="let tipo of tipoVisita | async" [value]="tipo.id">
             {{ tipo.tipo }}
           </option>
         </select>

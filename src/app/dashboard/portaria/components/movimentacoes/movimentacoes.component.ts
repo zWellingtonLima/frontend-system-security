@@ -7,6 +7,7 @@ import {
 } from "../../models/movimentacoes.model";
 import { MovimentacoesService } from "../../services/api/movimentacoes.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-movimentacoes",
@@ -19,17 +20,20 @@ export class MovimentacoesComponent implements OnInit {
     private fb: FormBuilder,
   ) {}
 
+  count$!: Observable<number>;
+
   ngOnInit() {
-    // this.movimentacoesService.carregarAtivas() // movimentacoes tabela
+    this.count$ = this.movimentacoesService.countAtivas$;
+    this.movimentacoesService.carregarTipoVisita();
     this.iniciarFormulario();
-    this.carregarTipoVisitaCombo();
   }
+
+  tipoVisita = this.movimentacoesService.listaPartilhada$;
   carregando: boolean = false;
 
   formularioRegistarVisita: FormGroup = new FormGroup({});
   modalIsOpen: boolean = false;
   modoEdicao: boolean = false;
-  tipoVisita?: TiposVisitas[];
   botaoEnvio?: string;
   novaVisita?: novaVisita;
 
@@ -48,10 +52,6 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   registarFormuluarioVisita() {
-    if (this.formularioRegistarVisita.invalid) {
-      console.log(this.formularioRegistarVisita.hasError("pattern"));
-      this.formularioRegistarVisita.markAsUntouched();
-    }
     if (this.formularioRegistarVisita.valid) {
       console.log(this.formularioRegistarVisita.value);
       this.movimentacoesService
@@ -59,6 +59,7 @@ export class MovimentacoesComponent implements OnInit {
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();
+            this.movimentacoesService.carregarAtivas().subscribe();
             this.mostrarToast("Visita registada com sucesso!");
           },
           () => {
@@ -66,15 +67,7 @@ export class MovimentacoesComponent implements OnInit {
             this.mostrarToast("Erro ao registar a visita.");
           },
         );
-    } else {
-      this.formularioRegistarVisita.markAsUntouched();
     }
-  }
-  carregarTipoVisitaCombo(): void {
-    this.movimentacoesService.carregarTipoVisita();
-    this.movimentacoesService.listaPartilhada$.subscribe(
-      (dados) => (this.tipoVisita = dados),
-    );
   }
 
   abrirModalEmprestar() {

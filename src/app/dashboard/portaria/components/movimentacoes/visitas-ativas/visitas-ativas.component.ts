@@ -20,7 +20,7 @@ export class VisitasAtivasComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.movimentacoesService.carregarAtivas() // movimentacoes tabela
+    this.movimentacoesService.carregarAtivas().subscribe();
     this.carregarTipoVisitaCombo();
     this.iniciarFormulario();
     this.carregarAtivas();
@@ -28,10 +28,15 @@ export class VisitasAtivasComponent implements OnInit {
 
   carregando: boolean = false;
 
-  carregarAtivas() {
-    this.movimentacoesService.carregarAtivas().subscribe((res) => {
-      this.dadosOriginais = res;
-      this.dadosFiltrados = res;
+  carregarAtivas(): void {
+    this.movimentacoesService.listaMovimentacoesAtivas$.subscribe({
+      next: (res) => {
+        this.dadosOriginais = res;
+        this.dadosFiltrados = res;
+      },
+      error: () => {
+        this.mostrarToast("Erro ao carregar visitas");
+      },
     });
   }
 
@@ -69,12 +74,12 @@ export class VisitasAtivasComponent implements OnInit {
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();
-            this.carregarAtivas();
+            this.movimentacoesService.carregarAtivas().subscribe();
             this.mostrarToast("Visita atualizada com sucesso!");
           },
           () => {
-            this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao atualizar a visita.");
+            this.alternarVisibilidadeModal();
           },
         );
     }
@@ -82,18 +87,17 @@ export class VisitasAtivasComponent implements OnInit {
 
   registarFormuluarioVisita() {
     if (this.formularioRegistarVisita.valid) {
-      console.log(this.formularioRegistarVisita.value);
       this.movimentacoesService
         .registoVisita(this.formularioRegistarVisita.value)
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();
-            this.carregarAtivas();
+            this.movimentacoesService.carregarAtivas().subscribe();
             this.mostrarToast("Visita registada com sucesso!");
           },
           () => {
-            this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao registar a visita.");
+            this.alternarVisibilidadeModal();
           },
         );
     }
@@ -102,7 +106,7 @@ export class VisitasAtivasComponent implements OnInit {
   marcarSaidaRapido(item: Movimentacoes) {
     this.movimentacoesService.marcarSaidaRapida(item.id).subscribe(
       () => {
-        this.carregarAtivas();
+        this.movimentacoesService.carregarAtivas().subscribe();
         this.mostrarToast("Saída registada com sucesso!");
       },
       () => {
@@ -129,7 +133,6 @@ export class VisitasAtivasComponent implements OnInit {
   filtrosAtuais: { [campo: string]: string } = {};
 
   private montarCamposPesquisa(): void {
-    console.log(this.tipoVisita);
     this.camposPesquisa = [
       { campo: "nomeVisitante", label: "Visitante", tipo: "texto" },
       { campo: "horaEntrada", label: "Entrada", tipo: "texto" },
@@ -150,7 +153,6 @@ export class VisitasAtivasComponent implements OnInit {
   }
 
   onFiltrosChange(filtros: { [campo: string]: string }): void {
-    console.log(filtros);
     this.filtrosAtuais = filtros;
     this.dadosFiltrados = this.filtrarLocal(this.dadosOriginais, filtros);
   }

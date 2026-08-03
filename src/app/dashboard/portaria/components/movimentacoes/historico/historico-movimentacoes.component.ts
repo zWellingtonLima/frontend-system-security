@@ -1,7 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { MovimentacoesService } from "../../../services/api/movimentacoes.service";
-import { Movimentacoes } from "../../../models/movimentacoes.model";
-import { TIPOS_LIST } from "../../../models/enums";
+import {
+  FILTROS_VAZIOS_MOVIMENTACOES,
+  MovimentacoesService,
+} from "../../../services/api/movimentacoes.service";
+import { FormBuilder, FormGroup } from "@angular/forms";
 
 @Component({
   selector: "app-historico-movimentacoes",
@@ -9,149 +11,29 @@ import { TIPOS_LIST } from "../../../models/enums";
   styleUrls: ["./historico-movimentacoes.component.scss"],
 })
 export class HistoricoMovimentacoesComponent implements OnInit {
-  constructor(private movimentacoesService: MovimentacoesService) {}
+  constructor(
+    private movimentacoesService: MovimentacoesService,
+    private fb: FormBuilder,
+  ) {}
+
+  filtrosForm!: FormGroup;
+  listaMovimentacoes = this.movimentacoesService.listaMovimentacoes$;
+  carregando = this.movimentacoesService.estaCarregandoDados$;
+  paginador = this.movimentacoesService.paginador;
+  tipoVisita = this.movimentacoesService.listaPartilhada$;
 
   ngOnInit() {
-    this.carregarVisitas();
-    console.log(this.tipoVisita);
-  }
-  limparFiltros() {}
-
-  carregarVisitas(): void {
-    this.carregando = true;
-    this.movimentacoesService
-      .listar({
-        dataInicio: this.dataInicio,
-        pesquisa: this.pesquisa && this.pesquisa.trim(),
-        dataFim: this.dataFim,
-        tipoVisita: this.tipoVisitaId,
-        page: this.currentPage - 1,
-        size: this.pageSize,
-      })
-      .subscribe(
-        (res) => {
-          this.listaMovimentacoes = res.movimentacoes;
-          this.totalElements = res.totalElements;
-          this.totalPages = res.totalPages;
-          this.currentPage = res.page + 1;
-          this.carregando = false;
-        },
-        () => {
-          this.carregando = false;
-        },
-      );
+    console.log(this.paginador);
+    this.movimentacoesService.inicializar();
+    this.filtrosForm = this.fb.group(FILTROS_VAZIOS_MOVIMENTACOES);
   }
 
-  // ─────────────────────────────────────────────
-  // LÓGICA DOS FILTROS DE PESQUISA
-  // ─────────────────────────────────────────────
-  tipoVisita = TIPOS_LIST;
-
-  dataInicio?: Date;
-  dataFim?: Date;
-  tipoVisitaId?: number;
-  pesquisa?: string;
-
-  aplicarFiltros(pesquisa: string) {
-    this.currentPage = 1;
-    this.pesquisa = pesquisa;
-    this.carregarVisitas();
+  aplicarFiltros(): void {
+    this.movimentacoesService.aplicarFiltros(this.filtrosForm.value);
   }
 
-  filtroInicio(dataInicio: Date) {
-    console.log(this.tipoVisita);
-    this.currentPage = 1;
-    this.dataInicio = dataInicio;
-    this.carregarVisitas();
-  }
-
-  filtroFim(dataFim: Date) {
-    this.currentPage = 1;
-    this.dataFim = dataFim;
-    this.carregarVisitas();
-  }
-
-  filtroTipoVisita(tipo: number) {
-    this.currentPage = 1;
-    this.tipoVisitaId = tipo;
-    console.log(tipo);
-    this.carregarVisitas();
-  }
-
-  // ── Tabela / paginação ──
-  readonly pageSize = 20;
-  listaMovimentacoes: Movimentacoes[] = [];
-  totalElements = 0;
-  totalPages = 0;
-  currentPage = 1;
-  carregando = false;
-
-  // ─────────────────────────────────────────────
-  // PAGINAÇÃO LÓGICAS
-  // ─────────────────────────────────────────────
-
-  get paginasVisiveis(): (number | "...")[] {
-    const total = this.totalPages;
-    const atual = this.currentPage;
-    const paginas: (number | "...")[] = [];
-
-    for (let p = 1; p <= total; p++) {
-      if (p === 1 || p === total || Math.abs(p - atual) <= 1) {
-        paginas.push(p);
-      } else if (paginas[paginas.length - 1] !== "...") {
-        paginas.push("...");
-      }
-    }
-    return paginas;
-  }
-
-  irParaPagina(pagina: number | "..."): void {
-    if (typeof pagina !== "number") {
-      return;
-    }
-    if (pagina < 1 || pagina > this.totalPages || pagina === this.currentPage) {
-      return;
-    }
-    this.currentPage = pagina;
-    this.carregarVisitas();
-  }
-
-  ehReticencia(p: number | "..."): boolean {
-    return p === "...";
-  }
-
-  isPaginaAtual(p: number | "..."): boolean {
-    return typeof p === "number" && p === this.currentPage;
-  }
-
-  // ─────────────────────────────────────────────
-  // VERIFICAR SE HÁ DADOS PAGINAÇÃO FOOTER
-  // ─────────────────────────────────────────────
-
-  get textoPaginacao(): string {
-    if (this.totalElements === 0) {
-      return "0 registos";
-    }
-    return `${this.inicioIntervalo} - ${this.fimIntervalo} de ${this.totalElements}`;
-  }
-
-  get inicioIntervalo(): number {
-    return this.totalElements === 0
-      ? 0
-      : (this.currentPage - 1) * this.pageSize + 1;
-  }
-
-  get fimIntervalo(): number {
-    return Math.min(this.currentPage * this.pageSize, this.totalElements);
-  }
-
-  formatarValor(valor: number): string {
-    if (valor === null || valor === undefined) {
-      return "-";
-    }
-    return valor.toLocaleString("pt-PT", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+  limparFiltros(): void {
+    this.filtrosForm.reset(FILTROS_VAZIOS_MOVIMENTACOES);
+    this.movimentacoesService.limparFiltros();
   }
 }

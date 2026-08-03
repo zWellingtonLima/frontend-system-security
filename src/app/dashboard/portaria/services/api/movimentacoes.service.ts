@@ -1,15 +1,26 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, throwError } from "rxjs";
+import { BehaviorSubject, Observable, of, throwError } from "rxjs";
 import {
   Movimentacoes,
   movimentacoesFiltro,
+  movimentacoesPage,
   novaVisita,
-  PageResponse,
   TiposVisitas,
 } from "../../models/movimentacoes.model";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
-import { catchError, map, shareReplay, tap } from "rxjs/operators";
+import { catchError, finalize, map, tap } from "rxjs/operators";
+import { Paginador } from "src/app/shared/utils/paginador";
+import { FormGroup } from "@angular/forms";
+
+const TAMANHO_PAGINA = 20;
+
+export const FILTROS_VAZIOS_MOVIMENTACOES: movimentacoesFiltro = {
+  tipoVisita: "",
+  dataInicio: "",
+  dataFim: "",
+  textoBusca: "",
+};
 
 @Injectable({
   providedIn: "root",
@@ -18,12 +29,61 @@ export class MovimentacoesService {
   private readonly apiUrl = environment.movimentacoesApiUrl;
   constructor(private http: HttpClient) {}
 
+  private estaCarregandoDados = new BehaviorSubject<boolean>(false);
+  readonly estaCarregandoDados$ = this.estaCarregandoDados.asObservable();
+
+  private movimentacoesBehavior = new BehaviorSubject<Movimentacoes[]>([]);
+  readonly listaMovimentacoes$ = this.movimentacoesBehavior.asObservable();
+
+  private movimentacoesAtivasBehavior = new BehaviorSubject<Movimentacoes[]>(
+    [],
+  );
+  readonly listaMovimentacoesAtivas$ =
+    this.movimentacoesAtivasBehavior.asObservable();
+
+  private countAtivasBehavior = new BehaviorSubject<number>(0);
+  readonly countAtivas$ = this.countAtivasBehavior.asObservable();
+
+  private filtros = new BehaviorSubject<movimentacoesFiltro>(
+    FILTROS_VAZIOS_MOVIMENTACOES,
+  );
+
+  readonly paginador = new Paginador(() => this.listar(), TAMANHO_PAGINA);
+
+  filtrosForm!: FormGroup;
+
+  inicializar(): void {
+    this.filtros.next(FILTROS_VAZIOS_MOVIMENTACOES);
+    this.paginador.reset();
+    this.listar();
+  }
+
+  aplicarFiltros(filtros: movimentacoesFiltro): void {
+    this.filtros.next({
+      ...filtros,
+      textoBusca: this.normalizarTexto(filtros.textoBusca),
+    });
+    this.paginador.primeiraPagina();
+    this.listar();
+  }
+
+  limparFiltros(): void {
+    this.filtros.next(FILTROS_VAZIOS_MOVIMENTACOES);
+    this.paginador.primeiraPagina();
+    this.listar();
+  }
+
   registoVisita(body: novaVisita) {
     return this.http.post(this.apiUrl, body);
   }
 
   carregarAtivas(): Observable<Movimentacoes[]> {
-    return this.http.get<Movimentacoes[]>(`${this.apiUrl}/ativas`);
+    return this.http.get<Movimentacoes[]>(`${this.apiUrl}/ativas`).pipe(
+      tap((res) => {
+        this.countAtivasBehavior.next(res.length);
+        this.movimentacoesAtivasBehavior.next(res);
+      }),
+    );
   }
 
   private listaDeTipos = new BehaviorSubject<TiposVisitas[]>([]);
@@ -55,16 +115,21 @@ export class MovimentacoesService {
   //     .subscribe((resultado) => this.linhasMovimentacoes$.next(resultado));
   // }
 
-  listar(filtro: movimentacoesFiltro): Observable<PageResponse<Movimentacoes>> {
+  listar(): void {
+    this.estaCarregandoDados.next(true);
+    const filtro = this.filtros.value;
     let params = new HttpParams()
-      .set("page", String(filtro.page))
-      .set("size", String(filtro.size));
+      .set("page", String(this.paginador.pagina))
+      .set("size", String(this.paginador.tamanho));
 
     if (filtro.tipoVisita) {
       params = params.set("tipoVisita", String(filtro.tipoVisita));
     }
-    if (filtro.pesquisa) {
-      params = params.set("pesquisa", String(filtro.pesquisa));
+    if (filtro.textoBusca) {
+      params = params.set(
+        "pesquisa",
+        String(this.normalizarTexto(filtro.textoBusca)),
+      );
     }
     if (filtro.dataInicio) {
       params = params.set("inicio", String(filtro.dataInicio));
@@ -72,14 +137,28 @@ export class MovimentacoesService {
     if (filtro.dataFim) {
       params = params.set("fim", String(filtro.dataFim));
     }
-    return this.http.get<any>(this.apiUrl, { params }).pipe(
-      map((res) => ({
-        movimentacoes: res.content,
-        totalElements: res.totalElements,
-        totalPages: res.totalPages,
-        page: res.number,
-        size: res.size,
-      })),
-    );
+    this.http
+      .get<movimentacoesPage>(this.apiUrl, { params })
+      .pipe(
+        catchError((err) => {
+          console.error("CHAV-SERV-INV: " + err); // implementar componente de Toast
+          return of(null);
+        }),
+        finalize(() => this.estaCarregandoDados.next(false)),
+      )
+      .subscribe((resultado) => {
+        if (resultado === null) {
+          return;
+        }
+        this.movimentacoesBehavior.next(resultado.content);
+        this.paginador.definirTotal(
+          resultado.totalPages,
+          resultado.totalElements,
+        );
+      });
+  }
+
+  private normalizarTexto(texto: string): string {
+    return texto.replace(/\s+/g, " ").trim();
   }
 }
