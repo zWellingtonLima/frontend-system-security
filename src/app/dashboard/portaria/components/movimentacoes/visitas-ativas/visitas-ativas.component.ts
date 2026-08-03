@@ -25,7 +25,7 @@ export class VisitasAtivasComponent implements OnInit {
     this.iniciarFormulario();
     this.carregarAtivas();
   }
-  movimentacoes: Movimentacoes[] = [];
+
   carregando: boolean = false;
 
   carregarAtivas() {
@@ -36,8 +36,8 @@ export class VisitasAtivasComponent implements OnInit {
   }
 
   carregarTipoVisitaCombo() {
-    this.movimentacoesService.carregarTipoVisita().subscribe((res) => {
-      this.tipoVisita = res;
+    this.movimentacoesService.listaPartilhada$.subscribe((dados) => {
+      this.tipoVisita = dados;
       this.montarCamposPesquisa();
     });
   }

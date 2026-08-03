@@ -22,7 +22,9 @@ export class HistoricoMovimentacoesComponent implements OnInit {
     this.movimentacoesService
       .listar({
         dataInicio: this.dataInicio,
+        pesquisa: this.pesquisa && this.pesquisa.trim(),
         dataFim: this.dataFim,
+        tipoVisita: this.tipoVisitaId,
         page: this.currentPage - 1,
         size: this.pageSize,
       })
@@ -39,15 +41,22 @@ export class HistoricoMovimentacoesComponent implements OnInit {
         },
       );
   }
-  aplicarFiltros() {}
+
   // ─────────────────────────────────────────────
   // LÓGICA DOS FILTROS DE PESQUISA
   // ─────────────────────────────────────────────
   tipoVisita = TIPOS_LIST;
 
-  dataInicio?: Date | null;
-  dataFim?: Date | null;
-  edificioId?: number;
+  dataInicio?: Date;
+  dataFim?: Date;
+  tipoVisitaId?: number;
+  pesquisa?: string;
+
+  aplicarFiltros(pesquisa: string) {
+    this.currentPage = 1;
+    this.pesquisa = pesquisa;
+    this.carregarVisitas();
+  }
 
   filtroInicio(dataInicio: Date) {
     console.log(this.tipoVisita);
@@ -61,9 +70,11 @@ export class HistoricoMovimentacoesComponent implements OnInit {
     this.dataFim = dataFim;
     this.carregarVisitas();
   }
-  filtroEdificio(edificio: number) {
+
+  filtroTipoVisita(tipo: number) {
     this.currentPage = 1;
-    this.edificioId = edificio;
+    this.tipoVisitaId = tipo;
+    console.log(tipo);
     this.carregarVisitas();
   }
 

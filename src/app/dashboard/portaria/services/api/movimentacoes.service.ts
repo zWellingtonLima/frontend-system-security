@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable, throwError } from "rxjs";
 import {
   Movimentacoes,
   movimentacoesFiltro,
@@ -9,7 +9,7 @@ import {
 } from "../../models/movimentacoes.model";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment";
-import { map } from "rxjs/operators";
+import { catchError, map, shareReplay, tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -26,8 +26,14 @@ export class MovimentacoesService {
     return this.http.get<Movimentacoes[]>(`${this.apiUrl}/ativas`);
   }
 
-  carregarTipoVisita(): Observable<TiposVisitas[]> {
-    return this.http.get<TiposVisitas[]>(`${this.apiUrl}/tipos`);
+  private listaDeTipos = new BehaviorSubject<TiposVisitas[]>([]);
+  readonly listaPartilhada$ = this.listaDeTipos.asObservable();
+
+  // Altere o tipo de retorno para Observable
+  carregarTipoVisita(): void {
+    this.http.get<TiposVisitas[]>(`${this.apiUrl}/tipos`).subscribe((res) => {
+      this.listaDeTipos.next(res);
+    });
   }
 
   marcarSaidaRapida(id: number) {
@@ -54,8 +60,11 @@ export class MovimentacoesService {
       .set("page", String(filtro.page))
       .set("size", String(filtro.size));
 
-    if (filtro.tipo) {
-      params = params.set("tipo", filtro.tipo);
+    if (filtro.tipoVisita) {
+      params = params.set("tipoVisita", String(filtro.tipoVisita));
+    }
+    if (filtro.pesquisa) {
+      params = params.set("pesquisa", String(filtro.pesquisa));
     }
     if (filtro.dataInicio) {
       params = params.set("inicio", String(filtro.dataInicio));

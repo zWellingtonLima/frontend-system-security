@@ -22,6 +22,7 @@ export class MovimentacoesComponent implements OnInit {
   ngOnInit() {
     // this.movimentacoesService.carregarAtivas() // movimentacoes tabela
     this.iniciarFormulario();
+    this.carregarTipoVisitaCombo();
   }
   carregando: boolean = false;
 
@@ -35,7 +36,10 @@ export class MovimentacoesComponent implements OnInit {
   iniciarFormulario() {
     this.formularioRegistarVisita = this.fb.group({
       id: [null],
-      nomeVisitante: ["", Validators.required],
+      nomeVisitante: [
+        "",
+        [Validators.required, Validators.pattern(/^[a-zA-ZÀ-ÿ\s]+$/)],
+      ],
       idTipoVisita: [null, Validators.required],
       idRHFuncionario: [null],
       setorFuncionario: [{ value: "", disabled: true }],
@@ -44,6 +48,10 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   registarFormuluarioVisita() {
+    if (this.formularioRegistarVisita.invalid) {
+      console.log(this.formularioRegistarVisita.hasError("pattern"));
+      this.formularioRegistarVisita.markAsUntouched();
+    }
     if (this.formularioRegistarVisita.valid) {
       console.log(this.formularioRegistarVisita.value);
       this.movimentacoesService
@@ -58,7 +66,15 @@ export class MovimentacoesComponent implements OnInit {
             this.mostrarToast("Erro ao registar a visita.");
           },
         );
+    } else {
+      this.formularioRegistarVisita.markAsUntouched();
     }
+  }
+  carregarTipoVisitaCombo(): void {
+    this.movimentacoesService.carregarTipoVisita();
+    this.movimentacoesService.listaPartilhada$.subscribe(
+      (dados) => (this.tipoVisita = dados),
+    );
   }
 
   abrirModalEmprestar() {
