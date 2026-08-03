@@ -18,7 +18,7 @@ export class FuncionarioService {
   listar(): Observable<Funcionario[]> {
     if (!this.funcionariosListacache$) {
       this.funcionariosListacache$ = this.http
-        .get<Funcionario[]>(environment.funcionariosApiUrl)
+        .get<Funcionario[]>(`${environment.funcionariosApiUrl}/nossa`)
         .pipe(
           catchError((err) => {
             this.funcionariosListacache$ = null;

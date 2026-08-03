@@ -10,6 +10,7 @@
     <input
       *ngSwitchCase="'numero'"
       type="number"
+      class="filtro-controlo"
       [formControl]="form.get(campo.campo)"
       [placeholder]="campo.placeholder || campo.label"
     />

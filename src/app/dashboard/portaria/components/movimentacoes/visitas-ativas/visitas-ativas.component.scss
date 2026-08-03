@@ -2,13 +2,10 @@
 @import "modal";
 @import "layout";
 
-.page-header-row {
-  margin-bottom: 25px;
-}
 .bold-text {
-  font-weight: bold;
+  color: $portaria-color-text-dark;
+  font-weight: 500;
 }
-
 // ── TOAST POP DE AVISO ---
 .toast {
   position: fixed;

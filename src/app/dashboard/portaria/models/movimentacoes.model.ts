@@ -26,9 +26,10 @@ export interface TiposVisitas {
 }
 
 export interface movimentacoesFiltro {
-  tipo?: string;
+  tipoVisita?: number;
   dataInicio?: Date | null;
   dataFim?: Date | null;
+  pesquisa?: string;
   /** página baseada em 0, tal como o Spring Data Pageable */
   page: number;
   size: number;
@@ -62,3 +63,13 @@ export const movColunas: MovimentacoesColunaChave[] = [
   "notas",
   "acoes",
 ];
+
+export const componenteMovimentacoesEnum = {
+  ATIVAS: "ATIVAS",
+  HISTORICO: "HISTORICO",
+};
+
+
+
+export type componenteMovimentacoesType =
+  keyof typeof componenteMovimentacoesEnum;
