@@ -23,7 +23,7 @@ import { environment } from "src/environments/environment";
 const TABS: OcorrenciaTabConfig[] = [
   { value: "PENDENTE", label: "Pendentes", paginada: true },
   { value: "RESOLVIDA", label: "Resolvidas", paginada: true },
-  { value: "CANCELADA", label: "Canceladas", paginada: true },
+  // { value: "CANCELADA", label: "Canceladas", paginada: true },
   { value: "TODAS", label: "Todas", paginada: true },
 ];
 
