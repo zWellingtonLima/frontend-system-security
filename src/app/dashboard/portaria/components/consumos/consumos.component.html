@@ -35,25 +35,6 @@
       </div>
     </div>
 
-    <div class="leitura-card lc-eletricidade">
-      <div class="lc-header">
-        <div class="lc-tipo elet">Elet.</div>
-        <div class="lc-icon li-elet"><i class="icon-energy"></i></div>
-      </div>
-      <div class="container-flex">
-        <app-card-leituras
-          *ngFor="let leitura of leiturasEletricidade"
-          [nomeEdificio]="leitura.nomeEdificio"
-          [leituraAtual]="leitura.leituraAtual"
-          [consumo]="leitura.consumo"
-          [dataRegisto]="leitura.dataRegisto"
-          unidade="kWh"
-          tipoClasse="elet"
-        >
-        </app-card-leituras>
-      </div>
-    </div>
-
     <div class="leitura-card lc-gas">
       <div class="lc-header">
         <div class="lc-tipo gas">Gás</div>
@@ -83,13 +64,7 @@
     >
       Água
     </div>
-    <div
-      class="tab"
-      [class.active]="abaAtiva === tipoConsumo.ELETRICIDADE"
-      (click)="selecionarAba(tipoConsumo.ELETRICIDADE)"
-    >
-      Eletricidade
-    </div>
+
     <div
       class="tab"
       [class.active]="abaAtiva === tipoConsumo.GAS"
@@ -287,7 +262,7 @@
         <!-- Tipo de consumo -->
         <div class="form-group">
           <label class="form-label-caps">Tipo de consumo</label>
-          <div class="tipo-consumo-grid">
+          <div class="tipo-consumo-grid content-center">
             <button
               type="button"
               class="tipo-consumo-card sel-agua"
@@ -297,17 +272,7 @@
               <i class="ft-droplet"></i>
               <span>Água</span>
             </button>
-            <button
-              type="button"
-              class="tipo-consumo-card sel-elet"
-              [class.active]="
-                registarLeituraForm.value.tipoConsumo === 'ELETRICIDADE'
-              "
-              (click)="selecionarTipoConsumo('ELETRICIDADE')"
-            >
-              <i class="ft-zap"></i>
-              <span>Eletricidade</span>
-            </button>
+
             <button
               type="button"
               class="tipo-consumo-card sel-gas"
