@@ -1,0 +1,26 @@
+@import "tokens";
+
+// Classes de célula usadas em qualquer tabela.
+//
+// São globais por obrigação, não por conveniência: o `classe` de uma
+// definição de coluna é uma string escrita num `.ts` e a célula é desenhada
+// pelo `<app-tabela-filtrada>`. Um seletor encapsulado num componente nunca
+// alcançaria markup gerado por outro.
+
+// Destaque da célula principal de uma linha (código, nome)
+.bold-text {
+  font-weight: 700;
+  color: $portaria-color-text-dark;
+}
+
+// Traço de célula sem valor
+.empty-dash {
+  color: $portaria-color-text-muted-alt;
+}
+
+// Segunda linha dentro de uma célula (ex: o piso por baixo da sala)
+.sub-text {
+  display: block;
+  font-size: 12px;
+  color: $portaria-color-text-muted;
+}

@@ -1,4 +1,4 @@
-<!-- FILTROS -->
+<!-- FILTROS — resolvidos no backend -->
 <div class="filter-container flex" [formGroup]="filtrosForm">
   <div class="search-wrap flex content-center">
     <i class="fas fa-search"></i>
@@ -7,36 +7,21 @@
       type="text"
       class="search-input"
       formControlName="textoBusca"
-      placeholder="Pesquisar por código ou nome de quem levou a chave..."
+      placeholder="Pesquisar por código da chave..."
     />
   </div>
-  <label for="data-inicio">Data início: </label>
-  <input
-    class="filter-select"
-    type="date"
-    formControlName="dataInicio"
-    id="data-inicio"
-    (change)="aplicarFiltros()"
-  />
 
-  <label for="data-fim">Data fim: </label>
-  <input
-    class="filter-select"
-    type="date"
-    formControlName="dataFim"
-    id="data-fim"
-    (change)="aplicarFiltros()"
-  />
-
-  <select
-    class="filter-select"
-    name="filter-select"
-    formControlName="idEdificio"
-    (change)="aplicarFiltros()"
-  >
+  <select class="filter-select" name="filter-select-edificios" formControlName="idEdificio" (change)="aplicarFiltros()">
     <option value="">Todos os edifícios</option>
     <option *ngFor="let edificio of edificios" [ngValue]="edificio.id">
       {{ edificio.label }}
+    </option>
+  </select>
+
+  <select class="filter-select" name="filter-select-pisos" formControlName="piso" (change)="aplicarFiltros()">
+    <option value="">Todos os pisos</option>
+    <option *ngFor="let piso of pisos" [ngValue]="piso.id">
+      {{ piso.label }}
     </option>
   </select>
 
@@ -45,7 +30,7 @@
     class="portaria-btn portaria-btn--secondary filter"
     (click)="limparFiltros()"
   >
-    <i class="ft-filter"></i>
+  <i class="ft-filter"></i>
     Limpar
   </button>
 </div>
@@ -54,8 +39,8 @@
   [modelo]="modelo"
   [carregando]="carregando$ | async"
   [idDe]="idDaChave"
-  textoCarregando="A carregar histórico de empréstimos..."
-  mensagemVazia="Nenhum empréstimo encontrado"
+  textoCarregando="Carregando chaves..."
+  mensagemVazia="Nenhuma chave encontrada."
 >
   <!-- SALA / PISO: o piso é um subtexto por baixo da sala -->
   <ng-template appCelula="sala" let-chave>
@@ -64,6 +49,19 @@
       <span class="tf-sub">{{ chave.pisoLabel }}</span>
     </ng-container>
     <ng-template #semSala><span class="tf-dash">—</span></ng-template>
+  </ng-template>
+
+  <!-- ESTADO: badge com ícone e cor -->
+  <ng-template appCelula="estado" let-chave>
+    <span
+      class="badge"
+      *ngIf="chave.statusConfig as estado; else semEstado"
+      [ngClass]="estado.classe"
+    >
+      <i [ngClass]="estado.icone"></i>
+      {{ estado.label }}
+    </span>
+    <ng-template #semEstado><span class="tf-dash">—</span></ng-template>
   </ng-template>
 
   <app-paginacao rodape [paginador]="paginador"></app-paginacao>

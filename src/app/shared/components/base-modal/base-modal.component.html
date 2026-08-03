@@ -1,9 +1,22 @@
-<div class="portaria-modal-overlay" *ngIf="modalEstaAberto" @overlay>
+<div
+  class="portaria-modal-overlay"
+  *ngIf="modalEstaAberto"
+  @overlay
+  (mousedown)="aoPremirNoFundo($event)"
+  (mouseup)="aoSoltarNoFundo($event)"
+  (click)="aoClicarNoFundo()"
+>
+  <!-- `tabindex="-1"` para o contentor poder receber o foco ao abrir sem
+       entrar na cadeia de Tab. É daqui que o ciclo do foco parte. -->
   <div
+    #dialogo
     @modal
     (@modal.done)="aoTerminarAbertura()"
     class="portaria-modal"
-    (click)="$event.stopPropagation()"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="titulo"
   >
     <header class="portaria-modal__header">
       <div>
@@ -17,7 +30,7 @@
       </button>
     </header>
 
-    <div class="portaria-modal__content" #contentRef>
+    <div class="portaria-modal__content">
       <ng-content></ng-content>
     </div>
 

@@ -104,22 +104,6 @@ export const TIPOS_OCORRENCIA: TipoOcorrencia[] = Object.keys(
 // ============================================================
 // CHAVES
 // ============================================================
-export type TabsChave = "EMPRESTADAS" | "INVENTARIO";
-
-// Quais são todas as colunas que existem nessa página
-export type ColunaChave =
-  | "edificio"
-  | "codigo"
-  | "sala"
-  | "estado"
-  | "desde"
-  | "nomeFuncionario"
-  | "acoes";
-
-// Cada tab decide quais colunas mostra e em que ordem
-export type ChavesTabConfig = TabConfig<TabsChave> & {
-  colunas: ColunaChave[];
-};
 
 export type StatusChaveEnumType = "EMPRESTADA" | "DISPONIVEL";
 
@@ -159,34 +143,6 @@ export const PISO_LABEL: Record<string, string> = {
 export const PISOS_OPCOES: { id: string; label: string }[] = Object.keys(
   PISO_LABEL,
 ).map((id) => ({ id: id, label: PISO_LABEL[Number(id)] }));
-
-// EMPRESTIMOS COLUNAS
-export type ColunaEmprestimoChave =
-  | "edificio"
-  | "codigo"
-  | "sala"
-  | "nomeFuncionario"
-  | "desde"
-  | "devolucao";
-
-export const COLUNA_EMPRESTIMO_TITULO: Record<ColunaEmprestimoChave, string> = {
-  edificio: "Edifício",
-  codigo: "Chave / Código",
-  sala: "Sala / Piso",
-  nomeFuncionario: "Responsável",
-  desde: "Data / Hora empréstimo",
-  devolucao: "Data / Hora devolução",
-};
-
-// A ordem aqui define a ordem das colunas na tabela do histórico
-export const COLUNAS_HISTORICO_EMPRESTIMO: ColunaEmprestimoChave[] = [
-  "edificio",
-  "codigo",
-  "sala",
-  "nomeFuncionario",
-  "desde",
-  "devolucao",
-];
 
 // ============================================================
 // MOVIMENTACOES

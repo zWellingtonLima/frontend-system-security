@@ -8,7 +8,8 @@ import { PortariaShellComponent } from "./components/portaria-shell/portaria-she
 import { BaseModalComponent } from "./components/base-modal/base-modal.component";
 import { FuncionarioAutocompleteComponent } from "./components/funcionario-autocomplete/funcionario-autocomplete.component";
 import { TableSearchComponent } from "./components/table-search/table-search.component";
-import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-coluna.component";
+import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
+import { TabelaFiltradaModule } from "./tabela-filtrada";
 
 @NgModule({
   imports: [
@@ -17,14 +18,15 @@ import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-colu
     FormsModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    TabelaFiltradaModule,
   ],
   declarations: [
     NavbarComponent,
     PortariaShellComponent,
     BaseModalComponent,
     FuncionarioAutocompleteComponent,
-    FiltrosColunaComponent,
     TableSearchComponent,
+    PaginacaoComponent,
   ],
   exports: [
     NavbarComponent,
@@ -32,7 +34,8 @@ import { FiltrosColunaComponent } from "./components/filtros-coluna/filtros-colu
     BaseModalComponent,
     TableSearchComponent,
     FuncionarioAutocompleteComponent,
-    FiltrosColunaComponent,
+    PaginacaoComponent,
+    TabelaFiltradaModule,
   ],
 })
 export class SharedModule {}

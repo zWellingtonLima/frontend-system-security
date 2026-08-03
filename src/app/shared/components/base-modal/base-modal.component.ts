@@ -47,43 +47,136 @@ export class BaseModalComponent implements OnChanges, OnDestroy {
   @Input() modalEstaAberto: boolean = false;
   @Output() fechar = new EventEmitter<void>();
 
-  // ViewChild so consegue fazer algo depois do ngAfterViewInit
-  @ViewChild("contentRef") contentRef!: ElementRef<HTMLElement>;
+  @ViewChild("dialogo") private dialogo!: ElementRef<HTMLElement>;
+
+  private focoAnterior: HTMLElement | null = null;
+
+  private premidoNoFundo = false;
+  private soltoNoFundo = false;
 
   private focusableSelectors = [
+    "a[href]",
+    "button:not([disabled])",
     "input:not([disabled])",
     "select:not([disabled])",
     "textarea:not([disabled])",
-    "button:not([disabled])",
+    '[tabindex]:not([tabindex="-1"])',
   ].join(", ");
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes["modalEstaAberto"]) {
-      document.body.style.overflow = changes["modalEstaAberto"].currentValue
-        ? "hidden"
-        : "";
+    const mudanca = changes["modalEstaAberto"];
+    if (!mudanca) return;
+
+    document.body.style.overflow = mudanca.currentValue ? "hidden" : "";
+
+    if (mudanca.currentValue) {
+      this.focoAnterior = document.activeElement as HTMLElement | null;
+    } else {
+      this.devolverFoco();
     }
   }
 
   aoTerminarAbertura(): void {
-    if (!this.modalEstaAberto) return;
-
-    const content = this.contentRef && this.contentRef.nativeElement;
-    if (!content) return;
-
-    const primeiroElemento = content.querySelector<HTMLElement>(
-      this.focusableSelectors,
-    );
-    if (primeiroElemento) primeiroElemento.focus();
+    if (!this.modalEstaAberto || !this.dialogo) return;
+    this.dialogo.nativeElement.focus();
   }
 
-  // Remove o estilo sempre que o componente é destruído
   ngOnDestroy(): void {
     document.body.style.overflow = "";
+    this.devolverFoco();
   }
 
   @HostListener("document:keydown.escape")
   onEscape() {
     if (this.modalEstaAberto) this.fechar.emit();
+  }
+
+  aoPremirNoFundo(evento: MouseEvent): void {
+    this.premidoNoFundo = this.noFundo(evento);
+  }
+
+  aoSoltarNoFundo(evento: MouseEvent): void {
+    this.soltoNoFundo = this.noFundo(evento);
+  }
+
+  aoClicarNoFundo(): void {
+    const foiNoFundo = this.premidoNoFundo && this.soltoNoFundo;
+
+    this.premidoNoFundo = false;
+    this.soltoNoFundo = false;
+
+    if (foiNoFundo) this.fechar.emit();
+  }
+
+  private noFundo(evento: MouseEvent): boolean {
+    return evento.target === evento.currentTarget;
+  }
+
+  @HostListener("document:keydown", ["$event"])
+  onKeydown(evento: KeyboardEvent): void {
+    if (!this.modalEstaAberto || evento.key !== "Tab") return;
+    this.prenderFoco(evento);
+  }
+
+  private prenderFoco(evento: KeyboardEvent): void {
+    if (!this.dialogo) return;
+
+    const contentor = this.dialogo.nativeElement;
+    const focaveis = this.focaveis(contentor);
+
+    if (!focaveis.length) {
+      evento.preventDefault();
+      return;
+    }
+
+    const primeiro = focaveis[0];
+    const ultimo = focaveis[focaveis.length - 1];
+    const ativo = document.activeElement as HTMLElement | null;
+
+    if (ativo === contentor) {
+      if (!evento.shiftKey) return;
+
+      evento.preventDefault();
+      ultimo.focus();
+      return;
+    }
+
+    if (!ativo || !contentor.contains(ativo)) {
+      evento.preventDefault();
+      (evento.shiftKey ? ultimo : primeiro).focus();
+      return;
+    }
+
+    if (!evento.shiftKey && ativo === ultimo) {
+      evento.preventDefault();
+      primeiro.focus();
+    } else if (evento.shiftKey && ativo === primeiro) {
+      evento.preventDefault();
+      ultimo.focus();
+    }
+  }
+
+  private focaveis(contentor: HTMLElement): HTMLElement[] {
+    const encontrados = contentor.querySelectorAll<HTMLElement>(
+      this.focusableSelectors,
+    );
+
+    const alcancaveis: HTMLElement[] = [];
+    for (let i = 0; i < encontrados.length; i++) {
+      const elemento = encontrados[i];
+
+      if (elemento.tabIndex >= 0 && elemento.getClientRects().length > 0) {
+        alcancaveis.push(elemento);
+      }
+    }
+
+    return alcancaveis;
+  }
+
+  private devolverFoco(): void {
+    const anterior = this.focoAnterior;
+    this.focoAnterior = null;
+
+    if (anterior && document.body.contains(anterior)) anterior.focus();
   }
 }

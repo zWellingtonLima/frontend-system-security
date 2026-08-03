@@ -22,11 +22,7 @@ registerLocaleData(localePt);
     SharedModule,
     HttpClientModule,
     PortariaModule,
-    // AuthModule,
   ],
-  // O DatePipe não é `providedIn: "root"`. Fica aqui, e não no PortariaModule,
-  // porque quem o injeta (ChaveService) é `providedIn: "root"` — no injetor
-  // raiz não veria os providers de um módulo de funcionalidade lazy.
   providers: [{ provide: LOCALE_ID, useValue: "pt-PT" }, DatePipe],
   bootstrap: [AppComponent],
 })

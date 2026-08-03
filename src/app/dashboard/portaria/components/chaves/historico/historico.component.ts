@@ -1,12 +1,18 @@
+import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
+import { of } from "rxjs";
+import { ModeloTabela } from "src/app/shared/tabela-filtrada";
+import { ChaveViewModel } from "../../../models/api";
 import {
   EmprestimosHistoricoService,
   FILTROS_VAZIOS,
-} from "../../../services/api/emprestimos-historico.service";
+} from "../../../services/api/chaves/emprestimos-historico.service";
+import { EDIFICIO_OPCOES } from "../../../models/enums";
 import {
-  COLUNA_EMPRESTIMO_TITULO,
-  EDIFICIO_OPCOES,
-} from "../../../models/enums";
+  ColunaHistorico,
+  COLUNAS_HISTORICO,
+  criarColunasHistorico,
+} from "./historico.colunas";
 import { FormBuilder, FormGroup } from "@angular/forms";
 
 @Component({
@@ -15,12 +21,17 @@ import { FormBuilder, FormGroup } from "@angular/forms";
   styleUrls: ["./historico.component.scss"],
 })
 export class EmprestimosHistoricoComponent implements OnInit {
-  historico$ = this.service.chavesEmprestimoHistorico$;
-  paginacao$ = this.service.paginacao$;
+
+
+  readonly modelo = new ModeloTabela<ChaveViewModel, ColunaHistorico>(
+    criarColunasHistorico(this.datePipe),
+    of(COLUNAS_HISTORICO),
+    this.service.chavesEmprestimoHistorico$,
+  );
+
+  paginador = this.service.paginador;
   carregando$ = this.service.estaCarregandoDados$;
 
-  colunas = this.service.colunas;
-  titulos = COLUNA_EMPRESTIMO_TITULO;
   edificios = EDIFICIO_OPCOES;
 
   // Rascunho: só chega ao service quando o utilizador confirma
@@ -29,6 +40,7 @@ export class EmprestimosHistoricoComponent implements OnInit {
   constructor(
     private service: EmprestimosHistoricoService,
     private fb: FormBuilder,
+    private datePipe: DatePipe,
   ) {}
 
   ngOnInit() {
@@ -36,7 +48,6 @@ export class EmprestimosHistoricoComponent implements OnInit {
     this.filtrosForm = this.fb.group(FILTROS_VAZIOS);
   }
 
-  // Botão Procurar e Enter no campo de pesquisa
   aplicarFiltros(): void {
     this.service.aplicarFiltros(this.filtrosForm.value);
   }
@@ -46,18 +57,7 @@ export class EmprestimosHistoricoComponent implements OnInit {
     this.service.limparFiltros();
   }
 
-  // Setas anterior/seguinte - recebe a página de destino (0-based)
-  onPageChange(pagina: number) {
-    this.service.setPagina(pagina);
-  }
-
-  // Botões numerados - converte a página exibida (1-based) para 0-based
-  irParaPagina(pagina: number | "...") {
-    if (typeof pagina !== "number") return;
-    this.service.setPagina(pagina - 1);
-  }
-
-  trackById(_: number, chave: { id: number }) {
+  idDaChave(chave: ChaveViewModel): number {
     return chave.id;
   }
 }

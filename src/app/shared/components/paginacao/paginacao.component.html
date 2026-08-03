@@ -1,0 +1,39 @@
+<ng-container *ngIf="paginador && (vista$ | async) as vista">
+  <div class="paginacao-barra">
+    <span class="paginacao-info">{{ vista.texto }}</span>
+
+    <div class="paginacao" *ngIf="vista.temPaginas">
+      <button
+        type="button"
+        [disabled]="!vista.temAnterior"
+        (click)="irPara(vista.paginaAtual - 1)"
+        aria-label="Página anterior"
+      >
+        <i class="ft-arrow-left"></i>
+      </button>
+
+      <ng-container *ngFor="let p of vista.paginas">
+        <button
+          type="button"
+          *ngIf="p !== '...'; else reticencia"
+          [class.active]="p === vista.paginaAtual + 1"
+          (click)="irParaNumero(p)"
+        >
+          {{ p }}
+        </button>
+        <ng-template #reticencia>
+          <span class="reticencia">…</span>
+        </ng-template>
+      </ng-container>
+
+      <button
+        type="button"
+        [disabled]="!vista.temProximo"
+        (click)="irPara(vista.paginaAtual + 1)"
+        aria-label="Página seguinte"
+      >
+        <i class="ft-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</ng-container>

@@ -19,6 +19,7 @@
     padding: $p-xs $p-md;
     font-weight: 500;
     color: $portaria-color-text-muted;
+    transition: color 0.2s ease;
 
     &.active {
       color: $portaria-color-accent-dark;
@@ -37,6 +38,10 @@
 
     &.active .tab-count {
       background: $portaria-color-bg-hover;
+      color: $portaria-color-accent-dark;
+    }
+
+    &:hover {
       color: $portaria-color-accent-dark;
     }
   }

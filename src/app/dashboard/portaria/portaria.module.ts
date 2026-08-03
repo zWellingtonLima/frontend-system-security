@@ -11,6 +11,8 @@ import { OcorrenciasComponent } from "./components/ocorrencias/ocorrencias.compo
 import { ChavesComponent } from "./components/chaves/chaves.component";
 import { CardLeiturasComponent } from "./components/consumos/card-leituras/card-leituras.component";
 import { EmprestimosHistoricoComponent } from "./components/chaves/historico/historico.component";
+import { EmprestadasComponent } from "./components/chaves/emprestadas/emprestadas.component";
+import { InventarioComponent } from "./components/chaves/inventario/inventario.component";
 import { MovimentacoesComponent } from "./components/movimentacoes/movimentacoes.component";
 import { HistoricoMovimentacoesComponent } from "./components/movimentacoes/historico/historico-movimentacoes.component";
 import { VisitasAtivasComponent } from './components/movimentacoes/visitas-ativas/visitas-ativas.component';
@@ -29,6 +31,8 @@ import { VisitasAtivasComponent } from './components/movimentacoes/visitas-ativa
     ConsumosComponent,
     OcorrenciasComponent,
     ChavesComponent,
+    EmprestadasComponent,
+    InventarioComponent,
     CardLeiturasComponent,
     MovimentacoesComponent,
     HistoricoMovimentacoesComponent,
