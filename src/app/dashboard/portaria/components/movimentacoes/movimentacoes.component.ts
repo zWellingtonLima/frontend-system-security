@@ -32,7 +32,7 @@ export class MovimentacoesComponent implements OnInit {
   tipoVisita = this.movimentacoesService.listaPartilhada$;
   carregando: boolean = false;
 
-  formularioRegistarVisita: FormGroup = new FormGroup({});
+  formularioRegistarVisita!: FormGroup;
   modalIsOpen: boolean = false;
   modoEdicao: boolean = false;
   botaoEnvio?: string;
@@ -60,7 +60,7 @@ export class MovimentacoesComponent implements OnInit {
         .subscribe(
           () => {
             this.alternarVisibilidadeModal();
-            this.movimentacoesService.carregarAtivas().subscribe();
+            this.movimentacoesService.carregarAtivas();
             this.mostrarToast("Visita registada com sucesso!");
           },
           () => {

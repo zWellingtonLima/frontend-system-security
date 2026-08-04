@@ -226,7 +226,8 @@
       "
       (fechar)="alternarVisibilidadeModal()"
     >
-      <form [formGroup]="registarLeituraForm" class="form-leitura">
+      <!-- 🔥 Classe aplicada aqui -->
+      <form [formGroup]="registarLeituraForm" class="modal-leitura">
         <!-- Tipo de consumo -->
         <div class="form-group">
           <label class="form-label-caps">Tipo de consumo</label>
@@ -273,8 +274,8 @@
           <div class="info-box">
             <div class="info-box-item">
               <span class="info-box-label">Leitura anterior</span>
-              <span class="info-box-valor"
-                >{{
+              <span class="info-box-valor">
+                {{
                   ultimaLieituraForm && ultimaLieituraForm.leituraAtual
                     | number: "1.2-2"
                 }}
@@ -285,7 +286,9 @@
                 }}
               </span>
             </div>
+
             <div class="info-box-divider"></div>
+
             <div class="info-box-item">
               <span class="info-box-label">Consumo calculado</span>
               <span class="info-box-valor">
@@ -315,6 +318,7 @@
               (input)="onLeituraAtualChange()"
             />
           </div>
+
           <div class="form-group">
             <label for="unidade">Unidade</label>
             <input
@@ -349,6 +353,7 @@
         >
           Cancelar
         </button>
+
         <button
           class="portaria-btn portaria-btn--primary"
           [disabled]="registarLeituraForm.invalid"

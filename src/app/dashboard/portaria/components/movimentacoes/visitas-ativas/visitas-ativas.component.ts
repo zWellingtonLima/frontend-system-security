@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import {
   Movimentacoes,
   novaVisita,
@@ -7,8 +7,8 @@ import {
 import { SearchFieldConfig } from "src/app/shared/components/table-search/table-search.component";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MovimentacoesService } from "../../../services/api/movimentacoes.service";
-import { TableSearchComponent } from "src/app/shared/components/table-search/table-search.component";
 import { Subject } from "rxjs";
+import { take, takeUntil } from "rxjs/operators";
 import { ToastComponent } from "src/app/shared/components/toast/toast.component";
 
 @Component({
@@ -16,38 +16,52 @@ import { ToastComponent } from "src/app/shared/components/toast/toast.component"
   templateUrl: "./visitas-ativas.component.html",
   styleUrls: ["./visitas-ativas.component.scss"],
 })
-export class VisitasAtivasComponent implements OnInit {
+export class VisitasAtivasComponent implements OnInit, OnDestroy {
   constructor(
     private movimentacoesService: MovimentacoesService,
     private fb: FormBuilder,
   ) {}
 
+  private destroy$ = new Subject<void>();
+
   ngOnInit() {
-    this.movimentacoesService.carregarAtivas().subscribe();
+    this.movimentacoesService.carregarAtivas();
+    this.carregarAtivas();
     this.carregarTipoVisitaCombo();
     this.iniciarFormulario();
-    this.carregarAtivas();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   carregando: boolean = false;
 
   carregarAtivas(): void {
-    this.movimentacoesService.listaMovimentacoesAtivas$.subscribe({
-      next: (res) => {
-        this.dadosOriginais = res;
-        this.dadosFiltrados = res;
-      },
-      error: () => {
-        this.mostrarToast("Erro ao carregar visitas");
-      },
-    });
+    this.carregando = true;
+    this.movimentacoesService.listaMovimentacoesAtivas$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.dadosOriginais = res;
+          this.dadosFiltrados = res;
+          this.carregando = false;
+        },
+        error: () => {
+          this.mostrarToast("Erro ao carregar visitas");
+          this.carregando = false;
+        },
+      });
   }
 
   carregarTipoVisitaCombo() {
-    this.movimentacoesService.listaPartilhada$.subscribe((dados) => {
-      this.tipoVisita = dados;
-      this.montarCamposPesquisa();
-    });
+    this.movimentacoesService.listaPartilhada$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((dados) => {
+        this.tipoVisita = dados;
+        this.montarCamposPesquisa();
+      });
   }
 
   formularioRegistarVisita: FormGroup = new FormGroup({});
@@ -74,48 +88,34 @@ export class VisitasAtivasComponent implements OnInit {
           this.formularioRegistarVisita.value.id,
           this.formularioRegistarVisita.value,
         )
-        .subscribe(
-          () => {
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
             this.alternarVisibilidadeModal();
-            this.movimentacoesService.carregarAtivas().subscribe();
+            this.movimentacoesService.carregarAtivas();
             this.mostrarToast("Visita atualizada com sucesso!");
           },
-          () => {
+          error: () => {
+            this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao atualizar a visita.");
-            this.alternarVisibilidadeModal();
           },
-        );
-    }
-  }
-
-  registarFormuluarioVisita() {
-    if (this.formularioRegistarVisita.valid) {
-      this.movimentacoesService
-        .registoVisita(this.formularioRegistarVisita.value)
-        .subscribe(
-          () => {
-            this.alternarVisibilidadeModal();
-            this.movimentacoesService.carregarAtivas().subscribe();
-            this.mostrarToast("Visita registada com sucesso!");
-          },
-          () => {
-            this.mostrarToast("Erro ao registar a visita.");
-            this.alternarVisibilidadeModal();
-          },
-        );
+        });
     }
   }
 
   marcarSaidaRapido(item: Movimentacoes) {
-    this.movimentacoesService.marcarSaidaRapida(item.id).subscribe(
-      () => {
-        this.movimentacoesService.carregarAtivas().subscribe();
-        this.mostrarToast("Saída registada com sucesso!");
-      },
-      () => {
-        this.mostrarToast("Erro ao marcar saida.");
-      },
-    );
+    this.movimentacoesService
+      .marcarSaidaRapida(item.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.movimentacoesService.carregarAtivas();
+          this.mostrarToast("Saída registada com sucesso!");
+        },
+        error: () => {
+          this.mostrarToast("Erro ao marcar saida.");
+        },
+      });
   }
 
   abrirEditar(item: Movimentacoes) {

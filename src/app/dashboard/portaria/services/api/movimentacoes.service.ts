@@ -75,13 +75,20 @@ export class MovimentacoesService {
     return this.http.post(this.apiUrl, body);
   }
 
-  carregarAtivas(): Observable<Movimentacoes[]> {
-    return this.http.get<Movimentacoes[]>(`${this.apiUrl}/ativas`).pipe(
-      tap((res) => {
-        this.countAtivasBehavior.next(res.length);
-        this.movimentacoesAtivasBehavior.next(res);
-      }),
-    );
+  carregarAtivas(): void {
+    this.http
+      .get<Movimentacoes[]>(`${this.apiUrl}/ativas`)
+      .pipe(
+        tap((res) => {
+          this.countAtivasBehavior.next(res.length);
+          this.movimentacoesAtivasBehavior.next(res);
+        }),
+        catchError((err) => {
+          console.error("Erro ao carregar ativas", err);
+          return of([]);
+        }),
+      )
+      .subscribe();
   }
 
   private listaDeTipos = new BehaviorSubject<TiposVisitas[]>([]);
