@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   componenteMovimentacoesEnum,
   componenteMovimentacoesType,
@@ -8,6 +8,7 @@ import {
 import { MovimentacoesService } from "../../services/api/movimentacoes.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Observable } from "rxjs";
+import { ToastComponent } from "src/app/shared/components/toast/toast.component";
 
 @Component({
   selector: "app-movimentacoes",
@@ -81,15 +82,9 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   // ── Toast ──
-  toastVisivel = false;
-  toastMensagem = "";
-  private toastTimeout: any;
-
-  private mostrarToast(mensagem: string): void {
-    this.toastMensagem = mensagem;
-    this.toastVisivel = true;
-    clearTimeout(this.toastTimeout);
-    this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
+  @ViewChild(ToastComponent) toast!: ToastComponent;
+  mostrarToast(msg: string): void {
+    this.toast.mostrar(msg);
   }
 
   abaAtiva: componenteMovimentacoesType = "ATIVAS";

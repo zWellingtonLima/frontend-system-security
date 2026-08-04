@@ -17,13 +17,14 @@ import {
   FILTROS_VAZIOS_CONSUMOS,
 } from "../../services/api/consumos.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ToastComponent } from "src/app/shared/components/toast/toast.component";
 
 @Component({
   selector: "app-consumos",
   templateUrl: "./consumos.component.html",
   styleUrls: ["./consumos.component.scss"],
 })
-export class ConsumosComponent implements OnInit, OnDestroy {
+export class ConsumosComponent implements OnInit {
   constructor(
     private consumoService: ConsumosService,
     private fb: FormBuilder,
@@ -41,11 +42,6 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   leituras: ConsumoLeitura[] = [];
   carregando = this.consumoService.estaCarregandoDados$;
 
-  // ── Toast ──
-  toastVisivel = false;
-  toastMensagem = "";
-  private toastTimeout: any;
-
   ngOnInit() {
     this.consumoService.inicializar();
     this.filtrosForm = this.fb.group(FILTROS_VAZIOS_CONSUMOS);
@@ -54,11 +50,6 @@ export class ConsumosComponent implements OnInit, OnDestroy {
     this.carregarConsumos();
     this.carregarUltimas();
   }
-
-  ngOnDestroy(): void {
-    clearTimeout(this.toastTimeout);
-  }
-
   aplicarFiltros(): void {
     this.consumoService.aplicarFiltros(this.filtrosForm.value);
   }
@@ -132,16 +123,6 @@ export class ConsumosComponent implements OnInit, OnDestroy {
     this.paginador.primeiraPagina;
     this.filtrosForm.patchValue({ tipo: abaStyle });
     this.aplicarFiltros();
-  }
-
-  // ─────────────────────────────────────────────
-  // TOAST - PEQUENO MODAL PARA MOSTRAR RESULTADOS(OPCIONAL)
-  // ─────────────────────────────────────────────
-  private mostrarToast(mensagem: string): void {
-    this.toastMensagem = mensagem;
-    this.toastVisivel = true;
-    clearTimeout(this.toastTimeout);
-    this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
   }
 
   // ─────────────────────────────────────────────
@@ -315,8 +296,12 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   };
 
   leiturasAgua?: UltimaLeitura[];
-
   leiturasEletricidade?: UltimaLeitura[];
-
   leiturasGas?: UltimaLeitura[];
+
+  // ── Toast ──
+  @ViewChild(ToastComponent) toast!: ToastComponent;
+  mostrarToast(msg: string): void {
+    this.toast.mostrar(msg);
+  }
 }

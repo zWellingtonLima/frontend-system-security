@@ -15,7 +15,7 @@ import { EmprestadasComponent } from "./components/chaves/emprestadas/emprestada
 import { InventarioComponent } from "./components/chaves/inventario/inventario.component";
 import { MovimentacoesComponent } from "./components/movimentacoes/movimentacoes.component";
 import { HistoricoMovimentacoesComponent } from "./components/movimentacoes/historico/historico-movimentacoes.component";
-import { VisitasAtivasComponent } from './components/movimentacoes/visitas-ativas/visitas-ativas.component';
+import { VisitasAtivasComponent } from "./components/movimentacoes/visitas-ativas/visitas-ativas.component";
 
 @NgModule({
   imports: [

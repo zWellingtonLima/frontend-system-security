@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MovimentacoesService } from "../../../services/api/movimentacoes.service";
 import { TableSearchComponent } from "src/app/shared/components/table-search/table-search.component";
 import { Subject } from "rxjs";
+import { ToastComponent } from "src/app/shared/components/toast/toast.component";
 
 @Component({
   selector: "app-visitas-ativas",
@@ -162,14 +163,8 @@ export class VisitasAtivasComponent implements OnInit {
   }
 
   // ── Toast ──
-  toastVisivel = false;
-  toastMensagem = "";
-  private toastTimeout: any;
-
-  private mostrarToast(mensagem: string): void {
-    this.toastMensagem = mensagem;
-    this.toastVisivel = true;
-    clearTimeout(this.toastTimeout);
-    this.toastTimeout = setTimeout(() => (this.toastVisivel = false), 3400);
+  @ViewChild(ToastComponent) toast!: ToastComponent;
+  mostrarToast(msg: string): void {
+    this.toast.mostrar(msg);
   }
 }

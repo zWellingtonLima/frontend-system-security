@@ -10,6 +10,7 @@ import { FuncionarioAutocompleteComponent } from "./components/funcionario-autoc
 import { TableSearchComponent } from "./components/table-search/table-search.component";
 import { PaginacaoComponent } from "./components/paginacao/paginacao.component";
 import { TabelaFiltradaModule } from "./tabela-filtrada";
+import { ToastComponent } from "./components/toast/toast.component";
 
 @NgModule({
   imports: [
@@ -27,6 +28,7 @@ import { TabelaFiltradaModule } from "./tabela-filtrada";
     FuncionarioAutocompleteComponent,
     TableSearchComponent,
     PaginacaoComponent,
+    ToastComponent,
   ],
   exports: [
     NavbarComponent,
@@ -36,6 +38,7 @@ import { TabelaFiltradaModule } from "./tabela-filtrada";
     FuncionarioAutocompleteComponent,
     PaginacaoComponent,
     TabelaFiltradaModule,
+    ToastComponent,
   ],
 })
 export class SharedModule {}
