@@ -94,7 +94,6 @@ export class EmprestadasComponent implements OnInit, OnDestroy {
 
   fecharModalAtualizar(): void {
     this.atualizarModalIsOpen = false;
-    this.chaveEmEdicao = null;
   }
 
   onSecaoChange(secao: SecaoModal): void {
