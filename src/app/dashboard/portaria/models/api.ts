@@ -155,13 +155,3 @@ export interface OcorrenciaViewModel extends OcorrenciasResponseDTO {
   tipoConfig: ConfigBase;
   estadoConfig: ConfigBase;
 }
-
-// Estado consolidado da barra de paginação para consumir direto no template
-export interface PaginacaoVM {
-  paginaAtual: number;
-  totalPaginas: number;
-  paginas: (number | "...")[];
-  temAnterior: boolean;
-  temProximo: boolean;
-  visivel: boolean;
-}

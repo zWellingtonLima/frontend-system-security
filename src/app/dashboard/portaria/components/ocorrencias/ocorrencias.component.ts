@@ -40,7 +40,7 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
   totalPendentes$ = this.ocorrenciasService.totalPendentes$;
   carregando$ = this.ocorrenciasService.estaCarregandoDados$; // Loader GET
 
-  paginacao$ = this.ocorrenciasService.paginacao$;
+  paginador = this.ocorrenciasService.paginador;
 
   constructor(private ocorrenciasService: OcorrenciasService) {}
 
@@ -81,17 +81,6 @@ export class OcorrenciasComponent implements OnInit, OnDestroy {
 
   onSearch(search: string): void {
     this.ocorrenciasService.setFiltro({ search });
-  }
-
-  // Setas anterior/seguinte - recebe a página de destino (0-based)
-  onPageChange(pagina: number) {
-    this.ocorrenciasService.setPagina(pagina);
-  }
-
-  // Botões numerados - converte a página exibida (1-based) para 0-based
-  irParaPagina(p: number | "...") {
-    if (typeof p !== "number") return;
-    this.ocorrenciasService.setPagina(p - 1);
   }
 
   // UPDATE

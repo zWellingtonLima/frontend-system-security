@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
+import { Paginador } from "src/app/shared/utils/paginador";
 import {
   ESTADO_OCORRENCIA_CONFIG,
   EstadoOcorrenciaEnumType,
@@ -14,7 +15,6 @@ import {
   OcorrenciasResponseDTO,
   OcorrenciasUpdateDTO,
   OcorrenciaViewModel,
-  PaginacaoVM,
 } from "../../models/api";
 import { catchError, finalize, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
@@ -46,34 +46,18 @@ export class OcorrenciasService {
   // Loader compartilhado pelo modal (criar e o de editar)
   estaSalvando$ = new BehaviorSubject<boolean>(false);
 
-  paginaAtual$ = new BehaviorSubject<number>(0);
-  totalPaginas$ = new BehaviorSubject<number>(0);
+  // Recarrega sempre a tab atual
+  readonly paginador = new Paginador(() =>
+    this.carregarOcorrencias(this.tabAtiva$.value),
+  );
 
   private totalPendentes = new BehaviorSubject<number>(0);
   readonly totalPendentes$ = this.totalPendentes.asObservable();
 
-  // Estado consolidado da paginação, pronto para o template (um único async).
-  // As páginas visíveis (1ª, atual e vizinhas, última) são calculadas aqui
-  paginacao$: Observable<PaginacaoVM> = combineLatest(
-    this.paginaAtual$,
-    this.totalPaginas$,
-    this.tabAtiva$,
-  ).pipe(
-    map(([paginaAtual, totalPaginas, tab]) => ({
-      paginaAtual,
-      totalPaginas,
-      paginas: this.calcularPaginasVisiveis(paginaAtual + 1, totalPaginas),
-      temAnterior: paginaAtual > 0,
-      temProximo: paginaAtual < totalPaginas - 1,
-      visivel: tab.paginada && totalPaginas > 1,
-    })),
-  );
-
   constructor(private http: HttpClient) {}
 
   inicializar(): void {
-    this.paginaAtual$.next(0);
-    this.totalPaginas$.next(0);
+    this.paginador.reset();
     this.carregarOcorrencias(TABS[0]);
     this.carregarTotalPendentes();
     this.tabAtiva$.next(TABS[0]);
@@ -81,7 +65,7 @@ export class OcorrenciasService {
 
   setTab(tab: OcorrenciaTabConfig): void {
     this.tabAtiva$.next(tab);
-    this.paginaAtual$.next(0);
+    this.paginador.reset();
     this.filtros$.next({ tipo: "", search: "" });
     this.carregarOcorrencias(tab);
     this.carregarTotalPendentes();
@@ -104,17 +88,7 @@ export class OcorrenciasService {
     if (proximo.tipo === atual.tipo && proximo.search === atual.search) return;
 
     this.filtros$.next(proximo);
-    this.carregarOcorrencias(this.tabAtiva$.value);
-  }
-
-  // Recebe a página de destino (0-based, igual ao backend)
-  setPagina(pagina: number): void {
-    const total = this.totalPaginas$.value;
-    const dentroDoLimite = pagina >= 0 && pagina <= total - 1;
-
-    if (!dentroDoLimite || pagina === this.paginaAtual$.value) return;
-
-    this.paginaAtual$.next(pagina);
+    this.paginador.primeiraPagina();
     this.carregarOcorrencias(this.tabAtiva$.value);
   }
 
@@ -139,8 +113,8 @@ export class OcorrenciasService {
 
     if (tab.paginada)
       parametros = parametros
-        .set("page", String(this.paginaAtual$.value))
-        .set("size", "20");
+        .set("page", String(this.paginador.pagina))
+        .set("size", String(this.paginador.tamanho));
 
     this.http
       .get<OcorrenciasPage>(environment.ocorrenciaApiUrl, {
@@ -159,7 +133,10 @@ export class OcorrenciasService {
         this.ocorrencias$.next(
           resultado.content.map((o) => this.toViewModel(o)),
         );
-        this.totalPaginas$.next(resultado.totalPages);
+        this.paginador.definirTotal(
+          resultado.totalPages,
+          resultado.totalElements,
+        );
       });
   }
 
@@ -295,26 +272,5 @@ export class OcorrenciasService {
       tipoConfig: TIPO_OCORRENCIA_CONFIG[o.tipo],
       estadoConfig: ESTADO_OCORRENCIA_CONFIG[o.estado],
     };
-  }
-
-  private calcularPaginasVisiveis(
-    atual: number,
-    total: number,
-  ): (number | "...")[] {
-    if (total <= 1) return [];
-
-    const paginasRelevantes = Array.from(
-      new Set([1, atual - 1, atual, atual + 1, total]),
-    )
-      .filter((p) => p >= 1 && p <= total)
-      .sort((a, b) => a - b);
-
-    const resultado: (number | "...")[] = [];
-    paginasRelevantes.forEach((p, i) => {
-      if (i > 0 && p - paginasRelevantes[i - 1] > 1) resultado.push("...");
-      resultado.push(p);
-    });
-
-    return resultado;
   }
 }
