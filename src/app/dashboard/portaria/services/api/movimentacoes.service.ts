@@ -50,8 +50,6 @@ export class MovimentacoesService {
 
   readonly paginador = new Paginador(() => this.listar(), TAMANHO_PAGINA);
 
-  filtrosForm!: FormGroup;
-
   inicializar(): void {
     this.filtros.next(FILTROS_VAZIOS_MOVIMENTACOES);
     this.paginador.reset();

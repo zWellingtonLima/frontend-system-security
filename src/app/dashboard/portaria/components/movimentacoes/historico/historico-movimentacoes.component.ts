@@ -23,7 +23,6 @@ export class HistoricoMovimentacoesComponent implements OnInit {
   tipoVisita = this.movimentacoesService.listaPartilhada$;
 
   ngOnInit() {
-    console.log(this.paginador);
     this.movimentacoesService.inicializar();
     this.filtrosForm = this.fb.group(FILTROS_VAZIOS_MOVIMENTACOES);
   }

@@ -2,7 +2,13 @@
 <ng-container *ngIf="carregando; else listaChaves">
   <div class="loading-state">
     <img class="loader" src="assets/img/oval.svg" alt="" />
-    <p>Carregando movimentações...</p>
+    <p>Carregando visitas...</p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!carregando && dadosFiltrados.length === 0">
+  <div class="loading-state">
+    <p>Nenhuma visita encontrada...</p>
   </div>
 </ng-container>
 
@@ -33,14 +39,6 @@
         <tr *ngIf="carregando">
           <td colspan="6" class="tbl-status">
             <div class="spinner-inline"></div>
-          </td>
-        </tr>
-
-        <!-- Estado: sem dados / erro -->
-        <tr *ngIf="!carregando && dadosFiltrados.length === 0">
-          <td colspan="6" class="tbl-status">
-            <i class="ft-alert-circle"></i>
-            Nenhum dado encontrado.
           </td>
         </tr>
 
