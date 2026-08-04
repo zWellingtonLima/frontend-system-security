@@ -48,6 +48,7 @@ export interface ChaveDisponivelDTO {
   idEdificio: number;
   chaveiro: string;
   codigo: string;
+  idRHFrequentes: number[];
 }
 
 export interface ChavesPage {
@@ -63,6 +64,7 @@ export interface ChaveOpcao {
   idEdificio: number;
   codigo: string;
   chaveiro: string;
+  idRHFrequentes: number[];
 }
 
 // Chaves de um edifício. Alimenta um <select> por edifício no modal de

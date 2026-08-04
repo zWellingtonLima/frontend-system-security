@@ -28,6 +28,7 @@ export function toChaveOpcao(chave: ChaveDisponivelDTO): ChaveOpcao {
     idEdificio: chave.idEdificio,
     codigo: chave.codigo,
     chaveiro: chave.chaveiro,
+    idRHFrequentes: chave.idRHFrequentes || [],
   };
 }
 
@@ -65,6 +66,7 @@ export function agruparParaEdicao(
       idEdificio: chaveAtual.idEdificio,
       codigo: chaveAtual.codigo,
       chaveiro: chaveAtual.chaveiro,
+      idRHFrequentes: [],
     });
   }
 

@@ -54,7 +54,7 @@
             <select
               class="filter-select"
               [value]="valorSelecionadoEm(grupo)"
-              (change)="onEscolherChave($event)"
+              (change)="onEscolherChave($event, grupo)"
             >
               <option value="">Escolher chave...</option>
               <option *ngFor="let opcao of grupo.chaves" [value]="opcao.id">
@@ -97,6 +97,7 @@
             formControlName="idFuncionario"
             placeholder="Quem está a levar a chave..."
             [temErro]="!!erroDoCampo(emprestarForm, 'idFuncionario')"
+            [sugeridos]="sugeridos"
           ></app-funcionario-autocomplete>
           <span
             class="form-error"
