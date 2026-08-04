@@ -9,6 +9,9 @@
 <ng-container *ngIf="!carregando && dadosFiltrados.length === 0">
   <div class="loading-state">
     <p>Nenhuma visita encontrada...</p>
+    <button class="tf-btn" type="button" (click)="limparFiltros()">
+      Limpar
+    </button>
   </div>
 </ng-container>
 
@@ -27,9 +30,10 @@
         <tr>
           <app-table-search
             [campos]="camposPesquisa"
-            (filtrosChange)="onFiltrosChange($event)"
-          >
-          </app-table-search>
+            [dados]="dadosOriginais"
+            [limparPedido]="limpar$"
+            (resultado)="onResultado($event)"
+          ></app-table-search>
           <th></th>
         </tr>
       </thead>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   Movimentacoes,
   novaVisita,
@@ -7,6 +7,8 @@ import {
 import { SearchFieldConfig } from "src/app/shared/components/table-search/table-search.component";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MovimentacoesService } from "../../../services/api/movimentacoes.service";
+import { TableSearchComponent } from "src/app/shared/components/table-search/table-search.component";
+import { Subject } from "rxjs";
 
 @Component({
   selector: "app-visitas-ativas",
@@ -130,20 +132,20 @@ export class VisitasAtivasComponent implements OnInit {
   dadosOriginais: Movimentacoes[] = [];
   dadosFiltrados: Movimentacoes[] = [];
   camposPesquisa: SearchFieldConfig<Movimentacoes>[] = [];
-  filtrosAtuais: { [campo: string]: string } = {};
+  limpar$ = new Subject<void>();
 
   private montarCamposPesquisa(): void {
     this.camposPesquisa = [
       { campo: "nomeVisitante", label: "Visitante", tipo: "texto" },
-      { campo: "horaEntrada", label: "Entrada", tipo: "texto" },
+      { campo: "horaEntrada", label: "HH:mm", tipo: "texto" },
       {
         campo: "tipoVisita",
-        label: "Todos",
+        label: "Tipos",
         tipo: "select",
         opcoes: this.tipoVisita
-          ? this.tipoVisita.map((element) => ({
-              valor: element.tipo,
-              label: element.tipo,
+          ? this.tipoVisita.map((t) => ({
+              valor: t.tipo,
+              label: t.tipo,
             }))
           : [],
       },
@@ -152,26 +154,13 @@ export class VisitasAtivasComponent implements OnInit {
     ];
   }
 
-  onFiltrosChange(filtros: { [campo: string]: string }): void {
-    this.filtrosAtuais = filtros;
-    this.dadosFiltrados = this.filtrarLocal(this.dadosOriginais, filtros);
+  limparFiltros(): void {
+    this.limpar$.next();
+  }
+  onResultado(dados: Movimentacoes[]): void {
+    this.dadosFiltrados = dados;
   }
 
-  private filtrarLocal(
-    dados: Movimentacoes[],
-    filtros: { [campo: string]: string },
-  ): Movimentacoes[] {
-    if (!filtros || !Object.keys(filtros).length) {
-      return dados;
-    }
-    return dados.filter((item: any) =>
-      Object.keys(filtros).every((campo) =>
-        String(item[campo] || "")
-          .toLowerCase()
-          .includes(filtros[campo].toLowerCase()),
-      ),
-    );
-  }
   // ── Toast ──
   toastVisivel = false;
   toastMensagem = "";

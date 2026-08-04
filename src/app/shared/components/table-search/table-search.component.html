@@ -1,33 +1,44 @@
 <th *ngFor="let campo of campos" [ngSwitch]="campo.tipo || 'texto'">
   <ng-container *ngIf="campo.campo">
+    <!-- TEXTO -->
     <input
       *ngSwitchCase="'texto'"
       type="text"
-      [formControl]="form.get(campo.campo)"
+      [formControl]="form.controls[campo.campo]"
       [placeholder]="campo.placeholder || campo.label"
+      class="filtro-controle"
     />
 
+    <!-- NÚMERO -->
     <input
       *ngSwitchCase="'numero'"
       type="number"
-      class="filtro-controlo"
-      [formControl]="form.get(campo.campo)"
+      [formControl]="form.controls[campo.campo]"
       [placeholder]="campo.placeholder || campo.label"
+      class="filtro-controle"
     />
 
+    <!-- DATA -->
     <input
       *ngSwitchCase="'data'"
-      type="datetime"
-      [formControl]="form.get(campo.campo)"
+      type="date"
+      [formControl]="form.controls[campo.campo]"
+      class="filtro-controle"
     />
 
-    <select *ngSwitchCase="'select'" [formControl]="form.get(campo.campo)">
-      <option value="">{{ campo.placeholder || campo.label }}</option>
+    <!-- SELECT -->
+    <select
+      *ngSwitchCase="'select'"
+      [formControl]="form.controls[campo.campo]"
+      class="filtro-controle"
+    >
+      <option value="">
+        {{ campo.placeholder || campo.label }}
+      </option>
+
       <option *ngFor="let opcao of campo.opcoes" [value]="opcao.valor">
         {{ opcao.label }}
       </option>
     </select>
   </ng-container>
-
-  <!-- se não tem campo (ex: "Ações"), fica vazio mas ocupa a célula -->
 </th>

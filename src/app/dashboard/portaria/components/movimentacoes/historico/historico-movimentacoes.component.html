@@ -62,12 +62,12 @@
   *ngIf="!(carregando | async) && (listaMovimentacoes | async).length === 0"
 >
   <div class="loading-state">
-    <p>Nenhuma leitura encontrada...</p>
+    <p>Nenhuma visita encontrada...</p>
   </div>
 </ng-container>
 
-<ng-template #listaVisitas
-  ><table class="tbl">
+<ng-template #listaVisitas>
+  <table class="tbl">
     <thead>
       <tr>
         <th>Visitante</th>
@@ -103,7 +103,6 @@
           </td>
         </tr>
       </ng-container>
-      >
     </tbody>
   </table>
 </ng-template>
