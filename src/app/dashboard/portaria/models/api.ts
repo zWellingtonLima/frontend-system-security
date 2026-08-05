@@ -25,6 +25,7 @@ export interface ChavesResponseDTO {
   idEmprestimo: number | null;
   idEdificio: number;
   codigo: string;
+  chaveiro: string;
   sala: number | null;
   piso: string;
   status: StatusChaveEnumType;
@@ -45,9 +46,9 @@ export interface ChaveViewModel extends ChavesResponseDTO {
 export interface ChaveDisponivelDTO {
   id: number;
   idEdificio: number;
+  chaveiro: string;
   codigo: string;
-  piso: string;
-  numeroSala: number | null; // null em caso de molho
+  idRHFrequentes: number[];
 }
 
 export interface ChavesPage {
@@ -62,7 +63,8 @@ export interface ChaveOpcao {
   id: number;
   idEdificio: number;
   codigo: string;
-  sala: number | null;
+  chaveiro: string;
+  idRHFrequentes: number[];
 }
 
 // Chaves de um edifício. Alimenta um <select> por edifício no modal de
@@ -154,14 +156,4 @@ export interface FiltrosOcorrencias {
 export interface OcorrenciaViewModel extends OcorrenciasResponseDTO {
   tipoConfig: ConfigBase;
   estadoConfig: ConfigBase;
-}
-
-// Estado consolidado da barra de paginação para consumir direto no template
-export interface PaginacaoVM {
-  paginaAtual: number;
-  totalPaginas: number;
-  paginas: (number | "...")[];
-  temAnterior: boolean;
-  temProximo: boolean;
-  visivel: boolean;
 }

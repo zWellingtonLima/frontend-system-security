@@ -53,8 +53,8 @@ Todas as classes e variáveis SCSS levam o prefixo `tf-`/`$tf-`.
 
 ### 1.4. Ícones (opcional)
 
-O template usa duas classes de ícone do **Feather**: `ft-search` (estado sem
-resultados) e `ft-x-circle` (estado sem dados). Sem a font ainda funciona —
+O template usa duas classes de ícone do **Feather**: `ft-search` (linha sem
+resultados) e `ft-x-circle` (linha sem dados). Sem a font ainda funciona —
 fica só sem ícone. Para os teres, inclui o `feather/style.css` nos `styles`.
 
 ---
@@ -179,7 +179,6 @@ ficava pendurado a esconder linhas sem o utilizador ter como o desfazer.
   [modelo]="modelo"
   [carregando]="carregando$ | async"
   [idDe]="idDaChave"
-  textoCarregando="Carregando chaves..."
   mensagemVazia="Não existem empréstimos no momento."
 >
   <!-- Coluna com markup próprio: `let-chave` é o objeto da linha -->
@@ -215,10 +214,10 @@ definição já calculou.
 | Input | Tipo | Omissão | O que faz |
 |---|---|---|---|
 | `modelo` | `ModeloTabela` | — | O modelo. Obrigatório. |
-| `carregando` | `boolean` | `false` | Troca a tabela pelo spinner. |
+| `carregando` | `boolean` | `false` | Esqueleto se não houver linhas; esbate as que houver. |
 | `idDe` | `(item) => any` | `null` | Identidade da linha para o `trackBy`. Sem isto usa o índice. |
 | `mensagemVazia` | `string` | `"Não existem registos."` | Quando não há dados **de todo**. |
-| `textoCarregando` | `string` | `"A carregar..."` | Legenda do spinner. |
+| `linhasEsqueleto` | `number` | `5` | Linhas do esqueleto. Numa tabela paginada, passa o tamanho da página. |
 | `classeTabela` | `string` | `""` | Classe extra no `<table>`, para um modificador teu. |
 
 **Slot `[rodape]`** — `ng-content` livre por baixo da tabela, tipicamente para
@@ -335,9 +334,20 @@ Notas de desenho que explicam decisões que parecem estranhas:
   `false` enquanto as linhas ainda eram as 0 da filtragem anterior — a tabela
   inteira era destruída durante 150 ms e o `<input>` onde se estava a escrever
   perdia o foco.
-- **Com filtros ativos a tabela fica de pé mesmo sem linhas.** O utilizador
-  precisa de chegar aos campos para desfazer o filtro — por isso o "sem
-  resultados" é uma linha *dentro* da tabela, e não o estado de vazio.
+- **A moldura nunca sai do DOM.** `<table>`, `<colgroup>` e `<thead>` não
+  dependem de haver linhas nem de estar a carregar; só o `<tbody>` muda. Os
+  estados de carregar e de vazio já foram ramos de topo que substituíam a
+  tabela por um bloco de outra altura — cada escrita desmontava e remontava
+  tudo, a tabela piscava e o rodapé de paginação saltava para debaixo do rato
+  de quem tinha acabado de clicar num número de página.
+- **A recarregar com linhas no ecrã, as linhas ficam.** Só esbatem, e o
+  esbatimento tem atraso à entrada e não à saída: um pedido de 80 ms nunca
+  chega a mudar nada no ecrã.
+- **O esqueleto erra por baixo.** Curto de mais faz a tabela crescer quando os
+  dados chegam; comprido de mais fá-la-ia encolher e puxava o rodapé para
+  cima. Numa tabela sem `largura` nas colunas as colunas ainda se ajustam
+  lateralmente no primeiro carregamento — `table-layout` é `auto` e as
+  larguras saem do conteúdo.
 - **`publishReplay(1) + refCount()`, não `shareReplay`.** O `refCount` larga a
   fonte quando sai o último subscritor; um service `root` sobrevive à página e
   sem isto ficava pendurado.

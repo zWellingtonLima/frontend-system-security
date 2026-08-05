@@ -36,6 +36,14 @@ export class FuncionarioAutocompleteComponent
   // O formulário continua dono da validação do campo
   @Input() temErro: boolean = false;
 
+  /**
+   * Um setter e não campo simples porque a chave pode mudar com a lista já aberta
+   */
+  @Input() set sugeridos(idsRH: number[]) {
+    this.idsSugeridos = idsRH || [];
+    this.filtrar();
+  }
+
   @ViewChild("campo") private campo!: ElementRef<HTMLInputElement>;
 
   estiloLista: { [propriedade: string]: string } = {};
@@ -50,6 +58,7 @@ export class FuncionarioAutocompleteComponent
   indiceAtivo: number = -1;
 
   private funcionarios: Funcionario[] = [];
+  private idsSugeridos: number[] = [];
 
   private valor: number | null = null;
 
@@ -161,6 +170,10 @@ export class FuncionarioAutocompleteComponent
     return funcionario.nomeFuncionario || `(sem nome) · ${funcionario.idRH}`;
   }
 
+  isSugerido(funcionario: Funcionario): boolean {
+    return this.idsSugeridos.indexOf(funcionario.idRH) !== -1;
+  }
+
   // ===============================================
   // ============= UTILITARIOS ===================
 
@@ -246,8 +259,21 @@ export class FuncionarioAutocompleteComponent
         )
       : this.funcionarios;
 
-    this.resultados = correspondencias.slice(0, MAX_RESULTADOS);
+    // Ordenar antes de cortar: senão um sugerido em 40.º nunca chegava ao topo.
+    this.resultados = this.ordenar(correspondencias).slice(0, MAX_RESULTADOS);
     this.indiceAtivo = this.resultados.length ? 0 : -1;
+  }
+
+  private ordenar(lista: Funcionario[]): Funcionario[] {
+    if (!this.idsSugeridos.length) return lista;
+
+    const sugeridos = this.idsSugeridos
+      .map((idRH) => lista.find((f) => f.idRH === idRH))
+      .filter((f): f is Funcionario => !!f);
+
+    if (!sugeridos.length) return lista;
+
+    return [...sugeridos, ...lista.filter((f) => !this.isSugerido(f))];
   }
 
   private mover(passo: number): void {

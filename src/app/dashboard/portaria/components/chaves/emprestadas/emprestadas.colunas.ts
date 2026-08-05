@@ -9,7 +9,7 @@ const FUSO = "Europe/Lisbon";
 export type ColunaEmprestada =
   | "edificio"
   | "codigo"
-  | "sala"
+  | "chaveiro"
   | "desde"
   | "nomeFuncionario"
   | "acoes";
@@ -18,7 +18,7 @@ export type ColunaEmprestada =
 export const COLUNAS_EMPRESTADAS: ColunaEmprestada[] = [
   "edificio",
   "codigo",
-  "sala",
+  "chaveiro",
   "desde",
   "nomeFuncionario",
   "acoes",
@@ -40,18 +40,17 @@ export function criarColunasEmprestadas(
 
     codigo: {
       largura: "13%",
-      titulo: "Chave / Código",
+      titulo: "Chave",
       filtro: "texto",
       classe: "tf-bold",
       texto: (chave) => chave.codigo,
     },
 
-    sala: {
+    chaveiro: {
       largura: "13%",
-      titulo: "Sala / Piso",
+      titulo: "Código Chaveiro",
       filtro: "texto",
-      texto: (chave) =>
-        chave.sala != null ? `Sala ${chave.sala} ${chave.pisoLabel}` : "",
+      texto: (chave) => chave.chaveiro,
     },
 
     desde: {

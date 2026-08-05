@@ -21,34 +21,39 @@ interface OpcoesFiltro {
   [coluna: string]: string[];
 }
 
-// O modelo de uma tabela: que colunas tem, que texto mostra cada célula e,
-// se a tabela filtrar em memória, que filtros estão ativos.
-//
-// A filtragem por coluna é AND — uma linha só passa se satisfizer TODOS os
-// filtros ativos. Uma tabela cujas colunas não declarem `filtro` nenhum
-// (porque filtra no backend, ou não filtra de todo) usa isto na mesma: o
-// filtro fica inerte e sobra o que qualquer tabela precisa, que é saber as
-// colunas e transformar as linhas em texto.
-//
-// Não depende de Angular. Recebe as colunas visíveis e as linhas cruas,
-// devolve as linhas decoradas (`linhas$`) e a descrição das colunas para o
-// template (`colunas$`).
-//
-// Uso:
-//   modelo = new ModeloTabela(COLUNAS, this.colunasVisiveis$, this.dados$);
+/**
+ * O modelo de uma tabela: que colunas tem, que texto mostra cada célula e,
+ * se a tabela filtrar em memória, que filtros estão ativos.
+ *
+ * A filtragem por coluna é AND — uma linha só passa se satisfizer TODOS os
+ * filtros ativos. Uma tabela cujas colunas não declarem `filtro` nenhum
+ * (porque filtra no backend, ou não filtra de todo) usa isto na mesma: o
+ * filtro fica inerte e sobra o que qualquer tabela precisa, que é saber as
+ * colunas e transformar as linhas em texto.
+ *
+ * Não depende de Angular. Recebe as colunas visíveis e as linhas cruas,
+ * devolve as linhas decoradas (`linhas$`) e a descrição das colunas para o
+ * template (`colunas$`).
+ *
+ * @example
+ * modelo = new ModeloTabela(COLUNAS, this.colunasVisiveis$, this.dados$);
+ *
+ * @see MapaColunas
+ */
 export class ModeloTabela<T, C extends string> {
   private filtros = new BehaviorSubject<EstadoFiltros>({});
   private filtros$ = this.filtros.asObservable();
 
-  // Linhas decoradas e filtradas, prontas para o *ngFor da tabela
+  /** Linhas decoradas e filtradas, prontas para o `*ngFor` da tabela. */
   readonly linhas$: Observable<LinhaTabela<T>[]>;
 
-  // Colunas visíveis, na ordem em que a tabela as mostra, já com título,
-  // tipo de filtro, valor ativo e opções resolvidos
+  /**
+   * Colunas visíveis, na ordem em que a tabela as mostra, já com título,
+   * tipo de filtro, valor ativo e opções resolvidos.
+   */
   readonly colunas$: Observable<ColunaVM[]>;
 
-  // Para distinguir "não há dados" de "os filtros não deixaram passar nada".
-  //
+  /** Distingue "não há dados" de "os filtros não deixaram passar nada". */
   // Sai do MESMO stream debounced que as linhas, de propósito. Se saísse do
   // estado imediato, limpar o último filtro punha-o a `false` enquanto as
   // linhas ainda eram as 0 da filtragem anterior — e o `*ngIf` da tabela,
@@ -56,14 +61,24 @@ export class ModeloTabela<T, C extends string> {
   // filtros ia atrás e o `<input>` onde se estava a escrever perdia o foco.
   readonly temAtivos$: Observable<boolean>;
 
-  // Alguma coluna declara filtro? É o que decide se a tabela desenha a linha
-  // de filtros — ninguém tem de a ligar ou desligar à mão.
+  /**
+   * Alguma coluna declara filtro? É o que decide se a tabela desenha a linha
+   * de filtros — ninguém tem de a ligar ou desligar à mão.
+   */
   readonly filtravel: boolean;
 
-  // Alguma coluna declara largura? Decide se a tabela fixa as larguras em
-  // vez de as deixar seguir o conteúdo.
+  /**
+   * Alguma coluna declara largura? Decide se a tabela fixa as larguras em
+   * vez de as deixar seguir o conteúdo.
+   */
   readonly temLarguras: boolean;
 
+  /**
+   * @param mapa As definições de todas as colunas da tabela.
+   * @param colunasVisiveis$ Quais mostrar, e por que ordem. Trocar de tab
+   * troca este conjunto e os filtros das colunas que saírem são esquecidos.
+   * @param fonte$ As linhas cruas, tipicamente um observable do service.
+   */
   constructor(
     private mapa: MapaColunas<T, C>,
     colunasVisiveis$: Observable<C[]>,
@@ -128,8 +143,10 @@ export class ModeloTabela<T, C extends string> {
     );
   }
 
-  // Valor vazio remove o filtro em vez de guardar "" — mantém o estado
-  // limpo e `temAtivos$` honesto.
+  /**
+   * Define o filtro de uma coluna. Valor vazio remove-o em vez de guardar
+   * `""` — mantém o estado limpo e o `temAtivos$` honesto.
+   */
   setFiltro(coluna: C, valor: string): void {
     const texto = (valor || "").trim();
     const atuais = this.filtros.value;
@@ -146,13 +163,18 @@ export class ModeloTabela<T, C extends string> {
     this.filtros.next(proximos);
   }
 
+  /** Desfaz todos os filtros de uma vez. */
   limpar(): void {
     if (Object.keys(this.filtros.value).length === 0) return;
     this.filtros.next({});
   }
 
-  // Acentos separados do caractere base (NFD) e removidos: "edificio"
-  // escrito no filtro passa a encontrar "Edifício" na célula.
+  /**
+   * Minúsculas e sem acentos, para comparar filtro com célula.
+   *
+   * Acentos separados do caractere base (NFD) e removidos: "edificio"
+   * escrito no filtro passa a encontrar "Edifício" na célula.
+   */
   static normalizar(texto: string): string {
     return (texto || "")
       .toLowerCase()

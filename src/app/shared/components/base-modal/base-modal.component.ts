@@ -1,4 +1,12 @@
-import { animate, style, transition, trigger } from "@angular/animations";
+import {
+  animate,
+  animateChild,
+  group,
+  query,
+  style,
+  transition,
+  trigger,
+} from "@angular/animations";
 import {
   Component,
   ElementRef,
@@ -20,9 +28,17 @@ import {
     trigger("overlay", [
       transition(":enter", [
         style({ opacity: 0 }),
-        animate("200ms ease", style({ opacity: 1 })),
+        group([
+          query("@modal", animateChild(), { optional: true }),
+          animate("200ms ease", style({ opacity: 1 })),
+        ]),
       ]),
-      transition(":leave", [animate("200ms ease", style({ opacity: 0 }))]),
+      transition(":leave", [
+        group([
+          query("@modal", animateChild(), { optional: true }),
+          animate("200ms ease", style({ opacity: 0 })),
+        ]),
+      ]),
     ]),
     trigger("modal", [
       transition(":enter", [

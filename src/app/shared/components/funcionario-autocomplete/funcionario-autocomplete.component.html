@@ -54,7 +54,12 @@
         (mousedown)="$event.preventDefault()"
         (click)="selecionar(funcionario)"
       >
-        <span class="autocomplete__nome">{{ nomeDe(funcionario) }}</span>
+        <span class="autocomplete__principal">
+          <span class="autocomplete__nome">{{ nomeDe(funcionario) }}</span>
+          <span class="autocomplete__sugerido" *ngIf="isSugerido(funcionario)">
+            usa esta chave
+          </span>
+        </span>
         <span class="autocomplete__ligacao" *ngIf="funcionario.ligacao">
           Ext. {{ funcionario.ligacao }}
         </span>

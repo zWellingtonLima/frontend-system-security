@@ -14,7 +14,7 @@ const MENSAGENS_OBRIGATORIO = {
 // Navegação da página. A ordem aqui é a ordem das tabs no ecrã
 const TABS: { label: string; rota: string }[] = [
   { label: "Emprestadas", rota: "emprestadas" },
-  { label: "Inventário", rota: "inventario" },
+  { label: "Inventário de Chaves", rota: "inventario" },
   { label: "Histórico de Empréstimos", rota: "historico" },
 ];
 
@@ -36,6 +36,8 @@ export class ChavesComponent implements OnInit, OnDestroy {
   emprestarModalIsOpen = false;
   emprestarForm!: FormGroup;
 
+  sugeridos: number[] = [];
+
   constructor(
     private service: EmprestimosService,
     private fb: FormBuilder,
@@ -54,6 +56,7 @@ export class ChavesComponent implements OnInit, OnDestroy {
   abrirModalEmprestar(): void {
     this.emprestarForm.reset({ idChave: null, idFuncionario: null });
     this.erros.limpar(this.emprestarForm);
+    this.sugeridos = [];
     this.service.carregarDisponiveis();
     this.emprestarModalIsOpen = true;
   }
@@ -62,12 +65,18 @@ export class ChavesComponent implements OnInit, OnDestroy {
     this.emprestarModalIsOpen = false;
   }
 
-  // Há um <select> por edifício mas só um empréstimo: todos escrevem no
-  // mesmo controle `idChave`
-  onEscolherChave(evento: Event): void {
+  // Recebe o grupo do *ngFor porque só ele tem a ChaveOpcao escolhida à mão —
+  // evita achatar os grupos ou subscrever de novo o chavesDisponiveis$.
+  onEscolherChave(evento: Event, grupo: GrupoChaves): void {
     const valor = (evento.target as HTMLSelectElement).value;
+    const idChave = valor ? Number(valor) : null;
 
-    this.emprestarForm.get("idChave")!.setValue(valor ? Number(valor) : null);
+    this.emprestarForm.get("idChave")!.setValue(idChave);
+
+    // Voltar a "Escolher chave..." limpa as sugestões, tal como trocar de
+    // edifício as substitui: só vale a última chave escolhida.
+    const escolhida = grupo.chaves.find((c) => c.id === idChave);
+    this.sugeridos = escolhida ? escolhida.idRHFrequentes : [];
   }
 
   // Valor a exibir no select deste edifício: vazio se a chave escolhida

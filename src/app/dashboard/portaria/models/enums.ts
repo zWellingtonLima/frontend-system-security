@@ -25,6 +25,8 @@ export type TipoOcorrenciaEnumType =
   | "OBJETO_PERDIDO_ENCONTRADO"
   | "INCIDENTE_COM_VISITANTE"
   | "ALARME_DISPARADO"
+  | "ENCOMENDA"
+  | "EMPRESTIMO_VIATURA"
   | "OUTROS";
 export type EstadoOcorrenciaEnumType = "PENDENTE" | "RESOLVIDA" | "CANCELADA";
 export type TabOcorrencia = EstadoOcorrenciaEnumType | "TODAS";
@@ -36,10 +38,7 @@ export interface TipoOcorrencia extends ConfigBase {
 export type OcorrenciaTabConfig = TabConfig<TabOcorrencia>;
 
 // Não serve para iteração direta no *ngFor mas é bom para CONFIG["AVARIA_EQUIPAMENTO"] por exempo
-export const TIPO_OCORRENCIA_CONFIG: Record<
-  TipoOcorrenciaEnumType,
-  ConfigBase
-> = {
+export const TIPO_OCORRENCIA_CONFIG: Record<TipoOcorrenciaEnumType, ConfigBase> = {
   ACESSO_NAO_AUTORIZADO: {
     icone: "ft-shield",
     label: "Acesso Não Autorizado",
@@ -64,6 +63,16 @@ export const TIPO_OCORRENCIA_CONFIG: Record<
     icone: "ft-user-x",
     classe: "tipo--visitante",
     label: "Incidente com Visitante",
+  },
+  ENCOMENDA: {
+    label: "Encomenda",
+    icone: "ft-shopping-cart",
+    classe: "tipo--encomenda",
+  },
+  EMPRESTIMO_VIATURA: {
+    label: "Empréstimo de Viatura",
+    icone: "fas fa-car",
+    classe: "tipo--viatura",
   },
   OUTROS: {
     label: "Outros",

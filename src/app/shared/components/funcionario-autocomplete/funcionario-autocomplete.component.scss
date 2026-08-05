@@ -73,9 +73,30 @@
   }
 }
 
+.autocomplete__principal {
+  display: flex;
+  align-items: baseline;
+  gap: $m-xxs;
+  min-width: 0;
+}
+
 .autocomplete__nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 12px;
   color: $portaria-color-text-body;
+}
+
+.autocomplete__sugerido {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: $portaria-radius-pill;
+  background: lighten($portaria-color-accent-pale, 80%);
+  font-weight: 500;
+  font-size: 10px;
+  color: $portaria-color-accent-dark;
+  white-space: nowrap;
 }
 
 // Para os nomes repetidos na lista vinda da procedure.

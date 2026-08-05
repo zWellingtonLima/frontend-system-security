@@ -73,6 +73,17 @@
   tbody tr:hover td {
     background: $tf-color-bg-soft;
   }
+
+  tbody {
+    opacity: 1;
+    transition: opacity 0.1s ease;
+
+    &.tf-recarregando {
+      opacity: 0.45;
+      pointer-events: none;
+      transition: opacity 0.15s ease 0.25s;
+    }
+  }
 }
 
 // Larguras fixas: ligado sozinho quando alguma coluna declara `largura`.
@@ -206,45 +217,40 @@ select.tf-filtro-controlo {
 // ESTADOS: a carregar, sem dados, sem resultados
 // ============================================================
 
-.tf-empty-state,
-.tf-loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: $tf-space-xs;
-  padding: $tf-space-lg;
-  font-weight: 500;
-  color: $tf-color-text-muted;
+.tf-esqueleto:hover td {
+  background: transparent;
+}
 
-  p {
-    margin: 0;
-    font-size: 0.9rem;
+.tf-esqueleto-barra {
+  display: block;
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    $tf-color-border-faint 25%,
+    $tf-color-border 37%,
+    $tf-color-border-faint 63%
+  );
+  background-size: 400% 100%;
+  animation: tf-brilho 1.4s ease infinite;
+}
+
+@keyframes tf-brilho {
+  from {
+    background-position: 100% 50%;
   }
-}
-
-.tf-empty-state i {
-  font-size: 2rem;
-}
-
-.tf-spinner {
-  width: 2rem;
-  height: 2rem;
-  border: 3px solid #e5e7eb;
-  border-top-color: $tf-color-accent;
-  border-radius: 50%;
-  margin: 0 auto;
-  animation: tf-spin 1.2s cubic-bezier(0.19, 1.06, 0.6, 0.58) infinite;
-}
-
-@keyframes tf-spin {
   to {
-    transform: rotate(360deg);
+    background-position: 0 50%;
   }
 }
 
-// Vazio por filtro: fica DENTRO da tabela para o cabeçalho e a linha de
-// filtros continuarem visíveis e o utilizador poder desfazer o filtro.
+@media (prefers-reduced-motion: reduce) {
+  .tf-esqueleto-barra {
+    animation: none;
+  }
+}
+
+.tf-vazio,
 .tf-sem-resultados {
   td {
     padding: $tf-space-lg;
@@ -266,6 +272,10 @@ select.tf-filtro-controlo {
   &:hover td {
     background: transparent;
   }
+}
+
+.tf-vazio p {
+  margin-bottom: 0;
 }
 
 // ============================================================
