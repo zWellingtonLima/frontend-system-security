@@ -5,6 +5,8 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 import {
   ConsumoLeitura,
   EdificiosResponse,
@@ -24,11 +26,13 @@ import { ToastComponent } from "src/app/shared/components/toast/toast.component"
   templateUrl: "./consumos.component.html",
   styleUrls: ["./consumos.component.scss"],
 })
-export class ConsumosComponent implements OnInit {
+export class ConsumosComponent implements OnInit, OnDestroy {
   constructor(
     private consumoService: ConsumosService,
     private fb: FormBuilder,
   ) {}
+
+  private destroy$ = new Subject<void>();
 
   filtrosForm!: FormGroup;
   paginador = this.consumoService.paginador;
@@ -50,6 +54,12 @@ export class ConsumosComponent implements OnInit {
     this.carregarConsumos();
     this.carregarUltimas();
   }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   aplicarFiltros(): void {
     this.consumoService.aplicarFiltros(this.filtrosForm.value);
   }
@@ -60,58 +70,59 @@ export class ConsumosComponent implements OnInit {
   }
 
   carregarAposAlteracao() {
-    this.carregarConsumos();
+    this.consumoService.listar();
     this.carregarUltimas();
   }
+
   // ─────────────────────────────────────────────
   // CARREGA OS DADOS PARA A TABELAS
   // ─────────────────────────────────────────────
   carregarConsumos(): void {
-    this.consumoService.listaConsumos$.subscribe(
-      (res) => {
-        this.leituras = res;
-      },
-      () => {
-        this.mostrarToast("Erro ao carregar as leituras.");
-      },
-    );
+    this.consumoService.listaConsumos$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.leituras = res;
+        },
+        error: () => {
+          this.mostrarToast("Erro ao carregar as leituras.");
+        },
+      });
   }
 
   // ─────────────────────────────────────────────
   // CARREGA AS ULTIMAS LEITURAS PARA POR NOS CARDS onInit
   // ─────────────────────────────────────────────
   carregarUltimas(): void {
-    this.consumoService.ultimas().subscribe(
-      (res) => {
-        res.forEach((item) => {
-          switch (item.tipoConsumo) {
-            case this.tipoConsumo.AGUA:
-              this.leiturasAgua = item.lista;
-              break;
-            case this.tipoConsumo.ELETRICIDADE:
-              this.leiturasEletricidade = item.lista;
-              break;
-            case this.tipoConsumo.GAS:
-              this.leiturasGas = item.lista;
-              break;
-          }
-        });
-      },
-      () => {
-        this.mostrarToast("Erro ao carregar as leituras.");
-      },
-    );
+    this.consumoService
+      .ultimas()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          res.forEach((item) => {
+            switch (item.tipoConsumo) {
+              case this.tipoConsumo.AGUA:
+                this.leiturasAgua = item.lista;
+                break;
+              case this.tipoConsumo.ELETRICIDADE:
+                this.leiturasEletricidade = item.lista;
+                break;
+              case this.tipoConsumo.GAS:
+                this.leiturasGas = item.lista;
+                break;
+            }
+          });
+        },
+        error: () => {
+          this.mostrarToast("Erro ao carregar as leituras.");
+        },
+      });
   }
-
-  // ─────────────────────────────────────────────
-  // LÓGICA DOS FILTROS DE PESQUISA
-  // ─────────────────────────────────────────────
-  abaAtiva: TipoConsumoType = "AGUA";
 
   // ─────────────────────────────────────────────
   // AGUA - ELETRICIDADE - GAS | MUDANÇA NO STYLE E CHAMADA DOS DADOS
   // ─────────────────────────────────────────────
-  novoTipo: TipoConsumoType = "AGUA";
+  abaAtiva: TipoConsumoType = "AGUA";
   readonly tipoConsumo = TipoConsumoEnum;
 
   selecionarAba(abaStyle: TipoConsumoType): void {
@@ -120,7 +131,7 @@ export class ConsumosComponent implements OnInit {
     }
     this.abaAtiva = abaStyle;
     this.limparFiltros();
-    this.paginador.primeiraPagina;
+    this.paginador.primeiraPagina();
     this.filtrosForm.patchValue({ tipo: abaStyle });
     this.aplicarFiltros();
   }
@@ -128,7 +139,7 @@ export class ConsumosComponent implements OnInit {
   // ─────────────────────────────────────────────
   // FORMULARIO DE REGISTAR LEITURA MODAL
   // ─────────────────────────────────────────────
-  registarLeituraForm: FormGroup = new FormGroup({});
+  registarLeituraForm!: FormGroup;
 
   unidadeAtual = null;
   consumoCalculadoPreview: number | null = 0;
@@ -161,17 +172,18 @@ export class ConsumosComponent implements OnInit {
           edificioId: this.registarLeituraForm.value.edificioId,
           tipoConsumo: this.registarLeituraForm.value.tipoConsumo,
         })
-        .subscribe(
-          () => {
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
             this.mostrarToast("Leitura registada com sucesso!");
-            this.consumoService.listar();
+            this.carregarAposAlteracao();
             this.alternarVisibilidadeModal();
           },
-          () => {
+          error: () => {
+            this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao registar a leitura.");
-            this.alternarVisibilidadeModal();
           },
-        );
+        });
     }
   }
 
@@ -184,44 +196,51 @@ export class ConsumosComponent implements OnInit {
           edificioId: this.registarLeituraForm.value.edificioId,
           tipoConsumo: this.registarLeituraForm.value.tipoConsumo,
         })
-        .subscribe(
-          (res) => {
-            this.consumoService.listar();
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.carregarAposAlteracao();
             this.mostrarToast("Leitura atualizada com sucesso!");
             this.alternarVisibilidadeModal();
           },
-          () => {
+          error: () => {
             this.alternarVisibilidadeModal();
             this.mostrarToast("Erro ao atualizar a leitura.");
           },
-        );
+        });
     }
   }
 
   submeterEliminar() {
-    this.consumoService.eliminar(this.leituraIdParaExcluir).subscribe(
-      () => {
-        this.modalExcluirOpen = false;
-        this.leituraIdParaExcluir = undefined;
-        this.carregarAposAlteracao();
-        this.mostrarToast("Leitura excluída com sucesso!");
-      },
-      () => {
-        this.modalExcluirOpen = false;
-        this.mostrarToast("Erro ao excluir leitura.");
-      },
-    );
+    this.consumoService
+      .eliminar(this.leituraIdParaExcluir)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.modalExcluirOpen = false;
+          this.leituraIdParaExcluir = undefined;
+          this.carregarAposAlteracao();
+          this.mostrarToast("Leitura excluída com sucesso!");
+        },
+        error: () => {
+          this.modalExcluirOpen = false;
+          this.mostrarToast("Erro ao excluir leitura.");
+        },
+      });
   }
 
   chamarEdificios() {
-    this.consumoService.preencherEdificio().subscribe(
-      (res) => {
-        this.edificios = res;
-      },
-      () => {
-        this.mostrarToast("Erro ao carregar os dados");
-      },
-    );
+    this.consumoService
+      .preencherEdificio()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.edificios = res;
+        },
+        error: () => {
+          this.mostrarToast("Erro ao carregar os dados");
+        },
+      });
   }
 
   selecionarTipoConsumo(tipo: string): void {
@@ -230,32 +249,38 @@ export class ConsumosComponent implements OnInit {
   }
 
   onLeituraAtualChange(): void {
-    const valorAtual = this.registarLeituraForm.value.leituraAtual;
-    this.consumoCalculadoPreview =
-      this.ultimaLieituraForm &&
-      this.ultimaLieituraForm.leituraAtual !== null &&
-      valorAtual
-        ? valorAtual - this.ultimaLieituraForm.leituraAtual
-        : null;
+    const leituraAtualControl = this.registarLeituraForm.get("leituraAtual");
+    const valorAtual = leituraAtualControl ? leituraAtualControl.value : null;
+
+    const ultima = this.ultimaLieituraForm
+      ? this.ultimaLieituraForm.leituraAtual
+      : null;
+
+    if (valorAtual == null || ultima == null) {
+      this.consumoCalculadoPreview = null;
+      return;
+    }
+
+    this.consumoCalculadoPreview = valorAtual - ultima;
   }
 
   pegarUltimaLeituraForm() {
-    const tipo = this.registarLeituraForm.get("tipoConsumo");
-    const edificio = this.registarLeituraForm.get("edificioId");
-    if (
-      tipo &&
-      tipo.value != null &&
-      tipo.value !== "" &&
-      edificio &&
-      edificio.value != null &&
-      edificio.value !== ""
-    ) {
-      this.consumoService
-        .ultimaLeituraForm(tipo.value, edificio.value)
-        .subscribe((res) => {
-          this.ultimaLieituraForm = res;
-        });
+    const tipoControl = this.registarLeituraForm.get("tipoConsumo");
+    const edificioControl = this.registarLeituraForm.get("edificioId");
+
+    const tipo = tipoControl ? tipoControl.value : null;
+    const edificio = edificioControl ? edificioControl.value : null;
+
+    if (!tipo || !edificio) {
+      return;
     }
+
+    this.consumoService
+      .ultimaLeituraForm(tipo, edificio)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.ultimaLieituraForm = res;
+      });
   }
 
   // ─────────────────────────────────────────────
