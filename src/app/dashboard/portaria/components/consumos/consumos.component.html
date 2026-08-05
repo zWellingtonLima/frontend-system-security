@@ -230,7 +230,9 @@
       <form [formGroup]="registarLeituraForm" class="modal-leitura">
         <!-- Tipo de consumo -->
         <div class="form-group">
-          <label class="form-label-caps">Tipo de consumo</label>
+          <label class="form-label-caps"
+            >Tipo de consumo <span class="required">*</span></label
+          >
           <div class="tipo-consumo-grid">
             <button
               type="button"
@@ -262,7 +264,9 @@
 
         <!-- Edifício -->
         <div class="form-group">
-          <label for="edificioId">Edifício</label>
+          <label for="edificioId"
+            >Edifício <span class="required">*</span></label
+          >
           <select
             id="edificioId"
             (change)="pegarUltimaLeituraForm()"

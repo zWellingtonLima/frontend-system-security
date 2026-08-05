@@ -72,6 +72,7 @@ export class MovimentacoesService {
   }
 
   registoVisita(body: novaVisita) {
+    body.nomeVisitante = this.formatarNome(body.nomeVisitante);
     return this.http.post(this.apiUrl, body);
   }
 
@@ -106,6 +107,7 @@ export class MovimentacoesService {
   }
 
   atualizarVisita(id: number, body: novaVisita) {
+    body.nomeVisitante = this.formatarNome(body.nomeVisitante);
     return this.http.patch(`${this.apiUrl}/${id}`, body);
   }
 
@@ -165,5 +167,17 @@ export class MovimentacoesService {
 
   private normalizarTexto(texto: string): string {
     return texto.replace(/\s+/g, " ").trim();
+  }
+  private formatarNome(nome: string): string {
+    if (!nome) return "";
+    nome = this.normalizarTexto(nome);
+    return nome
+      .trim()
+      .split(/\s+/) // divide por qualquer quantidade de espaços
+      .map(
+        (palavra) =>
+          palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase(),
+      )
+      .join(" ");
   }
 }

@@ -114,4 +114,6 @@ export class MovimentacoesComponent implements OnInit {
   erroDoCampo(form: FormGroup, nome: string): string | null {
     return this.erros.erro(form, nome);
   }
+
+  
 }
