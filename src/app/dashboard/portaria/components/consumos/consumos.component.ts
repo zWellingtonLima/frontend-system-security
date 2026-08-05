@@ -155,7 +155,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   consumoCalculadoPreview: number | null = 0;
   ultimaLieituraForm: UltimaLeitura | null = null;
   edificios: EdificiosResponse[] = [];
-  consumoElevado: number = 800;
+  consumoElevado: number = 8000000000; //mudar a classe do consumo para alerta: definir valor
 
   modalExcluirOpen: boolean = false;
   modalIsOpen: boolean = false;

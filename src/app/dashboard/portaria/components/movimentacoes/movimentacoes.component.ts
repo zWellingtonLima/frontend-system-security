@@ -3,7 +3,6 @@ import {
   componenteMovimentacoesEnum,
   componenteMovimentacoesType,
   novaVisita,
-  TiposVisitas,
 } from "../../models/movimentacoes.model";
 import { MovimentacoesService } from "../../services/api/movimentacoes.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
