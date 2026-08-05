@@ -8,6 +8,7 @@
 .main-content {
   margin-left: $sidebar-expanded;
   flex: 1;
+  min-width: 0;
   background-color: $body-bg-security;
   transition: margin-left $transition;
 }
