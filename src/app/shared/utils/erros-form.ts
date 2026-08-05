@@ -30,6 +30,9 @@ export class ErrosForm {
     if (campo.errors["minlength"])
       return `Mínimo de ${campo.errors["minlength"].requiredLength} caracteres.`;
 
+    if (campo.errors["pattern"])
+      return "Nome não pode haver caracteres nem números.";
+
     return "Valor inválido.";
   }
 

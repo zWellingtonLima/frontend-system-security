@@ -9,6 +9,12 @@ import { MovimentacoesService } from "../../services/api/movimentacoes.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Observable } from "rxjs";
 import { ToastComponent } from "src/app/shared/components/toast/toast.component";
+import { ErrosForm } from "src/app/shared/utils/erros-form";
+
+const MENSAGENS_OBRIGATORIO = {
+  nomeVisitante: "Nome do visitante é obrigatório.",
+  idTipoVisita: "Selecione na lista o tipo de visita.",
+};
 
 @Component({
   selector: "app-movimentacoes",
@@ -20,7 +26,7 @@ export class MovimentacoesComponent implements OnInit {
     private movimentacoesService: MovimentacoesService,
     private fb: FormBuilder,
   ) {}
-
+  private erros = new ErrosForm(MENSAGENS_OBRIGATORIO);
   count$!: Observable<number>;
 
   ngOnInit() {
@@ -53,6 +59,13 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   registarFormuluarioVisita() {
+    if (
+      !this.erros.validar(this.formularioRegistarVisita, [
+        "nomeVisitante",
+        "idTipoVisita",
+      ])
+    )
+      return;
     if (this.formularioRegistarVisita.valid) {
       console.log(this.formularioRegistarVisita.value);
       this.movimentacoesService
@@ -72,11 +85,13 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   abrirModalEmprestar() {
+    this.erros.limpar(this.formularioRegistarVisita);
     this.botaoEnvio = "Registar";
     this.modalIsOpen = !this.modalIsOpen;
   }
 
   alternarVisibilidadeModal() {
+    this.erros.limpar(this.formularioRegistarVisita);
     this.formularioRegistarVisita.reset();
     this.modalIsOpen = !this.modalIsOpen;
   }
@@ -94,5 +109,9 @@ export class MovimentacoesComponent implements OnInit {
       return;
     }
     this.abaAtiva = abaStyle;
+  }
+
+  erroDoCampo(form: FormGroup, nome: string): string | null {
+    return this.erros.erro(form, nome);
   }
 }

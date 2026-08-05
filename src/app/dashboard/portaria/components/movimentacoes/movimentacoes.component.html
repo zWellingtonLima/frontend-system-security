@@ -69,22 +69,30 @@
           class="search-input"
           formControlName="nomeVisitante"
         />
+        <span
+          class="form-error"
+          *ngIf="erroDoCampo(formularioRegistarVisita, 'nomeVisitante') as erro"
+        >
+          {{ erro }}
+        </span>
       </div>
 
       <div class="form-group">
         <label for="idTipoVisita">
           Tipo de visita <span class="required">*</span>
         </label>
-        <select
-          id="idTipoVisita"
-          formControlName="idTipoVisita"
-          class="filter-select"
-        >
+        <select id="idTipoVisita" formControlName="idTipoVisita">
           <option [ngValue]="null" disabled>Selecione um tipo</option>
           <option *ngFor="let tipo of tipoVisita | async" [value]="tipo.id">
             {{ tipo.tipo }}
           </option>
         </select>
+        <span
+          class="form-error"
+          *ngIf="erroDoCampo(formularioRegistarVisita, 'idTipoVisita') as erro"
+        >
+          {{ erro }}
+        </span>
       </div>
 
       <!-- ── Destino ── -->

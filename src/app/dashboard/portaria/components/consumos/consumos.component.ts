@@ -20,6 +20,13 @@ import {
 } from "../../services/api/consumos.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { ToastComponent } from "src/app/shared/components/toast/toast.component";
+import { ErrosForm } from "src/app/shared/utils/erros-form";
+
+const MENSAGENS_OBRIGATORIO = {
+  tipoConsumo: "Selecione o tipo da leitura.",
+  edificioId: "Selecione na lista o edifício.",
+  leituraAtual: "Valor da leitura é obrigatório.",
+};
 
 @Component({
   selector: "app-consumos",
@@ -33,6 +40,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   ) {}
 
   private destroy$ = new Subject<void>();
+  private erros = new ErrosForm(MENSAGENS_OBRIGATORIO);
 
   filtrosForm!: FormGroup;
   paginador = this.consumoService.paginador;
@@ -164,6 +172,14 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   }
 
   registarLeitura() {
+    if (
+      !this.erros.validar(this.registarLeituraForm, [
+        "edificioId",
+        "tipoConsumo",
+        "leituraAtual",
+      ])
+    )
+      return;
     if (this.registarLeituraForm.valid) {
       this.consumoService
         .criar({
@@ -294,6 +310,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   }
 
   abrirEditar(item: ConsumoLeitura) {
+    this.erros.limpar(this.registarLeituraForm);
     this.registarLeituraForm.reset();
     this.modoEdicao = true;
     this.modalIsOpen = true;
@@ -302,6 +319,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   }
 
   alternarVisibilidadeModal() {
+    this.erros.limpar(this.registarLeituraForm);
     this.modalIsOpen = !this.modalIsOpen;
 
     if (this.modalIsOpen) {
@@ -328,5 +346,9 @@ export class ConsumosComponent implements OnInit, OnDestroy {
   @ViewChild(ToastComponent) toast!: ToastComponent;
   mostrarToast(msg: string): void {
     this.toast.mostrar(msg);
+  }
+
+  erroDoCampo(form: FormGroup, nome: string): string | null {
+    return this.erros.erro(form, nome);
   }
 }

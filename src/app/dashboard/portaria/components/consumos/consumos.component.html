@@ -252,6 +252,12 @@
               <span>Gás</span>
             </button>
           </div>
+          <span
+            class="form-error"
+            *ngIf="erroDoCampo(registarLeituraForm, 'tipoConsumo') as erro"
+          >
+            {{ erro }}
+          </span>
         </div>
 
         <!-- Edifício -->
@@ -267,6 +273,12 @@
               {{ edificio.nome }}
             </option>
           </select>
+          <span
+            class="form-error"
+            *ngIf="erroDoCampo(registarLeituraForm, 'edificioId') as erro"
+          >
+            {{ erro }}
+          </span>
         </div>
 
         <!-- Leitura anterior / Consumo calculado -->
@@ -317,6 +329,12 @@
               placeholder="Ex: 1250"
               (input)="onLeituraAtualChange()"
             />
+            <span
+              class="form-error"
+              *ngIf="erroDoCampo(registarLeituraForm, 'leituraAtual') as erro"
+            >
+              {{ erro }}
+            </span>
           </div>
 
           <div class="form-group">
@@ -356,7 +374,6 @@
 
         <button
           class="portaria-btn portaria-btn--primary"
-          [disabled]="registarLeituraForm.invalid"
           (click)="modoEdicao ? registarAtualizar() : registarLeitura()"
         >
           <i [class]="modoEdicao ? 'ft-edit-2' : 'ft-file-plus'"></i>
