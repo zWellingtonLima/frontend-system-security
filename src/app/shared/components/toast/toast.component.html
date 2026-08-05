@@ -1,4 +1,13 @@
-<div class="toast" *ngIf="visivel">
-  <i class="ft-check-circle"></i>
-  <span>{{ mensagem }}</span>
-</div>
+<ng-container *ngIf="!erro; else ComErro">
+  <div class="toast" *ngIf="visivel">
+    <i class="ft-check-circle"></i>
+    <span>{{ mensagem }}</span>
+  </div>
+</ng-container>
+
+<ng-template #ComErro>
+  <div class="erro" *ngIf="visivel">
+    <i class="ft-x-circle"></i>
+    <span>{{ mensagem }}</span>
+  </div>
+</ng-template>

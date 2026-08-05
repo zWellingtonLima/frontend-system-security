@@ -8,7 +8,7 @@ import { SearchFieldConfig } from "src/app/shared/components/table-search/table-
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MovimentacoesService } from "../../../services/api/movimentacoes.service";
 import { Subject } from "rxjs";
-import { take, takeUntil } from "rxjs/operators";
+import { takeUntil } from "rxjs/operators";
 import { ToastComponent } from "src/app/shared/components/toast/toast.component";
 
 @Component({
@@ -49,6 +49,7 @@ export class VisitasAtivasComponent implements OnInit, OnDestroy {
           this.carregando = false;
         },
         error: () => {
+          this.toast.erro = true;
           this.mostrarToast("Erro ao carregar visitas");
           this.carregando = false;
         },
@@ -58,9 +59,15 @@ export class VisitasAtivasComponent implements OnInit, OnDestroy {
   carregarTipoVisitaCombo() {
     this.movimentacoesService.listaPartilhada$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((dados) => {
-        this.tipoVisita = dados;
-        this.montarCamposPesquisa();
+      .subscribe({
+        next: (dados) => {
+          this.tipoVisita = dados;
+          this.montarCamposPesquisa();
+        },
+        error: () => {
+          this.toast.erro = true;
+          this.mostrarToast("Erro ao carregar tipos.");
+        },
       });
   }
 
@@ -96,8 +103,9 @@ export class VisitasAtivasComponent implements OnInit, OnDestroy {
             this.mostrarToast("Visita atualizada com sucesso!");
           },
           error: () => {
-            this.alternarVisibilidadeModal();
+            this.toast.erro = true;
             this.mostrarToast("Erro ao atualizar a visita.");
+            this.alternarVisibilidadeModal();
           },
         });
     }
@@ -113,6 +121,7 @@ export class VisitasAtivasComponent implements OnInit, OnDestroy {
           this.mostrarToast("Saída registada com sucesso!");
         },
         error: () => {
+          this.toast.erro = true;
           this.mostrarToast("Erro ao marcar saida.");
         },
       });
@@ -158,6 +167,7 @@ export class VisitasAtivasComponent implements OnInit, OnDestroy {
   limparFiltros(): void {
     this.limpar$.next();
   }
+
   onResultado(dados: Movimentacoes[]): void {
     this.dadosFiltrados = dados;
   }

@@ -77,8 +77,9 @@ export class MovimentacoesComponent implements OnInit {
             this.mostrarToast("Visita registada com sucesso!");
           },
           () => {
-            this.alternarVisibilidadeModal();
+            this.toast.erro = true;
             this.mostrarToast("Erro ao registar a visita.");
+            this.alternarVisibilidadeModal();
           },
         );
     }
@@ -114,6 +115,4 @@ export class MovimentacoesComponent implements OnInit {
   erroDoCampo(form: FormGroup, nome: string): string | null {
     return this.erros.erro(form, nome);
   }
-
-  
 }

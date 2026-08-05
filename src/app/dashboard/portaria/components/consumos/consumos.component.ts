@@ -93,6 +93,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
           this.leituras = res;
         },
         error: () => {
+          this.toast.erro = true;
           this.mostrarToast("Erro ao carregar as leituras.");
         },
       });
@@ -122,6 +123,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
           });
         },
         error: () => {
+          this.toast.erro = true;
           this.mostrarToast("Erro ao carregar as leituras.");
         },
       });
@@ -196,8 +198,9 @@ export class ConsumosComponent implements OnInit, OnDestroy {
             this.alternarVisibilidadeModal();
           },
           error: () => {
-            this.alternarVisibilidadeModal();
+            this.toast.erro = true;
             this.mostrarToast("Erro ao registar a leitura.");
+            this.alternarVisibilidadeModal();
           },
         });
     }
@@ -220,8 +223,9 @@ export class ConsumosComponent implements OnInit, OnDestroy {
             this.alternarVisibilidadeModal();
           },
           error: () => {
-            this.alternarVisibilidadeModal();
+            this.toast.erro = true;
             this.mostrarToast("Erro ao atualizar a leitura.");
+            this.alternarVisibilidadeModal();
           },
         });
     }
@@ -239,6 +243,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
           this.mostrarToast("Leitura excluída com sucesso!");
         },
         error: () => {
+          this.toast.erro = true;
           this.modalExcluirOpen = false;
           this.mostrarToast("Erro ao excluir leitura.");
         },
@@ -254,6 +259,7 @@ export class ConsumosComponent implements OnInit, OnDestroy {
           this.edificios = res;
         },
         error: () => {
+          this.toast.erro = true;
           this.mostrarToast("Erro ao carregar os dados");
         },
       });
@@ -294,8 +300,14 @@ export class ConsumosComponent implements OnInit, OnDestroy {
     this.consumoService
       .ultimaLeituraForm(tipo, edificio)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
-        this.ultimaLieituraForm = res;
+      .subscribe({
+        next: (res) => {
+          this.ultimaLieituraForm = res;
+        },
+        error: () => {
+          this.toast.erro = true;
+          this.mostrarToast("Erro ao carregar ultima leitura.");
+        },
       });
   }
 

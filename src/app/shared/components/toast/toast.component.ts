@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from "@angular/core";
 })
 export class ToastComponent {
   @Input() mensagem: string = "";
+  @Input() erro: boolean = false;
   visivel: boolean = false;
 
   private timeoutRef: any;

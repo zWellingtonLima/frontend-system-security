@@ -171,13 +171,16 @@ export class MovimentacoesService {
   private formatarNome(nome: string): string {
     if (!nome) return "";
     nome = this.normalizarTexto(nome);
+    const preposicoes = ["da", "de", "do", "das", "dos"];
     return nome
       .trim()
-      .split(/\s+/) // divide por qualquer quantidade de espaços
-      .map(
-        (palavra) =>
-          palavra.charAt(0).toUpperCase() + palavra.slice(1).toLowerCase(),
-      )
+      .split(/\s+/)
+      .map((p) => {
+        const lower = p.toLowerCase();
+        return preposicoes.indexOf(lower) >= 0
+          ? lower
+          : lower.charAt(0).toUpperCase() + lower.slice(1);
+      })
       .join(" ");
   }
 }
